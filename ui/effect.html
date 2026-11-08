@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  html, body { margin:0; background:transparent; overflow:hidden; color:#fff; font:700 14px system-ui,sans-serif; }
+  #effect { position:relative; height:65px; display:flex; align-items:center; justify-content:center; border-radius:14px; background:linear-gradient(90deg,#234c48,#123044); border:1px solid #74b6a1; }
+  #effect[data-kind="win"] { background:linear-gradient(90deg,#68522d,#235c4e); border-color:#f8d98a; }
+  .effect__title { position:relative; z-index:2; text-align:center; }
+  .spark { position:absolute; display:block; height:5px; width:5px; border-radius:50%; pointer-events:none; animation: float 1s ease-out forwards; background:#f8d98a; }
+  @keyframes float { from { transform:translate(0,0) scale(1);opacity:1; } to { transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0; } }
+  @media (prefers-reduced-motion: reduce) { .spark { animation:none; display:none; } }
+</style>
+</head>
+<body>
+<div id="effect" data-kind="__KIND__" data-reduced="__REDUCED__" role="status" aria-live="polite"><span class="effect__title">__MESSAGE__</span></div>
+<script>__SCRIPT__</script>
+</body>
+</html>
