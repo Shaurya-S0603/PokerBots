@@ -7,7 +7,7 @@ import time
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import TimeoutError as PlaywrightTimeout, expect, sync_playwright
 
 URL = "http://127.0.0.1:8511"
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,13 +72,28 @@ def check_table(browser, width):
   page.close()
 
 
+def choose_mode(page, mode, count):
+  # Changing the seat count reruns the page and can close an open dropdown.
+  expect(page.get_by_test_id("stTextInput")).to_have_count(count)
+  picker = page.get_by_test_id("stSelectbox").first.locator("input")
+  option = page.get_by_text(mode, exact=True)
+  for attempt in range(3):
+    if not option.is_visible():
+      picker.click()
+    try:
+      option.click(timeout=2000)
+      return
+    except PlaywrightTimeout:
+      if attempt == 2:
+        raise
+
+
 def check_paced_bot(browser):
   page = browser.new_page(viewport={"width": 1440, "height": 900})
   page.goto(URL)
   expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
   set_player_count(page, 3)
-  page.get_by_test_id("stSelectbox").first.locator("input").click()
-  page.get_by_text("Human vs Bots", exact=True).click()
+  choose_mode(page, "Human vs Bots", 3)
   page.get_by_role("button", name="Deal the first hand").click()
   page.get_by_role("button", name="Fold", exact=True).click()
   expect(page.get_by_text("Player 2 is thinking…", exact=True)).to_be_visible()
@@ -91,8 +106,7 @@ def check_arena(browser):
   page.goto(URL)
   expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
   set_player_count(page, 2)
-  page.get_by_test_id("stSelectbox").first.locator("input").click()
-  page.get_by_text("Bot Arena", exact=True).click()
+  choose_mode(page, "Bot Arena", 2)
   page.get_by_role("button", name="Deal the first hand").click()
   expect(page.get_by_text("Bot Arena · Seed 42", exact=True)).to_be_visible()
   page.get_by_role("button", name="Play", exact=True).click()
