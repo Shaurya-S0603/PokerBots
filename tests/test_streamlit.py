@@ -78,3 +78,38 @@ def test_paced_bot_waits_then_commits_one_action_per_turn():
   assert not app.exception
   assert len(app.session_state.history) == 2
   assert app.session_state.history[-1]["player_id"] == 2
+
+
+def test_arena_pause_and_step_produce_the_same_hand_as_autoplay():
+  def play(autoplay):
+    app = AppTest.from_file(str(APP_PATH)).run()
+    app.slider[0].set_value(2).run()
+    app.selectbox[0].select("Bot Arena").run()
+    app.selectbox[2].select("Random")
+    button(app, "Deal the first hand").click().run()
+    if autoplay:
+      button(app, "Play").click().run()
+      assert app.session_state.history == []
+      turn, _ = app.session_state.arena_due
+      app.session_state.arena_due = (turn, 0)
+      app.run()
+      assert len(app.session_state.history) == 1
+      button(app, "Pause").click().run()
+      app.run()
+      assert len(app.session_state.history) == 1
+    while not app.session_state.game.hand_over:
+      before = len(app.session_state.history)
+      button(app, "Step").click().run()
+      assert not app.exception
+      assert len(app.session_state.history) == before + 1
+    record = app.session_state.hand_records[1]
+    dealer = app.session_state.game.dealer_index
+    action_count = len(app.session_state.history)
+    if not app.session_state.game.game_over:
+      button(app, "Step").click().run()
+      assert app.session_state.game.hand_number == 2
+      assert app.session_state.game.dealer_index != dealer
+      assert len(app.session_state.history) == action_count
+    return record
+
+  assert play(False) == play(True)

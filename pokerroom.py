@@ -2,9 +2,9 @@ import random
 ranks = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"]
 suits = ["♣️","♦️","♠️","♥️"]
 
-def set_deck():
+def set_deck(rng=None):
   deck = [(rank,suit) for rank in ranks for suit in suits]
-  random.shuffle(deck)
+  (rng if rng is not None else random).shuffle(deck)
   return deck
 
 def hole_cards(deck):
@@ -253,7 +253,7 @@ class Player:
     self.acted_bet = None
 
 class GameManager:
-  def __init__(self, players, small_blind=5, big_blind=10) -> None:
+  def __init__(self, players, small_blind=5, big_blind=10, *, deck_rng=None) -> None:
     if not 2 <= len(players) <= 10:
       raise ValueError("Number of players must be between 2 and 10")
 
@@ -270,6 +270,7 @@ class GameManager:
       raise ValueError("Invalid blind amounts")
 
     self.players = players
+    self.deck_rng = deck_rng
     self.deck = []
     self.board = []
     self.burned_cards = []
@@ -351,7 +352,7 @@ class GameManager:
     if not self.assign_positions(self.hand_number > 0):
       return False
 
-    self.deck = set_deck()
+    self.deck = set_deck(self.deck_rng)
     self.board = []
     self.burned_cards = []
     self.pot = 0
@@ -825,7 +826,7 @@ class GameManager:
       "max_raise_total":max_total if can_raise else None
     }
 
-def start_game(player_count=5, starting_chips=1000, small_blind=5, big_blind=10):
+def start_game(player_count=5, starting_chips=1000, small_blind=5, big_blind=10, *, deck_rng=None):
   if type(player_count) is not int or not 2 <= player_count <= 10:
     raise ValueError("Number of players must be between 2 and 10")
 
@@ -833,7 +834,7 @@ def start_game(player_count=5, starting_chips=1000, small_blind=5, big_blind=10)
     raise ValueError("Starting chips must be a positive integer")
 
   players = [Player(i+1, starting_chips) for i in range(player_count)]
-  startgame = GameManager(players, small_blind, big_blind)
+  startgame = GameManager(players, small_blind, big_blind, deck_rng=deck_rng)
   startgame.start_round()
   return startgame
 
