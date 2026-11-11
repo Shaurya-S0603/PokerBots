@@ -102,14 +102,14 @@ def play(strategies, seed, *, full_game, stack=100):
   raise RuntimeError("Training match exceeded its action or hand limit")
 
 
-def paired(candidate, opponent, seeds):
+def paired(candidate, opponent, seeds, *, stack=100):
   totals = []
   for seed in seeds:
-    first, deal_a = play({"Candidate": candidate, "Opponent": opponent}, seed, full_game=False)
-    second, deal_b = play({"Opponent": opponent, "Candidate": candidate}, seed, full_game=False)
+    first, deal_a = play({"Candidate": candidate, "Opponent": opponent}, seed, full_game=False, stack=stack)
+    second, deal_b = play({"Opponent": opponent, "Candidate": candidate}, seed, full_game=False, stack=stack)
     if deal_a != deal_b:
       raise RuntimeError("Mirrored training deal changed")
-    totals.append(first["results"][0]["final_chips"] + second["results"][1]["final_chips"] - 200)
+    totals.append(first["results"][0]["final_chips"] + second["results"][1]["final_chips"] - 2 * stack)
   return totals
 
 
@@ -162,16 +162,79 @@ def run(arena_source, human_source, incumbent):
     "training": final, "evaluation": evaluation, "champion": champion, "profile": asdict(profiles[champion])}
 
 
+def combine_human_summaries(summaries):
+  counts = {}
+  for source in summaries:
+    for context, actions in source["counts"].items():
+      counts.setdefault(context, Counter()).update(actions)
+  # Size to the latest match; retain prior action counts as extra evidence.
+  return {"counts": {context: dict(actions) for context, actions in counts.items()},
+    "median_raise_fraction": summaries[-1]["median_raise_fraction"]}
+
+
+def run_generation_three(previous, latest, stack):
+  arena_source = previous["source"]
+  fraction = min(0.9, max(0.4, arena_source["median_raise_fraction"] or 2 / 3))
+  incumbent = EquityProfile(**previous["profile"])
+  profiles = {
+    previous["champion"]: incumbent,
+    "Deep Value Equity": EquityProfile(0.045, 0.16, 0.07, fraction + 0.08, 0.02, 0.02),
+    "River Defense Equity": EquityProfile(0.045, 0.18, 0.08, fraction, -0.04, 0.02),
+    "Position Pressure Equity": EquityProfile(0.045, 0.16, 0.14, fraction + 0.05, 0.015, 0.03),
+    "Controlled Equity": EquityProfile(0.07, 0.21, 0.09, fraction - 0.12, 0.025, 0.02),
+  }
+  strategies = {name: profile_strategy(profile) for name, profile in profiles.items()}
+  names = list(strategies)
+  wins, rounds = Counter(), []
+  for i in range(len(names)):
+    order = names[i:] + names[:i]
+    match, _ = play({name: strategies[name] for name in order}, 5100 + i, full_game=True, stack=stack)
+    winner, = (row["model"] for row in match["results"] if row["final_chips"])
+    wins[winner] += 1
+    rounds.append({"seed": match["seed"], "hands": match["hands"], "winner": winner})
+
+  sources = [previous["human_source"], latest]
+  proxy = human_proxy(combine_human_summaries(sources))
+  proxy_results = {name: paired_report(paired(strategy, proxy, range(5200, 5216), stack=stack))
+    for name, strategy in strategies.items()}
+  proxy_order = sorted(names, key=lambda name: proxy_results[name]["bb_per_100"], reverse=True)
+  finalists = sorted(names, key=lambda name: wins[name] / 5 + (4 - proxy_order.index(name)) / 4, reverse=True)[:3]
+  final, _ = play({name: strategies[name] for name in finalists}, 5300, full_game=True, stack=stack)
+  champion, = (row["model"] for row in final["results"] if row["final_chips"])
+  holdout = range(5400, 5432)
+  evaluation = {
+    "against_incumbent": paired_report(paired(strategies[champion], profile_strategy(incumbent), holdout, stack=stack)),
+    "against_human_style_proxy": paired_report(paired(strategies[champion], proxy, holdout, stack=stack)),
+    "seed_start": holdout.start, "starting_stack": stack,
+  }
+  return {"generation": 3, "source": arena_source, "human_source": latest, "human_sources": sources,
+    "candidate_profiles": {name: asdict(profile) for name, profile in profiles.items()},
+    "screening": {"self_play": rounds, "proxy_seed_start": 5200, "proxy_results": proxy_results},
+    "training": final, "evaluation": evaluation, "champion": champion, "profile": asdict(profiles[champion])}
+
+
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument("arena_history", type=Path)
-  parser.add_argument("human_history", type=Path)
+  parser.add_argument("histories", type=Path, nargs="+")
+  parser.add_argument("--generation", type=int, choices=(2, 3), default=3)
   parser.add_argument("--human-seat", type=int, default=1)
   parser.add_argument("--output", type=Path, default=CHAMPION_PATH)
   args = parser.parse_args()
-  incumbent_record = json.loads(CHAMPION_PATH.with_name("generation-1.json").read_text())
-  result = run(source_summary(args.arena_history.read_bytes()),
-    human_summary(args.human_history.read_bytes(), args.human_seat), EquityProfile(**incumbent_record["profile"]))
+  if args.generation == 2:
+    if len(args.histories) != 2:
+      parser.error("Generation 2 needs the Arena history and the human history")
+    arena, human = args.histories
+    incumbent_record = json.loads(CHAMPION_PATH.with_name("generation-1.json").read_text())
+    result = run(source_summary(arena.read_bytes()),
+      human_summary(human.read_bytes(), args.human_seat), EquityProfile(**incumbent_record["profile"]))
+  else:
+    if len(args.histories) != 1:
+      parser.error("Generation 3 needs the new human history")
+    raw = args.histories[0].read_bytes()
+    latest = human_summary(raw, args.human_seat)
+    stack = json.loads(raw)["hands"][0]["starting_stacks"][str(args.human_seat)]
+    previous = json.loads(CHAMPION_PATH.with_name("generation-2.json").read_text())
+    result = run_generation_three(previous, latest, stack)
   temporary = args.output.with_suffix(".tmp")
   temporary.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
   temporary.replace(args.output)
