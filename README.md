@@ -19,6 +19,17 @@ The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity.
 
 **Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
 
+## Offline benchmarks
+
+Run a single mirrored deal or compare all four frozen Update 4 baselines:
+
+```bash
+python benchmark.py --opponent "Calling Station" --pairs 1
+python benchmark.py --split evaluation --pairs 100 --output evaluation.json
+```
+
+**Bot benchmarks** in the main menu shows a bundled evaluation and accepts reports from the runner. Each seed plays two hands with equal starting stacks and the bots swapped. A hash checks that the deal by seat is identical. Tuning uses even seeds and evaluation uses odd seeds. Use `--include-pairs` to keep each hand's outcome and deal hash in the export. Results show Equity's net big blinds per 100 hands, a 95% bootstrap interval sampled by seed pair, illegal actions, VPIP, PFR, and Equity's decision latency. If a strategy makes an illegal move, the runner reports it and exits with a nonzero status.
+
 ## Project structure
 
 - `app.py` - Streamlit application, session and action controls

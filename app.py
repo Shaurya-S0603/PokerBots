@@ -8,6 +8,7 @@ import streamlit.components.v1 as components
 from arena import BotArena, STRATEGIES
 from poker_bot import PokerBot
 from poker_engine import start_game
+from ui.benchmark_dashboard import render_benchmarks
 from ui.render import card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -495,6 +496,9 @@ def _render_menu():
     if st.button("Resume current game", type="primary", use_container_width=True):
       st.session_state.screen = "table"
       st.rerun()
+  if st.button("Bot benchmarks"):
+    st.session_state.screen = "benchmarks"
+    st.rerun()
   if st.session_state.hand_records and st.button("Hand history"):
     _open_history()
   with st.expander("How to play · 60-second guide", expanded=st.session_state.game is None):
@@ -580,6 +584,12 @@ def _render_sidebar(state):
 def main():
   _init_state()
   _inject_css()
+  if st.session_state.screen == "benchmarks":
+    if st.button("Back to menu"):
+      st.session_state.screen = "menu"
+      st.rerun()
+    render_benchmarks()
+    return
   if st.session_state.screen == "history":
     _render_history()
     return
