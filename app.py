@@ -8,6 +8,7 @@ import streamlit.components.v1 as components
 from poker_bot import PokerBot
 from poker_engine import start_game
 from ui.render import card_html, table_html
+from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
 from ui.showdown import best_five, pot_explanation
 
@@ -33,6 +34,7 @@ def _init_state():
     "last_action": "",
     "last_actions": {},
     "history": [],
+    "hand_records": {},
     "stats": {},
     "hand_start_stacks": {},
     "finished_hand": None,
@@ -75,8 +77,10 @@ def _start_game(count, chips, small, big, mode, difficulty, names):
   st.session_state.last_action = ""
   st.session_state.last_actions = {}
   st.session_state.history = []
+  st.session_state.hand_records = {}
   st.session_state.stats = {p.player_id: new_stats() for p in game.players}
   st.session_state.hand_start_stacks = {p.player_id: chips for p in game.players}
+  _record_hand_start(game.get_state())
   st.session_state.finished_hand = None
   st.session_state.flash = ("info", "New game started. Blinds have been posted.")
   st.session_state.pending_effect = None
@@ -84,10 +88,20 @@ def _start_game(count, chips, small, big, mode, difficulty, names):
   st.session_state.bot_due = None
 
 
+def _record_hand_start(state):
+  st.session_state.hand_records[state["hand_number"]] = start_record(
+    state, st.session_state.hand_start_stacks)
+
+
 def _log_action(action, player_id, before):
   game = st.session_state.game
   event = action_event(action, player_id, before, _player(player_id))
   st.session_state.history.append(event)
+  record = st.session_state.hand_records.get(before["hand_number"])
+  if record is None:
+    _record_hand_start(before)
+    record = st.session_state.hand_records[before["hand_number"]]
+  record_step(record, game.get_state(), event)
   phrase = f"{_name(player_id)} {action.replace('_', ' ')}"
   if action in ("call", "raise", "all_in") and event["amount"] > 0:
     phrase += f" · {event['amount']:,} chips"
@@ -304,16 +318,9 @@ def _render_showdown(state):
       used = sum(card in hole for card in chosen)
       source = "Plays the board" if not used else f"{used} hole card{'s' if used == 2 else ''} in the best five"
       st.markdown(f'<div class="room-status"><strong>{html.escape(_name(player_id))}</strong> · {html.escape(hand[0])}<div class="room-cardline room-cardline--showdown" role="group" aria-label="Best five cards">{cards}</div><small>{source}</small></div>', unsafe_allow_html=True)
-  st.subheader("Payout summary")
-  if state["pot_results"]:
-    for index, pot in enumerate(state["pot_results"]):
-      title = "Main pot" if index == 0 else f"Side pot {index}"
-      winners = ", ".join(f"{_name(int(player_id))} (+{chips:,})" for player_id, chips in pot["payouts"].items())
-      st.write(f"**{title}: {pot['amount']:,} chips** · {winners}")
-      st.caption(pot_explanation(pot, state["showdown_hands"]))
-  for player_id, chips in state["uncalled_returns"].items():
-    st.write(f"Uncalled bet returned to {_name(player_id)} · {chips:,} chips")
-  st.caption("Winners and pot eligibility are calculated by the poker engine, not by the interface.")
+  _render_payouts(state)
+  if st.button("Replay this hand", use_container_width=True):
+    _open_history(state["hand_number"])
   if state["game_over"]:
     st.subheader("Final standings")
     for player in sorted(state["players"], key=lambda p: p["stack"], reverse=True):
@@ -326,6 +333,7 @@ def _render_showdown(state):
     game = st.session_state.game
     st.session_state.hand_start_stacks = {p.player_id: p.stack for p in game.players}
     if game.start_next_round():
+      _record_hand_start(game.get_state())
       st.session_state.revealed_player = None
       st.session_state.handoff_required = st.session_state.game_mode == "Local Pass-and-Play"
       st.session_state.last_actions = {}
@@ -336,6 +344,76 @@ def _render_showdown(state):
     st.rerun()
 
 
+def _render_payouts(state):
+  st.subheader("Payout summary")
+  if state["pot_results"]:
+    for index, pot in enumerate(state["pot_results"]):
+      title = "Main pot" if index == 0 else f"Side pot {index}"
+      winners = ", ".join(f"{_name(int(player_id))} (+{chips:,})" for player_id, chips in pot["payouts"].items())
+      st.write(f"**{title}: {pot['amount']:,} chips** · {winners}")
+      st.caption(pot_explanation(pot, state["showdown_hands"]))
+  for player_id, chips in state["uncalled_returns"].items():
+    st.write(f"Uncalled bet returned to {_name(player_id)} · {chips:,} chips")
+
+
+def _open_history(hand=None):
+  if hand is not None:
+    game_id = st.session_state.game_id
+    st.session_state[f"replay_hand_{game_id}"] = hand
+    st.session_state[f"replay_step_{game_id}_{hand}"] = 0
+  st.session_state.screen = "history"
+  st.session_state.bot_due = None
+  if st.session_state.game_mode == "Local Pass-and-Play":
+    st.session_state.revealed_player = None
+    st.session_state.handoff_required = True
+  st.rerun()
+
+
+def _render_history():
+  if st.button("Back to table" if st.session_state.game else "Back to menu"):
+    st.session_state.screen = "table" if st.session_state.game else "menu"
+    st.rerun()
+  st.title("Hand history")
+  completed = {number: record for number, record in st.session_state.hand_records.items()
+    if record["steps"][-1]["table"]["hand_over"]}
+  if not completed:
+    st.info("Finish a hand to replay or download it.")
+    return
+  hand = st.selectbox("Completed hand", sorted(completed, reverse=True),
+    format_func=lambda number: f"Hand {number}", key=f"replay_hand_{st.session_state.game_id}")
+  record = completed[hand]
+  steps = record["steps"]
+  cursor_key = f"replay_step_{st.session_state.game_id}_{hand}"
+  index = st.session_state.get(cursor_key, 0)
+  previous, following = st.columns(2)
+  previous.button("Previous step", disabled=index == 0, use_container_width=True,
+    on_click=lambda: st.session_state.update({cursor_key: index - 1}))
+  following.button("Next step", disabled=index == len(steps) - 1, use_container_width=True,
+    on_click=lambda: st.session_state.update({cursor_key: index + 1}))
+  step = steps[index]
+  table = step["table"]
+  st.caption(f"Step {index + 1} of {len(steps)}")
+  if step["action"]:
+    event = step["action"]
+    action = event["action"].replace("_", " ")
+    amount = f" · {event['amount']:,} chips" if event["amount"] else ""
+    st.text(f"{event['phase'].capitalize()} · {_name(event['player_id'])}: {action}{amount}")
+  else:
+    st.text("Blinds posted")
+  for change in step["board_changes"]:
+    cards = " ".join(f"{rank}{suit}" for rank, suit in change["cards"])
+    st.text(f"{change['street']} · {cards}")
+  st.markdown(table_html(table, st.session_state.player_names), unsafe_allow_html=True)
+  with st.expander("Starting stacks"):
+    for player_id, stack in record["starting_stacks"].items():
+      st.text(f"{_name(player_id)} · {stack:,} chips")
+  if table["hand_over"]:
+    _render_payouts(table)
+  st.download_button("Download completed hands (JSON)", data=export_history(completed),
+    file_name="pokerroom-hand-history.json", mime="application/json")
+  st.caption("The download uses seat numbers and includes only cards revealed at showdown.")
+
+
 def _render_menu():
   st.markdown('<div class="room-hero"><h1>POKERROOM</h1><p>NO-LIMIT TEXAS HOLD’EM</p></div>', unsafe_allow_html=True)
   st.markdown('<p class="room-subtitle">A proper poker table. Real betting rules, side pots and showdown payouts. Play on one device or challenge the bots.</p>', unsafe_allow_html=True)
@@ -343,6 +421,8 @@ def _render_menu():
     if st.button("Resume current game", type="primary", use_container_width=True):
       st.session_state.screen = "table"
       st.rerun()
+  if st.session_state.hand_records and st.button("Hand history"):
+    _open_history()
   with st.expander("How to play · 60-second guide", expanded=st.session_state.game is None):
     st.markdown("Each player receives two private cards. Make the strongest five-card hand using your cards and the shared board. Betting happens **before the flop**, **after the flop**, **after the turn** and **after the river**. Fold to leave the hand, check when no bet is owed, call to match, or raise to increase the bet. The last player standing wins immediately, otherwise the best eligible hand wins each pot.")
     st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use a simple heuristic, not a trained solver.")
@@ -386,7 +466,9 @@ def _render_sidebar(state):
       st.rerun()
     st.checkbox("Reduce animations", key="reduced_motion")
     if st.session_state.game_mode == "Human vs Bots":
-      st.selectbox("Bot pace", list(BOT_PACING), key="bot_pacing")
+      st.selectbox("Bot pace", list(BOT_PACING),
+        index=list(BOT_PACING).index(st.session_state.bot_pacing), key="bot_pace_control",
+        on_change=lambda: st.session_state.update(bot_pacing=st.session_state.bot_pace_control))
     st.markdown("---")
     st.caption(f"{st.session_state.game_mode} · Hand {state['hand_number']}")
     st.metric("Pot", f"{state['pot']:,}")
@@ -398,10 +480,8 @@ def _render_sidebar(state):
       for event in events[-12:][::-1]:
         amount = f" · {event['amount']:,}" if event["amount"] else ""
         st.write(f"{_name(event['player_id'])}: {event['action'].replace('_', ' ')}{amount}")
-    with st.expander("Session hand history"):
-      for hand in sorted({e["hand"] for e in st.session_state.history}, reverse=True):
-        count = sum(1 for e in st.session_state.history if e["hand"] == hand)
-        st.write(f"Hand {hand}: {count} actions")
+    if st.button("Hand history", use_container_width=True):
+      _open_history()
     with st.expander("Player statistics"):
       for player_id, stats in st.session_state.stats.items():
         hands = max(1, stats["hands"])
@@ -415,6 +495,9 @@ def _render_sidebar(state):
 def main():
   _init_state()
   _inject_css()
+  if st.session_state.screen == "history":
+    _render_history()
+    return
   if st.session_state.screen == "menu" or st.session_state.game is None:
     _render_menu()
     return

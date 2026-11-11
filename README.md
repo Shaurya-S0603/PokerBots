@@ -23,6 +23,12 @@ Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 
 - `ui/render.py` - data-to-HTML renderer with escaped player labels
 - `tests/` - regression checks
 
+## Hand history
+
+Choose **Replay this hand** after a payout, or **Hand history** in the sidebar, to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
+
+**Download completed hands (JSON)** exports the current game's completed hands with seat numbers. It includes cards revealed at showdown and omits names, folded or otherwise unrevealed hole cards, and the deck. Download before starting another game or leaving the session to keep the history.
+
 ## Behavior and privacy
 
 The game state lives in Streamlit session state. Press **Main menu** and **Resume current game** to navigate within the same session. A browser reload or a disconnected session is not guaranteed to preserve the game. There is no database, external lobby or account system.
