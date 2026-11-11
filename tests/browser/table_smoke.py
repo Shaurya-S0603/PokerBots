@@ -99,9 +99,10 @@ def check_arena(browser):
   action = page.get_by_text("Last action: Seat 1 call · 5 chips", exact=True)
   expect(action).to_be_visible()
   page.get_by_role("button", name="Pause", exact=True).click()
-  expect(page.get_by_role("button", name="Step", exact=True)).to_be_enabled()
+  step = page.get_by_role("button", name="Step", exact=True).and_(page.locator("button:enabled"))
+  expect(step).to_be_visible()
   expect(action).to_be_visible()
-  page.get_by_role("button", name="Step", exact=True).click()
+  step.click()
   expect(page.get_by_text("Last action: Seat 2 check", exact=True)).to_be_visible()
   page.close()
 
