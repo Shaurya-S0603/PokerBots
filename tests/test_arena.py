@@ -58,3 +58,20 @@ def test_tight_and_loose_strategies_differ_in_the_expected_spots():
   assert tight(shared_pair, rng)[0] == "fold"
   trips = replace(shared_pair, hole=(("K", "♠️"), ("2", "♥️")))
   assert tight(trips, rng)[0] == "raise"
+
+
+def test_equity_strategy_cannot_see_hidden_cards_and_uses_a_legal_raise():
+  from arena import equity_bot
+
+  game = start_game(2)
+  actor = game.players[game.current_player]
+  opponent = next(player for player in game.players if player is not actor)
+  actor.hole_cards = [("A", "♣️"), ("A", "♥️")]
+  before = observe(game, actor)
+  opponent.hole_cards = [("K", "♣️"), ("Q", "♦️")]
+  after = observe(game, actor)
+  assert before == after
+  action, target = equity_bot(before, Random(12))
+  assert (action, target) == equity_bot(after, Random(12))
+  assert action == "raise"
+  assert before.legal["min_raise_total"] <= target <= before.effective_raise_total

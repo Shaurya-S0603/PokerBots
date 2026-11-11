@@ -93,6 +93,8 @@ def check_arena(browser):
   set_player_count(page, 2)
   page.get_by_test_id("stSelectbox").first.locator("input").click()
   page.get_by_text("Bot Arena", exact=True).click()
+  page.get_by_test_id("stSelectbox").nth(2).locator("input").click()
+  page.get_by_text("Equity", exact=True).click()
   page.get_by_role("button", name="Deal the first hand").click()
   expect(page.get_by_text("Bot Arena · Seed 42", exact=True)).to_be_visible()
   page.get_by_role("button", name="Play", exact=True).click()
@@ -102,7 +104,7 @@ def check_arena(browser):
   expect(page.get_by_role("button", name="Step", exact=True)).to_be_enabled()
   expect(action).to_be_visible()
   page.get_by_role("button", name="Step", exact=True).click()
-  expect(page.get_by_text("Last action: Seat 2 check", exact=True)).to_be_visible()
+  expect(page.get_by_text("Last action: Seat 2", exact=False)).to_be_visible()
   page.close()
 
 

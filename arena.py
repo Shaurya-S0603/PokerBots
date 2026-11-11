@@ -2,6 +2,7 @@ from collections import Counter
 from dataclasses import dataclass
 from random import Random
 
+from equity import exact_river_equity, sample_equity
 from poker_engine import highest_hand
 
 
@@ -18,6 +19,8 @@ class Observation:
   late_position: bool
   opponents: int
   legal: dict
+  effective_raise_total: int
+  has_all_in_opponent: bool
 
 
 def calling_station(view, rng):
@@ -37,13 +40,17 @@ def observe(game, player):
   if len(ids) >= 4:
     late_seats.add(ids[dealer_index - 1])
   own = next(seat for seat in seats if seat["player_id"] == player.player_id)
+  opponents = [seat for seat in seats if not seat["folded"] and seat["player_id"] != player.player_id]
+  respond_to = max((seat["current_bet"] + seat["stack"]
+    for seat in opponents if not seat["all_in"]), default=0)
   return Observation(
     hole=tuple(own["hole_cards"]), board=tuple(state["board"]), stack=own["stack"],
     stacks=tuple((seat["player_id"], seat["stack"]) for seat in seats),
     current_bet=own["current_bet"], table_bet=state["table_bet"],
     big_blind=state["big_blind"], pot=state["pot"], late_position=player.player_id in late_seats,
-    opponents=sum(not seat["folded"] and seat["player_id"] != player.player_id for seat in seats),
-    legal=game.legal_actions(player),
+    opponents=len(opponents), legal=game.legal_actions(player),
+    effective_raise_total=min(own["current_bet"] + own["stack"], respond_to),
+    has_all_in_opponent=any(seat["all_in"] for seat in opponents),
   )
 
 
@@ -149,9 +156,40 @@ def loose_aggressive(view, rng):
   return _value_strategy(view, rng, loose=True)
 
 
+def equity_bot(view, rng):
+  legal = view.legal
+  call = legal["call_amount"]
+  # A partial call or multiway all-in can expose less than the displayed pot.
+  if call < view.table_bet - view.current_bet or (view.opponents > 1 and view.has_all_in_opponent):
+    return tight(view, rng)
+
+  if len(view.board) == 5 and view.opponents == 1:
+    share = exact_river_equity(view.hole, view.board).equity
+  else:
+    trials = 256 if view.opponents <= 3 else 128
+    share = sample_equity(view.hole, view.board, view.opponents, trials, rng).equity
+
+  cushion = 0.04 if len(view.board) < 5 else 0
+  if legal["call"] and share < call / (view.pot + call) + cushion:
+    return "fold", None
+
+  value_threshold = max(0.35, 1 / (view.opponents + 1) + 0.17)
+  if not view.board and view.late_position and view.table_bet == view.big_blind:
+    value_threshold -= 0.06
+
+  if legal["raise"] and share >= value_threshold:
+    minimum = min(legal["min_raise_total"], legal["max_raise_total"])
+    maximum = min(legal["max_raise_total"], view.effective_raise_total)
+    if minimum <= maximum:
+      raise_size = max(view.big_blind, (view.pot + call) * 2 // 3)
+      return "raise", min(maximum, max(minimum, view.table_bet + raise_size))
+  return calling_station(view, rng)
+
+
 STRATEGIES = {
   "Calling Station": calling_station,
   "Random": random_bot,
   "Tight": tight,
   "Loose-Aggressive": loose_aggressive,
+  "Equity": equity_bot,
 }

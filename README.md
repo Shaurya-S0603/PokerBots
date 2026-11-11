@@ -15,7 +15,9 @@ Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 
 
 Select **Bot Arena** as the game mode. Pick a match seed and a strategy for each seat. **Step** plays one decision or deals the next hand after a payout. **Play** repeats those steps at the selected pace, and **Pause** returns control to you. Reuse the seed, strategies, stacks, and blinds to reproduce a match in the same app version. The hand history download includes the Arena seed and strategies.
 
-The Arena includes Calling Station, Random, Tight, and Loose-Aggressive. These are rule-based strategies that use each bot's own cards and public table information.
+The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity. All strategies use each bot's own cards and public table information.
+
+**Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
 
 ## Project structure
 
