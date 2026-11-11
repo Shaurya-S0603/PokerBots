@@ -100,7 +100,7 @@ h1, h2, h3 { letter-spacing: -.025em; }
   .felt-surface { left:10%; right:10%; top:19%; bottom:18%; }
 }
 @media (max-width: 760px) {
-  .block-container { padding: .8rem .8rem 3rem; }
+  .block-container { padding: 3.5rem .8rem 3rem; }
   .table-stage { height:auto; overflow:visible; padding: 14px; display:flex; flex-direction:column; gap:14px; }
   .felt-surface { position:relative; inset:auto; width:100%; min-height:244px; border-width:8px; border-radius:50% / 34%; }
   .felt-inner { max-width:100%; }

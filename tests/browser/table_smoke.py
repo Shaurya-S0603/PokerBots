@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -51,6 +52,21 @@ def check_table(browser, width):
   page.get_by_role("button", name="Reveal my cards").click()
   page.get_by_role("button", name="Fold", exact=True).click()
   expect(page.get_by_text("Uncalled bet returned to Player 1", exact=False)).to_be_visible()
+  expect(page.get_by_role("button", name="Next hand")).to_be_visible()
+  page.get_by_role("button", name="Replay this hand").click()
+  expect(page.get_by_text("Blinds posted", exact=True)).to_be_visible()
+  page.get_by_role("button", name="Next step").click()
+  expect(page.get_by_text("Preflop · Player 1: raise · 25 chips", exact=True)).to_be_visible()
+  page.get_by_role("button", name="Next step").click()
+  expect(page.get_by_text("Preflop · Player 2: fold", exact=True)).to_be_visible()
+  with page.expect_download() as download:
+    page.get_by_role("button", name="Download completed hands (JSON)").click()
+  history = json.loads(download.value.path().read_text(encoding="utf-8"))
+  hand = history["hands"][0]
+  assert hand["starting_stacks"] == {"1": 1000, "2": 1000}
+  assert [seat["stack"] for seat in hand["steps"][-1]["table"]["players"]] == [1010, 990]
+  assert all(not seat["hole_cards"] for step in hand["steps"] for seat in step["table"]["players"])
+  page.get_by_role("button", name="Back to table").click()
   expect(page.get_by_role("button", name="Next hand")).to_be_visible()
   assert not errors, errors
   page.close()
