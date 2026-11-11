@@ -1,14 +1,15 @@
 import html
 from pathlib import Path
+from secrets import randbits
 from time import monotonic
 
 import streamlit as st
 import streamlit.components.v1 as components
 
-from arena import BotArena, STRATEGIES
-from poker_bot import PokerBot
+from arena import BotArena, STRATEGIES, apply_decision, equity_bot, observe
 from poker_engine import start_game
 from ui.benchmark_dashboard import render_benchmarks
+from ui.bot_visualization import CHAMPION, PROFILE, render_bot_visualization
 from ui.render import card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -30,7 +31,8 @@ def _init_state():
     "game": None,
     "game_id": 0,
     "game_mode": "Local Pass-and-Play",
-    "difficulty": "Easy",
+    "human_bots": None,
+    "bot_simulations": {},
     "player_names": {},
     "revealed_player": None,
     "handoff_required": True,
@@ -70,8 +72,12 @@ def _player(player_id):
   return next(p for p in st.session_state.game.players if p.player_id == player_id)
 
 
-def _start_game(count, chips, small, big, mode, difficulty, names, arena=None):
-  game = start_game(count, chips, small, big, deck_rng=arena.deck_rng if arena else None)
+def _start_game(count, chips, small, big, mode, names, arena=None):
+  human_bots = BotArena(randbits(64), ["Equity"] * count) if mode == "Human vs Bots" else None
+  bot_match = arena or human_bots
+  game = start_game(count, chips, small, big, deck_rng=bot_match.deck_rng if bot_match else None)
+  st.session_state.human_bots = human_bots
+  st.session_state.bot_simulations = {}
   st.session_state.arena = arena
   st.session_state.arena_playing = False
   st.session_state.arena_due = None
@@ -79,7 +85,6 @@ def _start_game(count, chips, small, big, mode, difficulty, names, arena=None):
   st.session_state.game_id += 1
   st.session_state.screen = "table"
   st.session_state.game_mode = mode
-  st.session_state.difficulty = difficulty
   st.session_state.player_names = {i + 1: value.strip() for i, value in enumerate(names)}
   st.session_state.revealed_player = None
   st.session_state.handoff_required = mode == "Local Pass-and-Play"
@@ -147,9 +152,19 @@ def _bot_to_act(state):
 def _play_bot_turn(before):
   game = st.session_state.game
   current = before["current_player"]
-  bot = st.session_state.arena or PokerBot(st.session_state.difficulty)
+  player = _player(current)
+  arena = st.session_state.arena
+  diagnostics = {}
   try:
-    action, ok = bot.act(game, _player(current))
+    if arena:
+      model = arena.styles[current - 1]
+      action, ok = arena.act(game, player, diagnostics=diagnostics)
+    else:
+      model = CHAMPION
+      view = observe(game, player)
+      rng = st.session_state.human_bots.bot_rngs[current - 1]
+      action, target = equity_bot(view, rng, profile=PROFILE, diagnostics=diagnostics)
+      action, ok = apply_decision(game, player, view, action, target)
   except ValueError as error:
     st.session_state.bot_error = str(error)
     return False
@@ -157,6 +172,10 @@ def _play_bot_turn(before):
     st.session_state.bot_error = game.last_error or "A bot action was rejected."
     return False
   _log_action(action, current, before)
+  if diagnostics:
+    diagnostics.update(model=model, action=action, seat=current, phase=before["phase"],
+      board=before["board"], pot=before["pot"])
+    st.session_state.bot_simulations.setdefault(before["hand_number"], []).append(diagnostics)
   return True
 
 
@@ -496,6 +515,8 @@ def _render_menu():
     if st.button("Resume current game", type="primary", use_container_width=True):
       st.session_state.screen = "table"
       st.rerun()
+  if st.button("Bot visualization"):
+    _open_visualization("menu")
   if st.button("Bot benchmarks"):
     st.session_state.screen = "benchmarks"
     st.rerun()
@@ -503,10 +524,12 @@ def _render_menu():
     _open_history()
   with st.expander("How to play · 60-second guide", expanded=st.session_state.game is None):
     st.markdown("Each player receives two private cards. Make the strongest five-card hand using your cards and the shared board. Betting happens **before the flop**, **after the flop**, **after the turn** and **after the river**. Fold to leave the hand, check when no bet is owed, call to match, or raise to increase the bet. The last player standing wins immediately, otherwise the best eligible hand wins each pot.")
-    st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use a simple heuristic, not a trained solver.")
+    st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use the latest Equity training match winner.")
   st.subheader("New game")
   count = st.slider("Number of players", 2, 10, 5)
   mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots", "Bot Arena"])
+  if mode == "Human vs Bots":
+    st.caption(f"Opponent model · {CHAMPION}")
   with st.form("new_game", clear_on_submit=False):
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -515,7 +538,6 @@ def _render_menu():
       small = st.number_input("Small blind", min_value=1, max_value=1000000, value=5, step=1)
     with c3:
       big = st.number_input("Big blind", min_value=2, max_value=1000000, value=10, step=1)
-    difficulty = "Easy"
     seed = None
     styles = []
     if mode == "Bot Arena":
@@ -524,7 +546,6 @@ def _render_menu():
         for i in range(count)]
       names = [f"Seat {i + 1}" for i in range(count)]
     else:
-      difficulty = st.selectbox("Bot difficulty", ["Easy", "Medium", "Hard"], disabled=mode != "Human vs Bots", help="Difficulty controls the bot's heuristics and bluff frequency.")
       with st.expander("Player names"):
         names = [st.text_input(f"Seat {index + 1} name", value=("You" if index == 0 and mode == "Human vs Bots" else f"Player {index + 1}"), max_chars=24, key=f"player_name_{index}") for index in range(count)]
     submit = st.form_submit_button("Deal the first hand", type="primary", use_container_width=True)
@@ -537,7 +558,7 @@ def _render_menu():
       else:
         try:
           arena = BotArena(int(seed), styles) if styles else None
-          _start_game(count, int(chips), int(small), int(big), mode, difficulty, clean, arena)
+          _start_game(count, int(chips), int(small), int(big), mode, clean, arena)
           st.rerun()
         except ValueError as error:
           st.error(str(error))
@@ -569,6 +590,9 @@ def _render_sidebar(state):
       for event in events[-12:][::-1]:
         amount = f" · {event['amount']:,}" if event["amount"] else ""
         st.write(f"{_name(event['player_id'])}: {event['action'].replace('_', ' ')}{amount}")
+    if st.session_state.game_mode != "Local Pass-and-Play":
+      if st.button("Bot visualization", use_container_width=True):
+        _open_visualization("table")
     if st.button("Hand history", use_container_width=True):
       _open_history()
     with st.expander("Player statistics"):
@@ -581,9 +605,27 @@ def _render_sidebar(state):
       st.caption("Pass-and-play is for a trusted, shared device. Do not use this interface as a secure remote multiplayer server.")
 
 
+def _open_visualization(return_to):
+  _pause_arena()
+  st.session_state.bot_due = None
+  st.session_state.visualization_return = return_to
+  st.session_state.screen = "visualization"
+  st.rerun()
+
+
 def main():
   _init_state()
   _inject_css()
+  if st.session_state.screen == "visualization":
+    destination = st.session_state.visualization_return
+    if st.button(f"Back to {destination}"):
+      st.session_state.screen = destination
+      st.rerun()
+    completed = {number for number, record in st.session_state.hand_records.items()
+      if record["steps"][-1]["table"]["hand_over"]}
+    render_bot_visualization(st.session_state.bot_simulations, completed,
+      st.session_state.stats, st.session_state.player_names)
+    return
   if st.session_state.screen == "benchmarks":
     if st.button("Back to menu"):
       st.session_state.screen = "menu"

@@ -53,10 +53,14 @@ class BotArena:
     self.deck_rng = Random(seeds.getrandbits(64))
     self.bot_rngs = [Random(seeds.getrandbits(64)) for _ in self.styles]
 
-  def act(self, game, player):
+  def act(self, game, player, *, diagnostics=None):
     seat = player.player_id - 1
     view = observe(game, player)
-    action, target = STRATEGIES[self.styles[seat]](view, self.bot_rngs[seat])
+    style = self.styles[seat]
+    if style == "Equity":
+      action, target = equity_bot(view, self.bot_rngs[seat], diagnostics=diagnostics)
+    else:
+      action, target = STRATEGIES[style](view, self.bot_rngs[seat])
     return apply_decision(game, player, view, action, target)
 
 
@@ -76,32 +80,49 @@ EQUITY_TRIALS_SMALL_TABLE = 256
 EQUITY_TRIALS_LARGE_TABLE = 128
 
 
-def equity_bot(view, rng):
+@dataclass(frozen=True)
+class EquityProfile:
+  call_cushion: float = 0.04
+  value_edge: float = 0.17
+  position_bonus: float = 0.06
+  pot_fraction: float = 2 / 3
+
+
+def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None):
   legal = view.legal
   call = legal["call_amount"]
   # A partial call or multiway all-in can expose less than the displayed pot.
   if call < view.table_bet - view.current_bet or (view.opponents > 1 and view.has_all_in_opponent):
+    if diagnostics is not None:
+      diagnostics.update(method="Tight fallback")
     return tight(view, rng)
 
+  curve = [] if diagnostics is not None else None
   if len(view.board) == 5 and view.opponents == 1:
-    share = exact_river_equity(view.hole, view.board).equity
+    result = exact_river_equity(view.hole, view.board)
+    method = "Exact enumeration"
   else:
     trials = EQUITY_TRIALS_SMALL_TABLE if view.opponents <= 3 else EQUITY_TRIALS_LARGE_TABLE
-    share = sample_equity(view.hole, view.board, view.opponents, trials, rng).equity
+    result = sample_equity(view.hole, view.board, view.opponents, trials, rng, checkpoints=curve)
+    method = "Monte Carlo"
+  share = result.equity
+  if diagnostics is not None:
+    diagnostics.update(method=method, opponents=view.opponents, wins=result.wins,
+      ties=result.ties, losses=result.losses, equity=share, curve=curve)
 
-  cushion = 0.04 if len(view.board) < 5 else 0
+  cushion = profile.call_cushion if len(view.board) < 5 else 0
   if legal["call"] and share < call / (view.pot + call) + cushion:
     return "fold", None
 
-  value_threshold = max(0.35, 1 / (view.opponents + 1) + 0.17)
+  value_threshold = max(0.35, 1 / (view.opponents + 1) + profile.value_edge)
   if not view.board and view.late_position and view.table_bet == view.big_blind:
-    value_threshold -= 0.06
+    value_threshold -= profile.position_bonus
 
   if legal["raise"] and share >= value_threshold:
     minimum = min(legal["min_raise_total"], legal["max_raise_total"])
     maximum = min(legal["max_raise_total"], view.effective_raise_total)
     if minimum <= maximum:
-      raise_size = max(view.big_blind, (view.pot + call) * 2 // 3)
+      raise_size = max(view.big_blind, int((view.pot + call) * profile.pot_fraction))
       return "raise", min(maximum, max(minimum, view.table_bet + raise_size))
   return calling_station(view, rng)
 
