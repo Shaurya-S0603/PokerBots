@@ -127,3 +127,16 @@ def test_arena_can_select_and_run_equity_strategy():
     assert not app.exception
   assert [event["player_id"] for event in app.session_state.history] == [1, 2]
   assert app.session_state.bot_error is None
+
+
+def test_benchmarks_open_with_bundled_results():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Bot benchmarks").click().run()
+  assert not app.exception
+  assert not app.error
+  rows = app.dataframe[0].value
+  assert set(rows["Opponent"]) == {"Calling Station", "Random", "Tight", "Loose-Aggressive"}
+  assert (rows["Hands"] == 200).all()
+  assert (rows["Illegal actions"] == 0).all()
+  button(app, "Back to menu").click().run()
+  assert button(app, "Deal the first hand")

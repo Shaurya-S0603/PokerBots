@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "config": {
+    "code_version": "83a51334e9827f85d875a6747477ea8fc82e7420",
+    "baseline_version": "219a70131509a2eab6f6c9fd4a8f4fff83f6f8ff",
+    "python": "3.12.14",
+    "split": "evaluation",
+    "seed_start": 0,
+    "pair_count": 100,
+    "bootstrap_samples": 2000,
+    "stack": 1000,
+    "small_blind": 5,
+    "big_blind": 10,
+    "equity_trials": [
+      256,
+      128
+    ]
+  },
+  "results": [
+    {
+      "opponent": "Calling Station",
+      "attempted_hands": 200,
+      "hands": 200,
+      "pairs": 100,
+      "net_chips": 4506,
+      "bb_per_100": 225.3,
+      "interval_95": [
+        149.14125,
+        302.25875
+      ],
+      "illegal_actions": 0,
+      "vpip": 0.505,
+      "pfr": 0.075,
+      "decision_ms_median": 14.577006,
+      "decision_ms_p95": 79.8579742
+    },
+    {
+      "opponent": "Random",
+      "attempted_hands": 200,
+      "hands": 200,
+      "pairs": 100,
+      "net_chips": 16013,
+      "bb_per_100": 800.65,
+      "interval_95": [
+        231.32875000000004,
+        1365.5987499999999
+      ],
+      "illegal_actions": 0,
+      "vpip": 0.65,
+      "pfr": 0.07,
+      "decision_ms_median": 13.3534975,
+      "decision_ms_p95": 22.3710513
+    },
+    {
+      "opponent": "Tight",
+      "attempted_hands": 200,
+      "hands": 200,
+      "pairs": 100,
+      "net_chips": 265,
+      "bb_per_100": 13.25,
+      "interval_95": [
+        -183.5,
+        213.76875
+      ],
+      "illegal_actions": 0,
+      "vpip": 0.515,
+      "pfr": 0.065,
+      "decision_ms_median": 13.607996,
+      "decision_ms_p95": 25.39734
+    },
+    {
+      "opponent": "Loose-Aggressive",
+      "attempted_hands": 200,
+      "hands": 200,
+      "pairs": 100,
+      "net_chips": -1805,
+      "bb_per_100": -90.25,
+      "interval_95": [
+        -292.0125,
+        107.7625
+      ],
+      "illegal_actions": 0,
+      "vpip": 0.545,
+      "pfr": 0.065,
+      "decision_ms_median": 14.353141,
+      "decision_ms_p95": 27.340562
+    }
+  ]
+}

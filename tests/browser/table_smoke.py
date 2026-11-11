@@ -106,6 +106,21 @@ def check_arena(browser):
   page.close()
 
 
+def check_benchmarks(browser):
+  page = browser.new_page(viewport={"width": 1440, "height": 900})
+  page.goto(URL)
+  page.get_by_role("button", name="Bot benchmarks", exact=True).click()
+  expect(page.get_by_role("heading", name="Bot benchmarks", exact=True)).to_be_visible()
+  expect(page.get_by_test_id("stDataFrame")).to_be_visible()
+  with page.expect_download() as download:
+    page.get_by_role("button", name="Download benchmark report").click()
+  report = json.loads(download.value.path().read_text(encoding="utf-8"))
+  assert len(report["results"]) == 4 and report["config"]["split"] == "evaluation"
+  page.get_by_role("button", name="Back to menu").click()
+  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
+  page.close()
+
+
 if __name__ == "__main__":
   command = [sys.executable, "-m", "streamlit", "run", "app.py",
     "--server.port=8511", "--server.headless=true", "--browser.gatherUsageStats=false"]
@@ -118,5 +133,6 @@ if __name__ == "__main__":
         check_table(browser, 360)
         check_paced_bot(browser)
         check_arena(browser)
+        check_benchmarks(browser)
     finally:
       server.terminate()
