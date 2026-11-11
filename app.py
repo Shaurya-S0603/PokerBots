@@ -21,6 +21,7 @@ def _init_state():
   defaults = {
     "screen": "menu",
     "game": None,
+    "game_id": 0,
     "game_mode": "Local Pass-and-Play",
     "difficulty": "Easy",
     "player_names": {},
@@ -59,6 +60,7 @@ def _player(player_id):
 def _start_game(count, chips, small, big, mode, difficulty, names):
   game = start_game(count, chips, small, big)
   st.session_state.game = game
+  st.session_state.game_id += 1
   st.session_state.screen = "table"
   st.session_state.game_mode = mode
   st.session_state.difficulty = difficulty
@@ -181,11 +183,12 @@ def _render_actions(state):
     return
   if st.session_state.game_mode == "Local Pass-and-Play" and st.session_state.revealed_player != current:
     st.session_state.handoff_required = True
+  turn_key = f"{st.session_state.game_id}_{state['hand_number']}_{current}_{len(st.session_state.history)}"
   if st.session_state.handoff_required:
     st.markdown('<div class="room-status room-status--warning" role="status">PRIVATE HANDOFF · Give the device to the next player before revealing their cards.</div>', unsafe_allow_html=True)
     st.subheader(f"{_name(current)}'s turn")
     st.caption("The previous player's hole cards are hidden. Do not reveal this hand until the right player has the device.")
-    if st.button("Reveal my cards", type="primary", use_container_width=True):
+    if st.button("Reveal my cards", key=f"reveal_{turn_key}", type="primary", use_container_width=True):
       st.session_state.revealed_player = current
       st.session_state.handoff_required = False
       st.rerun()
@@ -203,7 +206,7 @@ def _render_actions(state):
   ]
   for column, (label, action) in zip(columns, actions):
     with column:
-      if st.button(label, key=f"{action}_button", disabled=not legal.get(action, False), use_container_width=True):
+      if st.button(label, key=f"{action}_{turn_key}", disabled=not legal.get(action, False), use_container_width=True):
         _apply_action(action, player)
   st.markdown('<div class="room-divider"></div>', unsafe_allow_html=True)
   can_raise = legal.get("raise", False)
@@ -214,10 +217,10 @@ def _render_actions(state):
   st.caption("Raise to a total bet for this street. The engine will contribute only the additional chips.")
   col_amount, col_button = st.columns([3, 1])
   with col_amount:
-    raise_to = st.number_input("Raise to (total bet)", min_value=int(target), max_value=int(max_total) if can_raise else int(target), value=int(target), step=1, disabled=not can_raise, key=f"raise_to_{state['hand_number']}_{current}_{len(st.session_state.history)}")
+    raise_to = st.number_input("Raise to (total bet)", min_value=int(target), max_value=int(max_total) if can_raise else int(target), value=int(target), step=1, disabled=not can_raise, key=f"raise_to_{turn_key}")
   with col_button:
     st.write(" ")
-    if st.button("Raise", disabled=not can_raise, type="primary", use_container_width=True):
+    if st.button("Raise", key=f"raise_{turn_key}", disabled=not can_raise, type="primary", use_container_width=True):
       _apply_action("raise", player, int(raise_to) - player.current_bet)
   if can_raise and min_total > max_total:
     st.caption("Only a short all-in raise is available at this stack size.")
@@ -257,6 +260,8 @@ def _render_showdown(state):
       title = "Main pot" if index == 0 else f"Side pot {index}"
       winners = ", ".join(f"{_name(int(player_id))} (+{chips:,})" for player_id, chips in pot["payouts"].items())
       st.write(f"**{title}: {pot['amount']:,} chips** · {winners}")
+  for player_id, chips in state["uncalled_returns"].items():
+    st.write(f"Uncalled bet returned to {_name(player_id)} · {chips:,} chips")
   st.caption("Winners and pot eligibility are calculated by the poker engine, not by the interface.")
   if state["game_over"]:
     st.subheader("Final standings")
@@ -266,7 +271,7 @@ def _render_showdown(state):
       st.session_state.screen = "menu"
       st.session_state.game = None
       st.rerun()
-  elif st.button("Next hand", type="primary", use_container_width=True):
+  elif st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
     game = st.session_state.game
     st.session_state.hand_start_stacks = {p.player_id: p.stack for p in game.players}
     if game.start_next_round():
@@ -291,8 +296,9 @@ def _render_menu():
     st.markdown("Each player receives two private cards. Make the strongest five-card hand using your cards and the shared board. Betting happens **before the flop**, **after the flop**, **after the turn** and **after the river**. Fold to leave the hand, check when no bet is owed, call to match, or raise to increase the bet. The last player standing wins immediately, otherwise the best eligible hand wins each pot.")
     st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use a simple heuristic, not a trained solver.")
   st.subheader("New game")
+  count = st.slider("Number of players", 2, 10, 5)
+  mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots"])
   with st.form("new_game", clear_on_submit=False):
-    count = st.slider("Number of players", 2, 10, 5)
     c1, c2, c3 = st.columns(3)
     with c1:
       chips = st.number_input("Starting chips per player", min_value=10, max_value=1000000, value=1000, step=100)
@@ -300,7 +306,6 @@ def _render_menu():
       small = st.number_input("Small blind", min_value=1, max_value=1000000, value=5, step=1)
     with c3:
       big = st.number_input("Big blind", min_value=2, max_value=1000000, value=10, step=1)
-    mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots"])
     difficulty = st.selectbox("Bot difficulty", ["Easy", "Medium", "Hard"], disabled=mode != "Human vs Bots", help="Difficulty controls the bot's heuristics and bluff frequency.")
     with st.expander("Player names"):
       names = [st.text_input(f"Seat {index + 1} name", value=("You" if index == 0 and mode == "Human vs Bots" else f"Player {index + 1}"), max_chars=24, key=f"player_name_{index}") for index in range(count)]
@@ -323,6 +328,9 @@ def _render_sidebar(state):
   with st.sidebar:
     st.markdown("### ♠ POKERROOM")
     if st.button("Main menu", use_container_width=True):
+      if st.session_state.game_mode == "Local Pass-and-Play":
+        st.session_state.revealed_player = None
+        st.session_state.handoff_required = True
       st.session_state.screen = "menu"
       st.rerun()
     st.checkbox("Reduce animations", key="reduced_motion")
