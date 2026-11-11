@@ -113,3 +113,17 @@ def test_arena_pause_and_step_produce_the_same_hand_as_autoplay():
     return record
 
   assert play(False) == play(True)
+
+
+def test_arena_can_select_and_run_equity_strategy():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  app.slider[0].set_value(2).run()
+  app.selectbox[0].select("Bot Arena").run()
+  app.selectbox[2].select("Equity")
+  button(app, "Deal the first hand").click().run()
+  assert app.session_state.arena.styles == ("Calling Station", "Equity")
+  for _ in range(2):
+    button(app, "Step").click().run()
+    assert not app.exception
+  assert [event["player_id"] for event in app.session_state.history] == [1, 2]
+  assert app.session_state.bot_error is None
