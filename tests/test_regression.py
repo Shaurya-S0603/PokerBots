@@ -96,8 +96,11 @@ def test_main_and_side_pots_correct_eligibility():
   game.pot = 350
   game.hand_over = False
   assert game.showdown()
-  assert [p['amount'] for p in game.pot_results] == [150,100,100]
-  assert game.payouts == {1:150,2:100,3:100}
+  assert [p['amount'] for p in game.pot_results] == [150,100]
+  assert game.payouts == {1:150,2:100}
+  assert game.get_state()['uncalled_returns'] == {3:100}
+  assert players[2].stack == 100
+  assert 3 not in game.winners
   assert game.pot == 0
 
 
@@ -169,3 +172,58 @@ def test_bot_actions_stay_legal_with_short_all_ins():
           action, ok = bot.act(game, player)
           assert ok, (difficulty, count, action, game.last_error)
         assert game.hand_over
+
+
+def test_lone_player_calls_only_the_chips_posted_by_short_blinds():
+  players = [Player(1, 100), Player(2, 5), Player(3, 7)]
+  game = GameManager(players)
+  assert game.start_round()
+  assert game.legal_actions(players[0])['call_amount'] == 7
+  assert not game.legal_actions(players[0])['raise']
+  assert game.call(players[0])
+  assert game.hand_over
+  assert players[0].total_bet == 7
+  assert [pot['amount'] for pot in game.pot_results] == [15, 4]
+  stacks = [p.stack for p in players]
+  assert not game.showdown()
+  assert not game.call(players[0])
+  assert [p.stack for p in players] == stacks
+
+
+def test_runout_skips_big_blind_when_no_one_can_bet_against_them():
+  players = [Player(1, 100), Player(2, 5), Player(3, 100), Player(4, 100)]
+  game = GameManager(players)
+  assert game.start_round()
+  assert game.fold(players[3])
+  assert game.fold(players[0])
+  assert game.hand_over
+  assert len(game.board) == 5
+  assert game.get_state()['current_player'] is None
+
+
+def test_cumulative_short_all_ins_reopen_betting_only_at_full_raise_size():
+  players = [Player(1, 100), Player(2, 100), Player(3, 29), Player(4, 100), Player(5, 25)]
+  game = GameManager(players)
+  assert game.start_round()
+  assert game.raise_bet(players[3], 20)
+  assert game.all_in(players[4])
+  assert game.call(players[0])
+  assert game.call(players[1])
+  assert game.all_in(players[2])
+
+  legal = game.legal_actions(players[3])
+  assert legal['call_amount'] == 9
+  assert not legal['raise']
+  assert not game.raise_bet(players[3], 19)
+  assert game.call(players[3])
+
+  players = [Player(1, 100), Player(2, 100), Player(3, 30), Player(4, 100), Player(5, 25)]
+  game = GameManager(players)
+  assert game.start_round()
+  assert game.raise_bet(players[3], 20)
+  assert game.all_in(players[4])
+  assert game.call(players[0])
+  assert game.call(players[1])
+  assert game.all_in(players[2])
+  assert game.legal_actions(players[3])['min_raise_total'] == 40
+  assert game.raise_bet(players[3], 20)

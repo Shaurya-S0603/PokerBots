@@ -286,6 +286,7 @@ class GameManager:
     self.pending_to_act = set()
     self.winners = []
     self.payouts = {}
+    self.uncalled_returns = {}
     self.pot_results = []
     self.showdown_hands = {}
     self.blind_posted = False
@@ -360,6 +361,7 @@ class GameManager:
     self.pending_to_act.clear()
     self.winners = []
     self.payouts = {}
+    self.uncalled_returns = {}
     self.pot_results = []
     self.showdown_hands = {}
     self.blind_posted = False
@@ -435,11 +437,7 @@ class GameManager:
     self.deal_hole_cards()
     self.pending_to_act = set(self.able_to_bet())
 
-    if len(self.able_to_bet()) < 2:
-      able = self.able_to_bet()
-      highest_actual_bet = max(p.current_bet for p in self.remaining_players())
-      if not able or able[0].current_bet >= highest_actual_bet:
-        self.pending_to_act.clear()
+    self._skip_uncontested_action()
 
     if self.pending_to_act:
       first = self.players[self.current_player]
@@ -554,6 +552,18 @@ class GameManager:
       and player in self.pending_to_act
       and player in self.able_to_bet())
 
+  def _call_amount(self, player):
+    target = self.table_bet
+    if len(self.able_to_bet()) == 1:
+      # A short blind can set a nominal bring-in only while betting is possible.
+      target = max(p.current_bet for p in self.remaining_players())
+    return max(0, target - player.current_bet)
+
+  def _skip_uncontested_action(self):
+    able = self.able_to_bet()
+    if not able or (len(able) == 1 and self._call_amount(able[0]) == 0):
+      self.pending_to_act.clear()
+
   def finish_action(self, player, raised=False):
     self.last_error = ""
 
@@ -565,6 +575,7 @@ class GameManager:
     else:
       self.pending_to_act.discard(player)
 
+    self._skip_uncontested_action()
     next_player = self.next_active_player(player)
     self.current_player = self.players.index(next_player) if next_player is not None else None
     self.update_game_state()
@@ -582,7 +593,7 @@ class GameManager:
     if not self.can_act(player):
       return self._reject("Player cannot check right now")
 
-    if player.current_bet < self.table_bet:
+    if self._call_amount(player):
       return self._reject("Cannot check: chips still owed")
 
     player.acted_bet = self.table_bet
@@ -592,7 +603,7 @@ class GameManager:
     if not self.can_act(player):
       return self._reject("Player cannot call right now")
 
-    call_amount = max(0, self.table_bet - player.current_bet)
+    call_amount = self._call_amount(player)
 
     if call_amount == 0:
       return self._reject("Nothing to call. Use check instead")
@@ -649,7 +660,7 @@ class GameManager:
     if player.stack <= 0:
       return self._reject("Player has no chips")
 
-    if player.current_bet + player.stack <= self.table_bet:
+    if player.stack <= self._call_amount(player):
       return self.call(player)
 
     return self.raise_bet(player, player.stack)
@@ -696,25 +707,35 @@ class GameManager:
     if not remaining:
       return False
 
+    if len(remaining) > 1 and len(self.board) != 5:
+      return False
+
+    contributions = {p: p.total_bet for p in self.players}
+    largest, second = sorted(contributions.values(), reverse=True)[:2]
+    if largest > second:
+      player = next(p for p, amount in contributions.items() if amount == largest)
+      refund = largest - second
+      contributions[player] -= refund
+      self.pot -= refund
+      player.stack += refund
+      self.uncalled_returns[player.player_id] = refund
+
     if len(remaining) == 1:
       player = remaining[0]
       self.distribute_pot(self.pot, [player])
       self.pot_results.append({"amount":self.pot,"eligible":[player.player_id],"winners":[player.player_id],"payouts":{player.player_id:self.pot}})
     else:
-      if len(self.board) != 5:
-        return False
-
       self.showdown_hands = {
         p.player_id:highest_hand(p.hole_cards + self.board)
         for p in remaining
       }
-      levels = sorted(set(p.total_bet for p in self.players if p.total_bet > 0))
+      levels = sorted({amount for amount in contributions.values() if amount > 0})
       previous_level = 0
 
       for level in levels:
-        contributing = [p for p in self.players if p.total_bet >= level]
+        contributing = [p for p in self.players if contributions[p] >= level]
         amount = (level - previous_level) * len(contributing)
-        eligible = [p for p in remaining if p.total_bet >= level]
+        eligible = [p for p in remaining if contributions[p] >= level]
 
         if not eligible:
           eligible = remaining
@@ -771,6 +792,7 @@ class GameManager:
       "pending_to_act":[p.player_id for p in self.players if p in self.pending_to_act],
       "winners":self.winners.copy(),
       "payouts":self.payouts.copy(),
+      "uncalled_returns":self.uncalled_returns.copy(),
       "pot_results":self.pot_results.copy(),
       "showdown_hands":self.showdown_hands.copy() if self.hand_over else {},
       "hand_over":self.hand_over,
@@ -785,7 +807,7 @@ class GameManager:
     if player is None or not self.can_act(player):
       return {"fold":False,"check":False,"call":False,"raise":False,"all_in":False}
 
-    call_amount = max(0, self.table_bet - player.current_bet)
+    call_amount = self._call_amount(player)
     min_total = self.table_bet + self.min_raise_increment if self.full_bet_made else self.big_blind
     other_active = any(p is not player for p in self.able_to_bet())
     can_reopen = player.acted_bet is None or self.table_bet - player.acted_bet >= self.min_raise_increment
