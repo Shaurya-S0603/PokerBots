@@ -119,6 +119,10 @@ def check_benchmarks(browser):
   assert len(report["results"]) == 4 and report["config"]["split"] == "evaluation"
   page.get_by_role("button", name="Back to menu").click()
   expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
+  page.get_by_role("button", name="Bot visualization", exact=True).click()
+  expect(page.get_by_role("heading", name="Bot visualization", exact=True)).to_be_visible()
+  page.get_by_role("tab", name="Training match", exact=True).click()
+  expect(page.get_by_role("heading", name="Positional Equity", exact=True)).to_be_visible()
   page.close()
 
 

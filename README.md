@@ -9,7 +9,7 @@ python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 human players sharing a device, or **Human vs Bots** to play as seat 1 against heuristic bots.
+Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 human players sharing a device, or **Human vs Bots** to play as seat 1 against the latest Equity training match winner.
 
 ## Bot Arena
 
@@ -18,6 +18,12 @@ Select **Bot Arena** as the game mode. Pick a match seed and a strategy for each
 The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity. All strategies use each bot's own cards and public table information.
 
 **Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
+
+## Training winner and bot visualization
+
+Human vs Bots uses the winner saved in `training/champion.json`. To select a new winner, run one complete elimination match offline with `python train_equity.py path/to/pokerroom-hand-history.json` and deploy the updated champion record. The input should be a completed all-Equity Arena export. Training uses the export's winner sizing to set candidate parameters and saves only the source summary, final standings, and winning parameters.
+
+Open **Bot visualization** from the menu or game sidebar. **Simulation** shows actual bot decision estimates for completed hands, including outcome counts and cumulative Monte Carlo win rate and pot share. Heads-up river decisions are enumerated exactly. **Training match** shows the latest tournament and its winner.
 
 ## Offline benchmarks
 

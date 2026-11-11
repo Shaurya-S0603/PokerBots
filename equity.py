@@ -47,7 +47,7 @@ def exact_river_equity(hole, board):
   return EquityResult(wins, ties, losses, (wins + ties / 2) / (wins + ties + losses))
 
 
-def sample_equity(hole, board, opponents, trials, rng):
+def sample_equity(hole, board, opponents, trials, rng, *, checkpoints=None):
   hole, board, unseen = _known_cards(hole, board, (0, 3, 4, 5))
   if type(opponents) is not int or not 1 <= opponents <= 9:
     raise ValueError("Expected between one and nine opponents")
@@ -57,7 +57,7 @@ def sample_equity(hole, board, opponents, trials, rng):
   hero_on_river = highest_hand(hole + board) if missing == 0 else None
   wins = ties = losses = 0
   shares = 0.0
-  for _ in range(trials):
+  for completed in range(1, trials + 1):
     dealt = rng.sample(unseen, missing + 2 * opponents)
     runout = board + tuple(dealt[:missing])
     hands = {0: hero_on_river if hero_on_river is not None else highest_hand(hole + runout)}
@@ -73,4 +73,6 @@ def sample_equity(hole, board, opponents, trials, rng):
     else:
       ties += 1
       shares += 1 / len(winners)
+    if checkpoints is not None and (completed % 16 == 0 or completed == trials):
+      checkpoints.append({"Trials": completed, "Equity": shares / completed, "Win rate": wins / completed})
   return EquityResult(wins, ties, losses, shares / trials)

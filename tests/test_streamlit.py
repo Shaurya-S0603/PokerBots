@@ -14,10 +14,10 @@ def test_setup_controls_follow_player_count_and_mode_before_dealing():
   app.slider[0].set_value(2).run()
   app.selectbox[0].select("Human vs Bots").run()
   assert [item.label for item in app.text_input] == ["Seat 1 name", "Seat 2 name"]
-  app.selectbox[1].select("Hard")
+  assert all(item.label != "Bot difficulty" for item in app.selectbox)
   button(app, "Deal the first hand").click().run()
   assert not app.exception
-  assert app.session_state.difficulty == "Hard"
+  assert app.session_state.human_bots.styles == ("Equity", "Equity")
   assert len(app.session_state.game.players) == 2
 
 
@@ -140,3 +140,26 @@ def test_benchmarks_open_with_bundled_results():
   assert (rows["Illegal actions"] == 0).all()
   button(app, "Back to menu").click().run()
   assert button(app, "Deal the first hand")
+
+
+def test_visualization_hides_in_progress_estimates_then_shows_completed_decision():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  app.slider[0].set_value(2).run()
+  app.selectbox[0].select("Bot Arena").run()
+  for selector in app.selectbox[1:]:
+    selector.select("Equity")
+  button(app, "Deal the first hand").click().run()
+  button(app, "Step").click().run()
+  assert app.session_state.bot_simulations[1]
+  button(app, "Bot visualization").click().run()
+  assert not app.exception
+  assert not app.metric
+  button(app, "Back to table").click().run()
+  for _ in range(50):
+    if app.session_state.game.hand_over:
+      break
+    button(app, "Step").click().run()
+  assert app.session_state.game.hand_over
+  button(app, "Bot visualization").click().run()
+  assert not app.exception
+  assert {metric.label for metric in app.metric} == {"Win rate", "Equity (pot share)", "Outcomes checked"}
