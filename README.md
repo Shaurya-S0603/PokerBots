@@ -17,7 +17,7 @@ Select **Bot Arena** as the game mode. Pick a match seed and a strategy for each
 
 The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity. All strategies use each bot's own cards and public table information.
 
-**Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
+**Equity** in Bot Arena uses position-based opening ranges when facing only the big blind. It uses equity for responses to raises and postflop decisions. The Arena opening rule is separate from the frozen benchmark and Human vs Bots training policies. **Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
 
 ## Training winner and bot visualization
 

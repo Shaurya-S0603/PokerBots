@@ -75,3 +75,21 @@ def test_equity_strategy_cannot_see_hidden_cards_and_uses_a_legal_raise():
   assert (action, target) == equity_bot(after, Random(12))
   assert action == "raise"
   assert before.legal["min_raise_total"] <= target <= before.effective_raise_total
+
+
+def test_equity_arena_opens_playable_hands_outside_the_blinds():
+  arena = BotArena(8, ["Equity"] * 10)
+  game = start_game(10, 500, deck_rng=arena.deck_rng)
+  player = game.players[game.current_player]
+  assert game.current_player not in {game.sb_index, game.bb_index}
+  player.hole_cards = [("K", "♣️"), ("K", "♥️")]
+  trace = {}
+  assert arena.act(game, player, diagnostics=trace) == ("raise", True)
+  assert game.table_bet == 25
+  assert trace["decision_basis"] == "Preflop opening range"
+
+  player = game.players[game.current_player]
+  player.hole_cards = [("7", "♣️"), ("2", "♥️")]
+  trace = {}
+  assert arena.act(game, player, diagnostics=trace) == ("fold", True)
+  assert "decision_basis" not in trace

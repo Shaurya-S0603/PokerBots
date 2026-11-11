@@ -30,6 +30,8 @@ def render_bot_visualization(records, completed_hands, stats, names):
       st.text(f"{turn['model']} · {turn['method']}")
       board = " ".join(f"{rank}{suit}" for rank, suit in turn["board"]) or "Preflop"
       st.text(f"{board} · Pot {turn['pot']:,} chips")
+      if turn.get("decision_basis"):
+        st.caption(f"Decision rule · {turn['decision_basis']}")
       if turn["method"] == "Tight fallback":
         st.caption("The bot used Tight for this partial call or multiway all-in.")
       else:
