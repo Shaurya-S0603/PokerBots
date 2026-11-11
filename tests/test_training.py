@@ -2,7 +2,7 @@ import json
 
 from arena import EquityProfile
 from train_equity import CHAMPION_PATH, train
-from train_generation import paired_report, play, profile_strategy
+from train_generation import combine_human_summaries, paired_report, play, profile_strategy
 
 
 def test_previous_generation_is_preserved():
@@ -17,7 +17,7 @@ def test_saved_champion_reproduces_the_final_and_evaluation_uses_separate_seeds(
   final = record["training"]
   strategies = {row["model"]: profile_strategy(EquityProfile(**record["candidate_profiles"][row["model"]]))
     for row in final["results"]}
-  assert play(strategies, final["seed"], full_game=True)[0] == final
+  assert play(strategies, final["seed"], full_game=True, stack=final["starting_stack"])[0] == final
   winner, = [row for row in final["results"] if row["final_chips"]]
   assert winner["model"] == record["champion"]
   assert record["profile"] == record["candidate_profiles"][record["champion"]]
@@ -28,3 +28,11 @@ def test_saved_champion_reproduces_the_final_and_evaluation_uses_separate_seeds(
 def test_paired_evaluation_counts_two_hands_per_seed():
   result = paired_report([20, 20])
   assert result == {"pairs": 2, "bb_per_100": 100.0, "interval_95": [100.0, 100.0]}
+
+
+def test_practice_opponent_combines_actions_without_using_older_sizing():
+  prior = {"counts": {"river:facing": {"call": 3}}, "median_raise_fraction": 0.8}
+  latest = {"counts": {"river:facing": {"call": 1, "fold": 2}}, "median_raise_fraction": 0.6}
+  assert combine_human_summaries([prior, latest]) == {
+    "counts": {"river:facing": {"call": 4, "fold": 2}}, "median_raise_fraction": 0.6,
+  }

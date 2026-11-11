@@ -51,7 +51,7 @@ def render_bot_visualization(records, completed_hands, stats, names):
   with training:
     match = TRAINING["training"]
     st.subheader(CHAMPION)
-    st.caption(f"Latest training winner · seed {match['seed']} · {match['hands']} hands")
+    st.caption(f"Generation {TRAINING.get('generation', 1)} winner · seed {match['seed']} · {match['hands']} hands · {match['starting_stack']:,} starting chips")
     st.dataframe([{"Model": row["model"], "Final chips": row["final_chips"],
       "Hands": row["hands"], "Hands won or split": row["hands_won"],
       "Hand win rate": f"{row['hands_won'] / row['hands']:.1%}" if row["hands"] else "—"}
@@ -63,5 +63,6 @@ def render_bot_visualization(records, completed_hands, stats, names):
         for label, result in (
           ("Previous champion", TRAINING["evaluation"]["against_incumbent"]),
           ("Human-style practice bot", TRAINING["evaluation"]["against_human_style_proxy"]))], hide_index=True)
-      st.caption("The practice bot uses public action frequencies from one uploaded game. Its results do not predict how you would play.")
+      games = len(TRAINING.get("human_sources", [TRAINING["human_source"]]))
+      st.caption(f"The practice bot uses public action frequencies from {games} uploaded games. Its results do not predict how you would play.")
     st.caption("Human vs Bots uses this tournament winner. One match does not establish which policy is strongest over many deals.")
