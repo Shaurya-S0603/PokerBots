@@ -1,0 +1,56 @@
+{
+  "source": {
+    "sha256": "c181406e69f1ff291b068e77866141d5041014ec345ae24441b57504ae22cbdf",
+    "hands": 37,
+    "winner_seat": 6,
+    "seats": 10,
+    "seed": 42,
+    "winner_raises": 14,
+    "median_raise_fraction": 0.6522
+  },
+  "training": {
+    "seed": 43,
+    "hands": 16,
+    "decisions": 122,
+    "starting_stack": 100,
+    "small_blind": 5,
+    "big_blind": 10,
+    "results": [
+      {
+        "model": "Original Equity",
+        "seat": 1,
+        "final_chips": 0,
+        "hands": 7,
+        "hands_won": 1
+      },
+      {
+        "model": "Patient Equity",
+        "seat": 2,
+        "final_chips": 0,
+        "hands": 10,
+        "hands_won": 1
+      },
+      {
+        "model": "Pressure Equity",
+        "seat": 3,
+        "final_chips": 0,
+        "hands": 16,
+        "hands_won": 5
+      },
+      {
+        "model": "Positional Equity",
+        "seat": 4,
+        "final_chips": 400,
+        "hands": 16,
+        "hands_won": 9
+      }
+    ]
+  },
+  "champion": "Positional Equity",
+  "profile": {
+    "call_cushion": 0.04,
+    "value_edge": 0.16,
+    "position_bonus": 0.12,
+    "pot_fraction": 0.6522
+  }
+}

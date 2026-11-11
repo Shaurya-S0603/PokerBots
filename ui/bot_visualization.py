@@ -56,4 +56,12 @@ def render_bot_visualization(records, completed_hands, stats, names):
       "Hands": row["hands"], "Hands won or split": row["hands_won"],
       "Hand win rate": f"{row['hands_won'] / row['hands']:.1%}" if row["hands"] else "—"}
       for row in match["results"]], hide_index=True)
+    if "evaluation" in TRAINING:
+      st.subheader("Held-out evaluation")
+      st.dataframe([{"Opponent": label, "Seed pairs": result["pairs"], "bb/100": result["bb_per_100"],
+        "95% interval": f"{result['interval_95'][0]:+.1f} to {result['interval_95'][1]:+.1f}"}
+        for label, result in (
+          ("Previous champion", TRAINING["evaluation"]["against_incumbent"]),
+          ("Human-style practice bot", TRAINING["evaluation"]["against_human_style_proxy"]))], hide_index=True)
+      st.caption("The practice bot uses public action frequencies from one uploaded game. Its results do not predict how you would play.")
     st.caption("Human vs Bots uses this tournament winner. One match does not establish which policy is strongest over many deals.")
