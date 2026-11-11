@@ -8,7 +8,7 @@ RANK_NAMES = {"A": "Ace", "K": "King", "Q": "Queen", "J": "Jack", "10": "Ten"}
 PHASE_NAMES = {"preflop": "Preflop", "flop": "Flop", "turn": "Turn", "river": "River", "showdown": "Showdown", "hand_over": "Hand complete"}
 
 
-def card_html(card=None, hidden=False, empty=False):
+def card_html(card=None, hidden=False, empty=False, highlight=False):
   if empty:
     return '<span class="play-card play-card--empty" role="img" aria-label="Empty card slot">?</span>'
   if hidden or not card:
@@ -17,6 +17,8 @@ def card_html(card=None, hidden=False, empty=False):
   readable = RANK_NAMES.get(rank, rank)
   readable = readable if readable != rank or not rank.isdigit() else rank
   color = " play-card--red" if suit in ("♦️", "♥️") else ""
+  if highlight:
+    color += " play-card--used"
   label = html.escape(f"{readable} of {SUIT_NAMES.get(suit, suit)}", quote=True)
   return (f'<span class="play-card{color}" role="img" aria-label="{label}">'
     f'<span class="play-card__rank" aria-hidden="true">{html.escape(rank)}</span>'
@@ -37,14 +39,14 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
     classes.append("seat--out")
   marker = []
   if seat_id == state["dealer"]:
-    marker.append("D")
+    marker.append(("D", "Dealer"))
   if seat_id == state["small_blind_player"]:
-    marker.append("SB")
+    marker.append(("SB", "Small blind"))
   if seat_id == state["big_blind_player"]:
-    marker.append("BB")
+    marker.append(("BB", "Big blind"))
   if is_bot:
-    marker.append("BOT")
-  marker_html = "".join(f'<span class="seat__badge">{item}</span>' for item in marker)
+    marker.append(("BOT", "Bot"))
+  marker_html = "".join(f'<span class="seat__badge" title="{label}" aria-label="{label}">{item}</span>' for item, label in marker)
   if player["folded"] and player["in_hand"]:
     status = "Folded"
   elif player["all_in"]:
@@ -52,7 +54,7 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
   elif not player["in_hand"]:
     status = "Out"
   elif state["current_player"] == seat_id:
-    status = "To act"
+    status = "Acting now"
   else:
     status = last_action
   if player["in_hand"]:
@@ -62,7 +64,10 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
     card_markup = '<span class="seat__footer">No cards</span>'
   safe_name = html.escape(str(name), quote=True)
   safe_status = html.escape(str(status), quote=True)
-  accessible = html.escape(f"{name}, {player['stack']} chips, {player['current_bet']} bet, {status}", quote=True)
+  details = [str(name), f"{player['stack']} chips", f"{player['current_bet']} bet", *(label for _, label in marker)]
+  if status:
+    details.append(status)
+  accessible = html.escape(", ".join(details), quote=True)
   return (f'<article class="{" ".join(classes)}" style="--seat-x:{left:.2f}%;--seat-y:{top:.2f}%" aria-label="{accessible}">'
     f'<span class="seat__name" title="{safe_name}">{safe_name}</span>'
     f'<div class="seat__stack">{player["stack"]:,} chips · {player["current_bet"]:,} bet</div>'

@@ -1,5 +1,6 @@
 import html
 from pathlib import Path
+from time import monotonic
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -8,12 +9,14 @@ from poker_bot import PokerBot
 from poker_engine import start_game
 from ui.render import card_html, table_html
 from ui.session import action_event, new_stats, settle_stats
+from ui.showdown import best_five, pot_explanation
 
 
-st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", layout="wide", initial_sidebar_state="auto")
 ROOT = Path(__file__).parent
 CSS = (ROOT / "ui" / "styles.css").read_text(encoding="utf-8")
 EFFECT_TEMPLATE = (ROOT / "ui" / "effect.html").read_text(encoding="utf-8")
+BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 EFFECT_SCRIPT = (ROOT / "ui" / "effects.js").read_text(encoding="utf-8")
 
 
@@ -36,7 +39,9 @@ def _init_state():
     "flash": None,
     "pending_effect": None,
     "reduced_motion": False,
-    "bot_error": None
+    "bot_error": None,
+    "bot_pacing": "Quick",
+    "bot_due": None
   }
   for key, value in defaults.items():
     if key not in st.session_state:
@@ -76,6 +81,7 @@ def _start_game(count, chips, small, big, mode, difficulty, names):
   st.session_state.flash = ("info", "New game started. Blinds have been posted.")
   st.session_state.pending_effect = None
   st.session_state.bot_error = None
+  st.session_state.bot_due = None
 
 
 def _log_action(action, player_id, before):
@@ -110,24 +116,50 @@ def _apply_action(action, player, amount=None):
   st.rerun()
 
 
+def _bot_to_act(state):
+  return (st.session_state.game_mode == "Human vs Bots"
+    and not state["hand_over"] and state["current_player"] not in (None, 1))
+
+
+def _play_bot_turn(before):
+  game = st.session_state.game
+  current = before["current_player"]
+  bot = PokerBot(st.session_state.difficulty)
+  action, ok = bot.act(game, _player(current))
+  if not ok:
+    st.session_state.bot_error = game.last_error or "A bot action was rejected."
+    return False
+  _log_action(action, current, before)
+  return True
+
+
 def _run_bots():
   game = st.session_state.game
-  if st.session_state.game_mode != "Human vs Bots" or game.hand_over:
-    return
-  bot = PokerBot(st.session_state.difficulty)
   for _ in range(250):
-    current = game.get_state()["current_player"]
-    if current is None or current == 1 or game.hand_over:
-      st.session_state.bot_error = None
+    state = game.get_state()
+    if not _bot_to_act(state) or not _play_bot_turn(state):
       return
-    player = _player(current)
-    before = game.get_state()
-    action, ok = bot.act(game, player)
-    if not ok:
-      st.session_state.bot_error = game.last_error or "A bot action was rejected."
-      return
-    _log_action(action, current, before)
   st.session_state.bot_error = "Bot action limit reached. Select Continue bot turns to resume."
+
+
+def _render_paced_bot(state, delay):
+  st.info(f"{_name(state['current_player'])} is thinking…")
+  turn = (st.session_state.game_id, state["hand_number"], len(st.session_state.history))
+  timing = st.session_state.bot_due
+  if timing is None or timing[:2] != (turn, delay):
+    st.session_state.bot_due = (turn, delay, monotonic() + delay)
+
+  @st.fragment(run_every=delay)
+  def tick():
+    current_timing = st.session_state.bot_due
+    if current_timing is None or current_timing[:2] != (turn, delay) or st.session_state.screen != "table":
+      return
+    if monotonic() >= current_timing[2]:
+      st.session_state.bot_due = None
+      _play_bot_turn(state)
+      st.rerun()
+
+  tick()
 
 
 def _finish_hand_if_needed(state):
@@ -197,7 +229,7 @@ def _render_actions(state):
   legal = st.session_state.game.legal_actions(player)
   st.markdown(f'<div class="room-action-head"><div class="room-action-head__title">{html.escape(_name(current))} · Your turn</div><div class="room-action-head__meta">Stack {player.stack:,} · Bet {player.current_bet:,} · To call {legal.get("call_amount", 0):,}</div></div>', unsafe_allow_html=True)
   _render_private_cards(current)
-  columns = st.columns(4)
+  columns = st.columns(2) + st.columns(2)
   actions = [
     ("Fold", "fold"),
     ("Check", "check"),
@@ -222,6 +254,20 @@ def _render_actions(state):
     st.write(" ")
     if st.button("Raise", key=f"raise_{turn_key}", disabled=not can_raise, type="primary", use_container_width=True):
       _apply_action("raise", player, int(raise_to) - player.current_bet)
+  if can_raise and min_total <= max_total:
+    pot_after_call = state["pot"] + legal["call_amount"]
+    presets = [("Min", min_total),
+      ("½ pot", state["table_bet"] + pot_after_call // 2),
+      ("Pot", state["table_bet"] + pot_after_call)]
+    used_totals = set()
+    columns = iter(st.columns(3))
+    for label, total in presets:
+      if not min_total <= total < max_total or total in used_totals:
+        continue
+      used_totals.add(total)
+      with next(columns):
+        if st.button(f"{label} {total:,}", key=f"preset_{label}_{turn_key}", use_container_width=True):
+          _apply_action("raise", player, total - player.current_bet)
   if can_raise and min_total > max_total:
     st.caption("Only a short all-in raise is available at this stack size.")
   with st.expander("How betting works"):
@@ -252,14 +298,19 @@ def _render_showdown(state):
     for raw_id, hand in state["showdown_hands"].items():
       player_id = int(raw_id)
       player = next(p for p in state["players"] if p["player_id"] == player_id)
-      cards = "".join(card_html(c) for c in player["hole_cards"])
-      st.markdown(f'<div class="room-status"><strong>{html.escape(_name(player_id))}</strong> · {html.escape(hand[0])}<div class="room-cardline">{cards}</div></div>', unsafe_allow_html=True)
+      hole = player["hole_cards"]
+      chosen = best_five(state["board"], hole, hand)
+      cards = "".join(card_html(card, highlight=card in hole) for card in chosen)
+      used = sum(card in hole for card in chosen)
+      source = "Plays the board" if not used else f"{used} hole card{'s' if used == 2 else ''} in the best five"
+      st.markdown(f'<div class="room-status"><strong>{html.escape(_name(player_id))}</strong> · {html.escape(hand[0])}<div class="room-cardline room-cardline--showdown" role="group" aria-label="Best five cards">{cards}</div><small>{source}</small></div>', unsafe_allow_html=True)
   st.subheader("Payout summary")
   if state["pot_results"]:
     for index, pot in enumerate(state["pot_results"]):
       title = "Main pot" if index == 0 else f"Side pot {index}"
       winners = ", ".join(f"{_name(int(player_id))} (+{chips:,})" for player_id, chips in pot["payouts"].items())
       st.write(f"**{title}: {pot['amount']:,} chips** · {winners}")
+      st.caption(pot_explanation(pot, state["showdown_hands"]))
   for player_id, chips in state["uncalled_returns"].items():
     st.write(f"Uncalled bet returned to {_name(player_id)} · {chips:,} chips")
   st.caption("Winners and pot eligibility are calculated by the poker engine, not by the interface.")
@@ -334,6 +385,8 @@ def _render_sidebar(state):
       st.session_state.screen = "menu"
       st.rerun()
     st.checkbox("Reduce animations", key="reduced_motion")
+    if st.session_state.game_mode == "Human vs Bots":
+      st.selectbox("Bot pace", list(BOT_PACING), key="bot_pacing")
     st.markdown("---")
     st.caption(f"{st.session_state.game_mode} · Hand {state['hand_number']}")
     st.metric("Pot", f"{state['pot']:,}")
@@ -365,7 +418,10 @@ def main():
   if st.session_state.screen == "menu" or st.session_state.game is None:
     _render_menu()
     return
-  _run_bots()
+  delay = BOT_PACING[st.session_state.bot_pacing]
+  if not delay and not st.session_state.bot_error:
+    st.session_state.bot_due = None
+    _run_bots()
   game = st.session_state.game
   state = game.get_state()
   _finish_hand_if_needed(state)
@@ -388,7 +444,11 @@ def main():
   _show_effect()
   if st.session_state.last_action:
     st.caption(f"Last action: {st.session_state.last_action}")
-  _render_actions(state)
+  if _bot_to_act(state):
+    _render_paced_bot(state, delay)
+  else:
+    st.session_state.bot_due = None
+    _render_actions(state)
 
 
 if __name__ == "__main__":

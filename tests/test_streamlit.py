@@ -49,3 +49,32 @@ def test_pass_and_play_resume_hides_cards_and_reruns_do_not_pay_twice():
   assert not app.exception
   assert app.session_state.game.hand_number == 2
   assert button(app, "Fold").key != first_fold_key
+
+
+def test_pot_preset_commits_only_additional_chips():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  app.slider[0].set_value(2).run()
+  button(app, "Deal the first hand").click().run()
+  button(app, "Reveal my cards").click().run()
+  button(app, "Pot 30").click().run()
+  assert not app.exception
+  game = app.session_state.game
+  assert game.table_bet == 30
+  assert game.players[0].stack == 970
+  assert app.session_state.history[-1]["amount"] == 25
+
+
+def test_paced_bot_waits_then_commits_one_action_per_turn():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  app.slider[0].set_value(3).run()
+  app.selectbox[0].select("Human vs Bots").run()
+  button(app, "Deal the first hand").click().run()
+  button(app, "Fold").click().run()
+  assert not app.exception
+  assert len(app.session_state.history) == 1
+  turn, delay, _ = app.session_state.bot_due
+  app.session_state.bot_due = (turn, delay, 0)
+  app.run()
+  assert not app.exception
+  assert len(app.session_state.history) == 2
+  assert app.session_state.history[-1]["player_id"] == 2
