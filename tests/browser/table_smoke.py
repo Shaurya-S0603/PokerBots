@@ -86,6 +86,26 @@ def check_paced_bot(browser):
   page.close()
 
 
+def check_arena(browser):
+  page = browser.new_page(viewport={"width": 1440, "height": 900})
+  page.goto(URL)
+  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
+  set_player_count(page, 2)
+  page.get_by_test_id("stSelectbox").first.locator("input").click()
+  page.get_by_text("Bot Arena", exact=True).click()
+  page.get_by_role("button", name="Deal the first hand").click()
+  expect(page.get_by_text("Bot Arena · Seed 42", exact=True)).to_be_visible()
+  page.get_by_role("button", name="Play", exact=True).click()
+  action = page.get_by_text("Last action: Seat 1 call · 5 chips", exact=True)
+  expect(action).to_be_visible()
+  page.get_by_role("button", name="Pause", exact=True).click()
+  expect(page.get_by_role("button", name="Step", exact=True)).to_be_enabled()
+  expect(action).to_be_visible()
+  page.get_by_role("button", name="Step", exact=True).click()
+  expect(page.get_by_text("Last action: Seat 2 check", exact=True)).to_be_visible()
+  page.close()
+
+
 if __name__ == "__main__":
   command = [sys.executable, "-m", "streamlit", "run", "app.py",
     "--server.port=8511", "--server.headless=true", "--browser.gatherUsageStats=false"]
@@ -97,5 +117,6 @@ if __name__ == "__main__":
         check_table(browser, 1440)
         check_table(browser, 360)
         check_paced_bot(browser)
+        check_arena(browser)
     finally:
       server.terminate()

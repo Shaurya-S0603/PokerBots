@@ -11,6 +11,12 @@ streamlit run app.py
 
 Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 human players sharing a device, or **Human vs Bots** to play as seat 1 against heuristic bots.
 
+## Bot Arena
+
+Select **Bot Arena** as the game mode. Pick a match seed and a strategy for each seat. **Step** plays one decision or deals the next hand after a payout. **Play** repeats those steps at the selected pace, and **Pause** returns control to you. Reuse the seed, strategies, stacks, and blinds to reproduce a match in the same app version. The hand history download includes the Arena seed and strategies.
+
+The Arena includes Calling Station, Random, Tight, and Loose-Aggressive. These are rule-based strategies that use each bot's own cards and public table information.
+
 ## Project structure
 
 - `app.py` - Streamlit application, session and action controls

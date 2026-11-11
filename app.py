@@ -5,6 +5,7 @@ from time import monotonic
 import streamlit as st
 import streamlit.components.v1 as components
 
+from arena import BotArena, STRATEGIES
 from poker_bot import PokerBot
 from poker_engine import start_game
 from ui.render import card_html, table_html
@@ -17,6 +18,7 @@ st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", 
 ROOT = Path(__file__).parent
 CSS = (ROOT / "ui" / "styles.css").read_text(encoding="utf-8")
 EFFECT_TEMPLATE = (ROOT / "ui" / "effect.html").read_text(encoding="utf-8")
+ARENA_PACING = {"Quick": 0.35, "Normal": 0.7, "Relaxed": 1.2}
 BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 EFFECT_SCRIPT = (ROOT / "ui" / "effects.js").read_text(encoding="utf-8")
 
@@ -43,7 +45,10 @@ def _init_state():
     "reduced_motion": False,
     "bot_error": None,
     "bot_pacing": "Quick",
-    "bot_due": None
+    "bot_due": None,
+    "arena": None,
+    "arena_playing": False,
+    "arena_due": None
   }
   for key, value in defaults.items():
     if key not in st.session_state:
@@ -64,8 +69,11 @@ def _player(player_id):
   return next(p for p in st.session_state.game.players if p.player_id == player_id)
 
 
-def _start_game(count, chips, small, big, mode, difficulty, names):
-  game = start_game(count, chips, small, big)
+def _start_game(count, chips, small, big, mode, difficulty, names, arena=None):
+  game = start_game(count, chips, small, big, deck_rng=arena.deck_rng if arena else None)
+  st.session_state.arena = arena
+  st.session_state.arena_playing = False
+  st.session_state.arena_due = None
   st.session_state.game = game
   st.session_state.game_id += 1
   st.session_state.screen = "table"
@@ -138,8 +146,12 @@ def _bot_to_act(state):
 def _play_bot_turn(before):
   game = st.session_state.game
   current = before["current_player"]
-  bot = PokerBot(st.session_state.difficulty)
-  action, ok = bot.act(game, _player(current))
+  bot = st.session_state.arena or PokerBot(st.session_state.difficulty)
+  try:
+    action, ok = bot.act(game, _player(current))
+  except ValueError as error:
+    st.session_state.bot_error = str(error)
+    return False
   if not ok:
     st.session_state.bot_error = game.last_error or "A bot action was rejected."
     return False
@@ -206,6 +218,8 @@ def _render_table(state):
     if st.session_state.game_mode == "Local Pass-and-Play" and st.session_state.revealed_player == current:
       shown = st.session_state.game.get_state(current)
   bot_ids = {p.player_id for p in st.session_state.game.players if p.player_id != 1} if st.session_state.game_mode == "Human vs Bots" else set()
+  if st.session_state.arena:
+    bot_ids = {seat["player_id"] for seat in state["players"]}
   markup = table_html(shown, st.session_state.player_names, st.session_state.last_actions, bot_ids)
   st.markdown(markup, unsafe_allow_html=True)
 
@@ -329,19 +343,76 @@ def _render_showdown(state):
       st.session_state.screen = "menu"
       st.session_state.game = None
       st.rerun()
-  elif st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
-    game = st.session_state.game
-    st.session_state.hand_start_stacks = {p.player_id: p.stack for p in game.players}
-    if game.start_next_round():
-      _record_hand_start(game.get_state())
-      st.session_state.revealed_player = None
-      st.session_state.handoff_required = st.session_state.game_mode == "Local Pass-and-Play"
-      st.session_state.last_actions = {}
-      st.session_state.last_action = ""
-      st.session_state.flash = ("info", f"Hand {game.hand_number} started. Dealer rotated and blinds posted.")
-      st.rerun()
-    st.session_state.flash = ("error", game.last_error or "Could not start the next hand.")
+  elif not st.session_state.arena and st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
+    _deal_next_hand()
     st.rerun()
+
+
+def _deal_next_hand():
+  game = st.session_state.game
+  starting_stacks = {p.player_id: p.stack for p in game.players}
+  if not game.start_next_round():
+    st.session_state.flash = ("error", game.last_error or "Could not start the next hand.")
+    return False
+  st.session_state.hand_start_stacks = starting_stacks
+  _record_hand_start(game.get_state())
+  st.session_state.revealed_player = None
+  st.session_state.handoff_required = st.session_state.game_mode == "Local Pass-and-Play"
+  st.session_state.last_actions = {}
+  st.session_state.last_action = ""
+  st.session_state.flash = ("info", f"Hand {game.hand_number} started. Dealer rotated and blinds posted.")
+  return True
+
+
+def _pause_arena():
+  st.session_state.arena_playing = False
+  st.session_state.arena_due = None
+
+
+def _advance_arena(state):
+  advanced = _deal_next_hand() if state["hand_over"] else _play_bot_turn(state)
+  if not advanced:
+    _pause_arena()
+
+
+def _render_arena(state):
+  arena = st.session_state.arena
+  st.caption(f"Bot Arena · Seed {arena.seed}")
+  st.caption(" · ".join(f"Seat {seat}: {style}" for seat, style in enumerate(arena.styles, 1)))
+  delay = ARENA_PACING[st.selectbox("Arena pace", list(ARENA_PACING), index=1)]
+  play, pause, step = st.columns(3)
+  if state["game_over"]:
+    _pause_arena()
+  playing = st.session_state.arena_playing
+  if play.button("Play", disabled=playing or state["game_over"], use_container_width=True):
+    st.session_state.arena_playing = True
+    st.rerun()
+  if pause.button("Pause", disabled=not playing, use_container_width=True):
+    _pause_arena()
+    st.rerun()
+  if step.button("Step", disabled=playing or state["game_over"], use_container_width=True):
+    _advance_arena(state)
+    st.rerun()
+  if state["hand_over"]:
+    _render_showdown(state)
+  if not playing:
+    return
+
+  turn = (st.session_state.game_id, state["hand_number"], len(st.session_state.history), delay)
+  timing = st.session_state.arena_due
+  if timing is None or timing[0] != turn:
+    st.session_state.arena_due = (turn, monotonic() + delay)
+
+  @st.fragment(run_every=delay)
+  def tick():
+    timing = st.session_state.arena_due
+    if (st.session_state.screen == "table" and st.session_state.arena_playing
+        and timing and timing[0] == turn and monotonic() >= timing[1]):
+      st.session_state.arena_due = None
+      _advance_arena(state)
+      st.rerun()
+
+  tick()
 
 
 def _render_payouts(state):
@@ -357,6 +428,7 @@ def _render_payouts(state):
 
 
 def _open_history(hand=None):
+  _pause_arena()
   if hand is not None:
     game_id = st.session_state.game_id
     st.session_state[f"replay_hand_{game_id}"] = hand
@@ -409,7 +481,9 @@ def _render_history():
       st.text(f"{_name(player_id)} · {stack:,} chips")
   if table["hand_over"]:
     _render_payouts(table)
-  st.download_button("Download completed hands (JSON)", data=export_history(completed),
+  arena = st.session_state.arena
+  config = {"seed": arena.seed, "styles": arena.styles} if arena else None
+  st.download_button("Download completed hands (JSON)", data=export_history(completed, config),
     file_name="pokerroom-hand-history.json", mime="application/json")
   st.caption("The download uses seat numbers and includes only cards revealed at showdown.")
 
@@ -428,7 +502,7 @@ def _render_menu():
     st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use a simple heuristic, not a trained solver.")
   st.subheader("New game")
   count = st.slider("Number of players", 2, 10, 5)
-  mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots"])
+  mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots", "Bot Arena"])
   with st.form("new_game", clear_on_submit=False):
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -437,9 +511,18 @@ def _render_menu():
       small = st.number_input("Small blind", min_value=1, max_value=1000000, value=5, step=1)
     with c3:
       big = st.number_input("Big blind", min_value=2, max_value=1000000, value=10, step=1)
-    difficulty = st.selectbox("Bot difficulty", ["Easy", "Medium", "Hard"], disabled=mode != "Human vs Bots", help="Difficulty controls the bot's heuristics and bluff frequency.")
-    with st.expander("Player names"):
-      names = [st.text_input(f"Seat {index + 1} name", value=("You" if index == 0 and mode == "Human vs Bots" else f"Player {index + 1}"), max_chars=24, key=f"player_name_{index}") for index in range(count)]
+    difficulty = "Easy"
+    seed = None
+    styles = []
+    if mode == "Bot Arena":
+      seed = st.number_input("Match seed", min_value=0, max_value=2**32 - 1, value=42, step=1)
+      styles = [st.selectbox(f"Seat {i + 1} strategy", list(STRATEGIES), key=f"arena_style_{i}")
+        for i in range(count)]
+      names = [f"Seat {i + 1}" for i in range(count)]
+    else:
+      difficulty = st.selectbox("Bot difficulty", ["Easy", "Medium", "Hard"], disabled=mode != "Human vs Bots", help="Difficulty controls the bot's heuristics and bluff frequency.")
+      with st.expander("Player names"):
+        names = [st.text_input(f"Seat {index + 1} name", value=("You" if index == 0 and mode == "Human vs Bots" else f"Player {index + 1}"), max_chars=24, key=f"player_name_{index}") for index in range(count)]
     submit = st.form_submit_button("Deal the first hand", type="primary", use_container_width=True)
     if submit:
       clean = [value.strip() for value in names]
@@ -449,7 +532,8 @@ def _render_menu():
         st.error("Enter a distinct, nonempty name for each player.")
       else:
         try:
-          _start_game(count, int(chips), int(small), int(big), mode, difficulty, clean)
+          arena = BotArena(int(seed), styles) if styles else None
+          _start_game(count, int(chips), int(small), int(big), mode, difficulty, clean, arena)
           st.rerun()
         except ValueError as error:
           st.error(str(error))
@@ -459,6 +543,7 @@ def _render_sidebar(state):
   with st.sidebar:
     st.markdown("### ♠ POKERROOM")
     if st.button("Main menu", use_container_width=True):
+      _pause_arena()
       if st.session_state.game_mode == "Local Pass-and-Play":
         st.session_state.revealed_player = None
         st.session_state.handoff_required = True
@@ -527,7 +612,9 @@ def main():
   _show_effect()
   if st.session_state.last_action:
     st.caption(f"Last action: {st.session_state.last_action}")
-  if _bot_to_act(state):
+  if st.session_state.arena:
+    _render_arena(state)
+  elif _bot_to_act(state):
     _render_paced_bot(state, delay)
   else:
     st.session_state.bot_due = None

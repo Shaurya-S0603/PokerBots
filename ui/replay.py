@@ -39,6 +39,9 @@ def record_step(record, state, action=None):
     "board_changes": board_changes, "table": _snapshot(state)})
 
 
-def export_history(records):
+def export_history(records, arena=None):
   completed = [record for record in records.values() if record["steps"][-1]["table"]["hand_over"]]
-  return json.dumps({"schema_version": 1, "hands": completed}, ensure_ascii=False, indent=2)
+  data = {"schema_version": 1, "hands": completed}
+  if arena is not None:
+    data["arena"] = arena
+  return json.dumps(data, ensure_ascii=False, indent=2)
