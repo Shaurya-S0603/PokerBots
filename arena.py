@@ -86,6 +86,8 @@ class EquityProfile:
   value_edge: float = 0.17
   position_bonus: float = 0.06
   pot_fraction: float = 2 / 3
+  river_call_margin: float = 0.0
+  shallow_open_bonus: float = 0.0
 
 
 def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None):
@@ -110,13 +112,15 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None):
     diagnostics.update(method=method, opponents=view.opponents, wins=result.wins,
       ties=result.ties, losses=result.losses, equity=share, curve=curve)
 
-  cushion = profile.call_cushion if len(view.board) < 5 else 0
+  cushion = profile.call_cushion if len(view.board) < 5 else profile.river_call_margin
   if legal["call"] and share < call / (view.pot + call) + cushion:
     return "fold", None
 
   value_threshold = max(0.35, 1 / (view.opponents + 1) + profile.value_edge)
   if not view.board and view.late_position and view.table_bet == view.big_blind:
     value_threshold -= profile.position_bonus
+    if view.stack + view.current_bet <= 12 * view.big_blind:
+      value_threshold -= profile.shallow_open_bonus
 
   if legal["raise"] and share >= value_threshold:
     minimum = min(legal["min_raise_total"], legal["max_raise_total"])

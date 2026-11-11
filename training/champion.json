@@ -1,56 +1,220 @@
 {
+  "generation": 2,
   "source": {
-    "sha256": "c181406e69f1ff291b068e77866141d5041014ec345ae24441b57504ae22cbdf",
-    "hands": 37,
-    "winner_seat": 6,
-    "seats": 10,
-    "seed": 42,
-    "winner_raises": 14,
-    "median_raise_fraction": 0.6522
+    "sha256": "177488ab375296f619ddf60a9b45b94cfa0397cb4e1b2a210e470c25e1dc8ddb",
+    "hands": 21,
+    "winner_seat": 1,
+    "seats": 5,
+    "seed": 786578,
+    "winner_raises": 15,
+    "median_raise_fraction": 0.65
+  },
+  "human_source": {
+    "sha256": "de1e06aa9ae4b29a6a847c5144563742c6d0e0b7023ca438af3ca198596b304e",
+    "hands": 15,
+    "human_seat": 1,
+    "human_final_chips": 300,
+    "counts": {
+      "preflop:facing": {
+        "call": 10
+      },
+      "flop:free": {
+        "check": 11,
+        "raise": 1
+      },
+      "turn:free": {
+        "fold": 2,
+        "check": 10
+      },
+      "preflop:free": {
+        "check": 5
+      },
+      "river:free": {
+        "raise": 6,
+        "check": 3,
+        "fold": 1
+      },
+      "flop:facing": {
+        "call": 4,
+        "raise": 1
+      },
+      "turn:facing": {
+        "call": 1
+      }
+    },
+    "median_raise_fraction": 1.0
+  },
+  "candidate_profiles": {
+    "Positional Equity (incumbent)": {
+      "call_cushion": 0.04,
+      "value_edge": 0.16,
+      "position_bonus": 0.12,
+      "pot_fraction": 0.6522,
+      "river_call_margin": 0.0,
+      "shallow_open_bonus": 0.0
+    },
+    "Short-Stack Equity": {
+      "call_cushion": 0.02,
+      "value_edge": 0.15,
+      "position_bonus": 0.08,
+      "pot_fraction": 0.65,
+      "river_call_margin": 0.0,
+      "shallow_open_bonus": 0.06
+    },
+    "River Defense Equity": {
+      "call_cushion": 0.04,
+      "value_edge": 0.17,
+      "position_bonus": 0.12,
+      "pot_fraction": 0.65,
+      "river_call_margin": -0.06,
+      "shallow_open_bonus": 0.01
+    },
+    "Selective Equity": {
+      "call_cushion": 0.06,
+      "value_edge": 0.2,
+      "position_bonus": 0.07,
+      "pot_fraction": 0.65,
+      "river_call_margin": 0.03,
+      "shallow_open_bonus": 0.02
+    },
+    "Pressure Equity": {
+      "call_cushion": 0.03,
+      "value_edge": 0.13,
+      "position_bonus": 0.1,
+      "pot_fraction": 0.75,
+      "river_call_margin": -0.02,
+      "shallow_open_bonus": 0.04
+    }
+  },
+  "screening": {
+    "self_play": [
+      {
+        "seed": 1000,
+        "hands": 47,
+        "winner": "Selective Equity"
+      },
+      {
+        "seed": 1001,
+        "hands": 40,
+        "winner": "Positional Equity (incumbent)"
+      },
+      {
+        "seed": 1002,
+        "hands": 26,
+        "winner": "River Defense Equity"
+      },
+      {
+        "seed": 1003,
+        "hands": 17,
+        "winner": "River Defense Equity"
+      },
+      {
+        "seed": 1004,
+        "hands": 11,
+        "winner": "Pressure Equity"
+      }
+    ],
+    "proxy_seed_start": 2000,
+    "proxy_results": {
+      "Positional Equity (incumbent)": {
+        "pairs": 12,
+        "bb_per_100": 94.58,
+        "interval_95": [
+          -60.86,
+          242.5
+        ]
+      },
+      "Short-Stack Equity": {
+        "pairs": 12,
+        "bb_per_100": 92.5,
+        "interval_95": [
+          -62.1,
+          240.42
+        ]
+      },
+      "River Defense Equity": {
+        "pairs": 12,
+        "bb_per_100": 94.58,
+        "interval_95": [
+          -60.86,
+          242.5
+        ]
+      },
+      "Selective Equity": {
+        "pairs": 12,
+        "bb_per_100": 153.75,
+        "interval_95": [
+          -15.43,
+          321.25
+        ]
+      },
+      "Pressure Equity": {
+        "pairs": 12,
+        "bb_per_100": 91.67,
+        "interval_95": [
+          -64.58,
+          239.58
+        ]
+      }
+    }
   },
   "training": {
-    "seed": 43,
-    "hands": 16,
-    "decisions": 122,
+    "seed": 3000,
+    "hands": 10,
+    "decisions": 55,
     "starting_stack": 100,
     "small_blind": 5,
     "big_blind": 10,
     "results": [
       {
-        "model": "Original Equity",
+        "model": "Selective Equity",
         "seat": 1,
-        "final_chips": 0,
-        "hands": 7,
-        "hands_won": 1
+        "final_chips": 300,
+        "hands": 10,
+        "hands_won": 6
       },
       {
-        "model": "Patient Equity",
+        "model": "Positional Equity (incumbent)",
         "seat": 2,
         "final_chips": 0,
         "hands": 10,
-        "hands_won": 1
+        "hands_won": 3
       },
       {
-        "model": "Pressure Equity",
+        "model": "River Defense Equity",
         "seat": 3,
         "final_chips": 0,
-        "hands": 16,
-        "hands_won": 5
-      },
-      {
-        "model": "Positional Equity",
-        "seat": 4,
-        "final_chips": 400,
-        "hands": 16,
-        "hands_won": 9
+        "hands": 4,
+        "hands_won": 1
       }
     ]
   },
-  "champion": "Positional Equity",
+  "evaluation": {
+    "against_incumbent": {
+      "pairs": 16,
+      "bb_per_100": 17.81,
+      "interval_95": [
+        -0.62,
+        45.0
+      ]
+    },
+    "against_human_style_proxy": {
+      "pairs": 16,
+      "bb_per_100": 136.88,
+      "interval_95": [
+        34.02,
+        240.97
+      ]
+    },
+    "seed_start": 4000
+  },
+  "champion": "Selective Equity",
   "profile": {
-    "call_cushion": 0.04,
-    "value_edge": 0.16,
-    "position_bonus": 0.12,
-    "pot_fraction": 0.6522
+    "call_cushion": 0.06,
+    "value_edge": 0.2,
+    "position_bonus": 0.07,
+    "pot_fraction": 0.65,
+    "river_call_margin": 0.03,
+    "shallow_open_bonus": 0.02
   }
 }

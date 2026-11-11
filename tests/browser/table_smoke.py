@@ -136,7 +136,7 @@ def check_benchmarks(browser):
   page.get_by_role("button", name="Bot visualization", exact=True).click()
   expect(page.get_by_role("heading", name="Bot visualization", exact=True)).to_be_visible()
   page.get_by_role("tab", name="Training match", exact=True).click()
-  expect(page.get_by_role("heading", name="Positional Equity", exact=True)).to_be_visible()
+  expect(page.get_by_role("heading", name="Held-out evaluation", exact=True)).to_be_visible()
   page.close()
 
 

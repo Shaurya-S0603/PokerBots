@@ -21,7 +21,7 @@ The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity.
 
 ## Training winner and bot visualization
 
-Human vs Bots uses the winner saved in `training/champion.json`. To select a new winner, run one complete elimination match offline with `python train_equity.py path/to/pokerroom-hand-history.json` and deploy the updated champion record. The input should be a completed all-Equity Arena export. Training uses the export's winner sizing to set candidate parameters and saves only the source summary, final standings, and winning parameters.
+Human vs Bots uses the winner saved in `training/champion.json`. To reproduce generation 2, run `python train_generation.py arena-history.json human-history.json` with a completed all-Equity Arena export and a completed Human vs Bots export. The human defaults to seat 1. The trainer uses the Arena winner's bet sizing and a practice opponent fitted to public human action counts. It rotates candidates through starting seats, runs paired screening matches, and promotes the winner of the final elimination match. Separate seed pairs check the winner against the previous champion and the practice opponent. The saved report contains aggregates and parameters rather than raw hand histories. Deploy the updated champion record to use the new winner.
 
 Open **Bot visualization** from the menu or game sidebar. **Simulation** shows actual bot decision estimates for completed hands, including outcome counts and cumulative Monte Carlo win rate and pot share. Heads-up river decisions are enumerated exactly. **Training match** shows the latest tournament and its winner.
 
