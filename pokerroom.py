@@ -298,6 +298,7 @@ class GameManager:
     self.full_bet_made = False
     self.last_error = ""
     self.aggressive_actions = []
+    self.betting_line = []
 
   def seated_players(self):
     return [p for p in self.players if p.in_hand]
@@ -372,6 +373,7 @@ class GameManager:
     self.round_ready = True
     self.last_error = ""
     self.aggressive_actions.clear()
+    self.betting_line.clear()
 
     for player in self.players:
       player.hole_cards = []
@@ -611,7 +613,9 @@ class GameManager:
     if call_amount == 0:
       return self._reject("Nothing to call. Use check instead")
 
-    self.commit_chips(player, min(player.stack, call_amount))
+    paid = min(player.stack, call_amount)
+    self.betting_line.append((player.player_id, self.phase, "call", paid, self.pot))
+    self.commit_chips(player, paid)
     player.acted_bet = self.table_bet
     return self.finish_action(player)
 
@@ -647,6 +651,7 @@ class GameManager:
 
     previous_table_bet = self.table_bet
     self.aggressive_actions.append((player.player_id, self.phase, new_total - previous_table_bet, self.pot))
+    self.betting_line.append((player.player_id, self.phase, "raise", new_total, self.pot))
     self.commit_chips(player, amount)
     self.table_bet = new_total
     player.acted_bet = self.table_bet

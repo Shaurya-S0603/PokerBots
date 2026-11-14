@@ -1,0 +1,432 @@
+[
+  {
+    "opponent": "fledge",
+    "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+    "hand": 48,
+    "hole": "Kh 8d",
+    "board": "Kc Th 6h 7s 9h",
+    "stacks": [
+      1792,
+      2496
+    ],
+    "pot": 15712,
+    "call": 0,
+    "big_blind": 200,
+    "button": false,
+    "current_bet": 0,
+    "min_increment": 200,
+    "opponent_bets": [],
+    "replay_action": "raise to 1792",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        1320,
+        300
+      ],
+      [
+        true,
+        "flop",
+        "call",
+        1900,
+        4540
+      ],
+      [
+        true,
+        "turn",
+        "call",
+        4636,
+        11076
+      ]
+    ]
+  },
+  {
+    "opponent": "PluriBot",
+    "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+    "hand": 3,
+    "hole": "Kc 9h",
+    "board": "3c 8h 8d Ac 2c",
+    "stacks": [
+      9150,
+      6850
+    ],
+    "pot": 4000,
+    "call": 2400,
+    "big_blind": 100,
+    "button": true,
+    "current_bet": 0,
+    "min_increment": 2400,
+    "opponent_bets": [
+      [
+        "turn",
+        400,
+        800
+      ],
+      [
+        "river",
+        2400,
+        1600
+      ]
+    ],
+    "replay_action": "call",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        400,
+        344
+      ],
+      [
+        true,
+        "turn",
+        "raise",
+        400,
+        800
+      ],
+      [
+        true,
+        "river",
+        "raise",
+        2400,
+        1600
+      ]
+    ]
+  },
+  {
+    "opponent": "PluriBot",
+    "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+    "hand": 4,
+    "hole": "7d 6s",
+    "board": "3c 6c 2c 3s 9c",
+    "stacks": [
+      11150,
+      0
+    ],
+    "pot": 8850,
+    "call": 4850,
+    "big_blind": 100,
+    "button": false,
+    "current_bet": 0,
+    "min_increment": 4850,
+    "opponent_bets": [
+      [
+        "flop",
+        250,
+        500
+      ],
+      [
+        "turn",
+        1500,
+        1000
+      ],
+      [
+        "river",
+        4850,
+        4000
+      ]
+    ],
+    "replay_action": "call",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        250,
+        150
+      ],
+      [
+        true,
+        "flop",
+        "raise",
+        250,
+        500
+      ],
+      [
+        true,
+        "turn",
+        "raise",
+        1500,
+        1000
+      ],
+      [
+        true,
+        "river",
+        "raise",
+        4850,
+        4000
+      ]
+    ]
+  },
+  {
+    "opponent": "PluriBot",
+    "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+    "hand": 9,
+    "hole": "Qc 3c",
+    "board": "Kd Kc 2h 3h",
+    "stacks": [
+      10550,
+      0
+    ],
+    "pot": 9450,
+    "call": 6250,
+    "big_blind": 100,
+    "button": true,
+    "current_bet": 0,
+    "min_increment": 6250,
+    "opponent_bets": [
+      [
+        "flop",
+        1200,
+        800
+      ],
+      [
+        "turn",
+        6250,
+        3200
+      ]
+    ],
+    "replay_action": "call",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        400,
+        200
+      ],
+      [
+        true,
+        "flop",
+        "raise",
+        1200,
+        800
+      ],
+      [
+        true,
+        "turn",
+        "raise",
+        6250,
+        3200
+      ]
+    ]
+  },
+  {
+    "opponent": "pebble",
+    "source": "https://chipzen.ai/match/52c6f936-9694-4cb2-942a-ac6c2b78b437",
+    "hand": 87,
+    "hole": "4c 2c",
+    "board": "Th Tc 9c 2s Qc",
+    "stacks": [
+      16632,
+      1977
+    ],
+    "pot": 1391,
+    "call": 591,
+    "big_blind": 400,
+    "button": true,
+    "current_bet": 0,
+    "min_increment": 591,
+    "opponent_bets": [
+      [
+        "river",
+        591,
+        800
+      ]
+    ],
+    "replay_action": "raise to 2018",
+    "betting_line": [
+      [
+        true,
+        "river",
+        "raise",
+        591,
+        800
+      ]
+    ]
+  },
+  {
+    "opponent": "Plodder8",
+    "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+    "hand": 2,
+    "hole": "Ks 7s",
+    "board": "9c 6h Ac 8h 4c",
+    "stacks": [
+      8286,
+      6356
+    ],
+    "pot": 5358,
+    "call": 2130,
+    "big_blind": 100,
+    "button": false,
+    "current_bet": 0,
+    "min_increment": 2130,
+    "opponent_bets": [
+      [
+        "flop",
+        396,
+        600
+      ],
+      [
+        "turn",
+        918,
+        1392
+      ],
+      [
+        "river",
+        2130,
+        3228
+      ]
+    ],
+    "replay_action": "call",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        300,
+        150
+      ],
+      [
+        true,
+        "flop",
+        "raise",
+        396,
+        600
+      ],
+      [
+        true,
+        "turn",
+        "raise",
+        918,
+        1392
+      ],
+      [
+        true,
+        "river",
+        "raise",
+        2130,
+        3228
+      ]
+    ]
+  },
+  {
+    "opponent": "Plodder8",
+    "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+    "hand": 26,
+    "hole": "Jd Ts",
+    "board": "Ac Jh 3s 6c 2c",
+    "stacks": [
+      4604,
+      10038
+    ],
+    "pot": 5358,
+    "call": 0,
+    "big_blind": 150,
+    "button": false,
+    "current_bet": 0,
+    "min_increment": 150,
+    "opponent_bets": [],
+    "replay_action": "raise to 3857",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        450,
+        225
+      ],
+      [
+        true,
+        "flop",
+        "call",
+        648,
+        1548
+      ],
+      [
+        true,
+        "turn",
+        "call",
+        1581,
+        3777
+      ]
+    ]
+  },
+  {
+    "opponent": "fledge",
+    "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+    "hand": 25,
+    "hole": "Qs Td",
+    "board": "Tc 8h 5d 5c Ad",
+    "stacks": [
+      12657,
+      5557
+    ],
+    "pot": 1786,
+    "call": 0,
+    "big_blind": 150,
+    "button": true,
+    "current_bet": 0,
+    "min_increment": 150,
+    "opponent_bets": [],
+    "replay_action": "raise to 1285",
+    "betting_line": [
+      [
+        true,
+        "flop",
+        "call",
+        216,
+        516
+      ],
+      [
+        true,
+        "turn",
+        "call",
+        527,
+        1259
+      ]
+    ]
+  },
+  {
+    "opponent": "PluriBot",
+    "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+    "hand": 5,
+    "hole": "8h 5s",
+    "board": "6d 4s 5c Ad 8s",
+    "stacks": [
+      5300,
+      12700
+    ],
+    "pot": 2000,
+    "call": 0,
+    "big_blind": 100,
+    "button": true,
+    "current_bet": 0,
+    "min_increment": 100,
+    "opponent_bets": [
+      [
+        "turn",
+        750,
+        500
+      ]
+    ],
+    "replay_action": "raise to 1440",
+    "betting_line": [
+      [
+        true,
+        "preflop",
+        "raise",
+        250,
+        200
+      ],
+      [
+        true,
+        "turn",
+        "raise",
+        750,
+        500
+      ]
+    ]
+  }
+]

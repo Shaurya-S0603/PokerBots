@@ -8,7 +8,10 @@ from arena import EquityProfile
 TRAINING = json.loads((Path(__file__).resolve().parents[1] / "training" / "champion.json").read_text())
 CHAMPION = TRAINING["champion"]
 PROFILE = EquityProfile(**TRAINING["profile"])
-RIVER_REPORT = Path(__file__).resolve().parents[1] / "benchmarks" / "river-experiment.json"
+BENCHMARKS = Path(__file__).resolve().parents[1] / "benchmarks"
+REPORTS = {"Betting-line challengers · 100 BB": "betting-line-experiment.json",
+  "Betting-line challengers · 15 BB": "betting-line-shallow.json",
+  "River-call experiment": "river-experiment.json"}
 
 
 def render_bot_visualization(records, completed_hands, stats, names):
@@ -39,9 +42,13 @@ def render_bot_visualization(records, completed_hands, stats, names):
           label += f" · Call threshold {turn['call_threshold']:.1%}"
         st.caption(label)
       if "weighted_equity" in turn:
-        st.metric("Weighted river equity", f"{turn['weighted_equity']:.1%}")
+        st.metric("Weighted equity", f"{turn['weighted_equity']:.1%}")
       if turn["method"] == "Tight fallback":
         st.caption("The bot used Tight for this partial call or multiway all-in.")
+      elif turn["method"] == "Preflop range":
+        st.caption(f"Strength score {turn['preflop_strength']:.2f} · "
+          f"Threshold {turn['preflop_strength_threshold']:.2f} · "
+          f"Effective stack {turn['effective_stack_bb']:.1f} BB")
       else:
         outcomes = {"Win": turn["wins"], "Tie": turn["ties"], "Loss": turn["losses"]}
         total = sum(outcomes.values())
@@ -52,7 +59,10 @@ def render_bot_visualization(records, completed_hands, stats, names):
         st.bar_chart([{"Outcome": key, "Count": value} for key, value in outcomes.items()],
           x="Outcome", y="Count")
         if turn["curve"]:
-          st.line_chart(turn["curve"], x="Trials", y=["Equity", "Win rate"])
+          series = ["Equity", "Win rate"]
+          if "Weighted equity" in turn["curve"][0]:
+            series.append("Weighted equity")
+          st.line_chart(turn["curve"], x="Trials", y=series)
         st.caption("Estimates use the bot's cards and the board at the time of its decision, with uniformly sampled unknown cards. Equity credits ties with a share of the pot.")
       actual = stats.get(turn["seat"])
       if actual and actual["hands"]:
@@ -82,10 +92,12 @@ def render_bot_visualization(records, completed_hands, stats, names):
 
 
 def render_river_experiment():
-  if not RIVER_REPORT.exists():
+  available = {name: filename for name, filename in REPORTS.items() if (BENCHMARKS / filename).exists()}
+  if not available:
     st.info("Run the offline river experiment to load the replay comparisons.")
     return
-  report = json.loads(RIVER_REPORT.read_text())
+  experiment = st.selectbox("Experiment", list(available))
+  report = json.loads((BENCHMARKS / available[experiment]).read_text())
   st.subheader("Chipzen decision fixtures")
   fixture = st.selectbox("Replay decision", report["fixtures"],
     format_func=lambda item: f"{item['opponent']} · Hand {item['hand']} · "
@@ -107,7 +119,14 @@ def render_river_experiment():
       "Weighted equity": percent(decision["weighted_equity"]),
       "Call threshold": percent(decision["call_threshold"])})
   st.dataframe(rows, hide_index=True)
-  st.caption("The weighting applies to heads-up river calls facing a recorded bet. Raises use uniform equity.")
+  for name, decision in fixture["decisions"].items():
+    if options := decision.get("bet_options"):
+      st.caption(f"{name} · modeled EV assumes fold or call, then showdown.")
+      st.dataframe([{"Action": row["action"], "Bet chips": row["amount"],
+        "EV chips": round(row["ev_chips"], 1), "Worse calls": percent(row.get("worse_call_mass")),
+        "Better calls": percent(row.get("better_call_mass")),
+        "Better folds": percent(row.get("better_fold_mass"))} for row in options], hide_index=True)
+      break
 
   st.subheader("Fresh seat-swapped deals")
   config = report["config"]
@@ -123,3 +142,13 @@ def render_river_experiment():
     "p95 decision (ms)": round(row["decision_ms_p95"], 2)} for row in report["results"]], hide_index=True)
   st.caption("Chip losses count calls costing at least two-thirds of the pot before the latest opponent bet, "
     "on hands where the bot received no payout.")
+  if "position" in report["results"][0]:
+    st.subheader("Preflop and position")
+    st.dataframe([{"Opponent": row["opponent"], "Policy": row["strategy"],
+      "Button limp": percent(row["position"]["button_limp_rate"]),
+      "Button open raise": percent(row["position"]["button_open_raise_rate"]),
+      "Fold after limp and raise": percent(row["position"]["fold_after_limp_raise_rate"]),
+      "Limp-raise opportunities": row["position"]["faced_raise_after_limp"],
+      "Button bb/100": round(row["position"]["button_bb_per_100"], 2),
+      "Big blind bb/100": round(row["position"]["big_blind_bb_per_100"], 2)}
+      for row in report["results"]], hide_index=True)
