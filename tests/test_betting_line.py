@@ -62,3 +62,24 @@ def test_preflop_uses_position_and_depth():
     diagnostics = {}
     assert heads_up_preflop(observe(game, button), Random(0), diagnostics=diagnostics) == ("fold", None)
     assert diagnostics["decision_basis"] == "Button facing raise after limp"
+
+
+def test_preflop_ablations_only_change_their_target_decisions():
+  from pokerbots_sdk.strategies import big_blind_defense_only, button_open_only, range_and_sizing
+
+  game = start_game(2)
+  button, blind = game.players
+  button.hole_cards = list(cards("As Kd"))
+  unopened = observe(game, button)
+  assert button_open_only(unopened, Random(0)) == ("raise", 25)
+  assert big_blind_defense_only(unopened, Random(0)) == range_and_sizing(unopened, Random(0))
+
+  assert game.raise_bet(button, 20)
+  blind.hole_cards = list(cards("7s 2d"))
+  opened = observe(game, blind)
+  assert big_blind_defense_only(opened, Random(0)) == ("fold", None)
+  assert button_open_only(opened, Random(0)) == range_and_sizing(opened, Random(0))
+  assert game.raise_bet(blind, 50)
+  reraised = observe(game, button)
+  for strategy in (button_open_only, big_blind_defense_only):
+    assert strategy(reraised, Random(0)) == range_and_sizing(reraised, Random(0))

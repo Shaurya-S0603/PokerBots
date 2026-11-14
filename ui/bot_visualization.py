@@ -93,11 +93,15 @@ def render_bot_visualization(records, completed_hands, stats, names):
 
 def render_river_experiment():
   available = {name: filename for name, filename in REPORTS.items() if (BENCHMARKS / filename).exists()}
-  if not available:
-    st.info("Run the offline river experiment to load the replay comparisons.")
+  preflop_path = BENCHMARKS / "preflop-experiment.json"
+  preflop_reports = json.loads(preflop_path.read_text()) if preflop_path.exists() else []
+  preflop = {f"Preflop ablation · {run['config']['stack'] // run['config']['big_blind']} BB": run
+    for run in preflop_reports}
+  if not (available or preflop):
+    st.info("Run an offline experiment to load the replay comparisons.")
     return
-  experiment = st.selectbox("Experiment", list(available))
-  report = json.loads((BENCHMARKS / available[experiment]).read_text())
+  experiment = st.selectbox("Experiment", [*preflop, *available])
+  report = preflop[experiment] if experiment in preflop else json.loads((BENCHMARKS / available[experiment]).read_text())
   st.subheader("Chipzen decision fixtures")
   fixture = st.selectbox("Replay decision", report["fixtures"],
     format_func=lambda item: f"{item['opponent']} · Hand {item['hand']} · "
@@ -152,3 +156,21 @@ def render_river_experiment():
       "Button bb/100": round(row["position"]["button_bb_per_100"], 2),
       "Big blind bb/100": round(row["position"]["big_blind_bb_per_100"], 2)}
       for row in report["results"]], hide_index=True)
+
+  if experiment in preflop:
+    st.subheader("Preflop changes vs Range + Sizing")
+    rows = []
+    for row in report["results"]:
+      if row["strategy"] in {"Value", "Range + Sizing"}:
+        continue
+      responses = row["big_blind_responses"]
+      faced = sum(responses.values())
+      low, high = row["delta_range_sizing_interval_95"]
+      rows.append({"Opponent": row["opponent"], "Policy": row["strategy"],
+        "Δ bb/100": round(row["delta_vs_range_sizing"], 2), "95% interval": f"{low:+.2f} to {high:+.2f}",
+        "Button Δ bb/100": round(row["position_delta_vs_range_sizing"]["button"][0], 2),
+        "Big blind Δ bb/100": round(row["position_delta_vs_range_sizing"]["big_blind"][0], 2),
+        "Faced opens": faced,
+        "Fold to open": percent(responses.get("fold", 0) / faced if faced else None)})
+    st.dataframe(rows, hide_index=True)
+    st.caption("Decision times are CPU time per decision. Position deltas use 100 hands in the stated seat.")
