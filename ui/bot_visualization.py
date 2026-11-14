@@ -161,7 +161,7 @@ def render_river_experiment():
     st.subheader("Preflop changes vs Range + Sizing")
     rows = []
     for row in report["results"]:
-      if row["strategy"] in {"Value", "Range + Sizing"}:
+      if row["strategy"] == "Value":
         continue
       responses = row["big_blind_responses"]
       faced = sum(responses.values())
@@ -171,6 +171,8 @@ def render_river_experiment():
         "Button Δ bb/100": round(row["position_delta_vs_range_sizing"]["button"][0], 2),
         "Big blind Δ bb/100": round(row["position_delta_vs_range_sizing"]["big_blind"][0], 2),
         "Faced opens": faced,
-        "Fold to open": percent(responses.get("fold", 0) / faced if faced else None)})
+        "Fold to open": percent(responses.get("fold", 0) / faced if faced else None),
+        "Call open": percent(responses.get("call", 0) / faced if faced else None),
+        "Raise open": percent(responses.get("raise", 0) / faced if faced else None)})
     st.dataframe(rows, hide_index=True)
     st.caption("Decision times are CPU time per decision. Position deltas use 100 hands in the stated seat.")
