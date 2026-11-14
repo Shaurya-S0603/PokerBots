@@ -91,3 +91,19 @@ Streamlit Community Cloud deployment settings:
 Merge tested changes into main to update the connected app. Configure any future secrets in Streamlit settings; `.streamlit/secrets.toml` is ignored. Repository privacy and deployed-app access are separate settings.
 
 See [ROADMAP.md](ROADMAP.md) for the ordered browser-testing, persistence, AI and multiplayer milestones and their acceptance criteria.
+
+## Chipzen competition
+
+Open `PokerBots_Chipzen_Colab.ipynb` in Colab using a CPU runtime. Run setup and the offline conformance check, then use the bundled Value policy or train on fresh seeds. The final cell is opt-in and uses the Chipzen remote track with a bot ID and token stored in Colab Secrets. Test a friendly match before entering ranked play.
+
+The competition trainer runs mirrored heads-up hands in parallel, keeps screening and held-out seeds separate, and saves a challenger only when its held-out interval against the incumbent clears zero. The bundled report is in `training/competition-policy.json`. It measures performance against local bots.
+
+To reproduce the initial report locally:
+
+```bash
+python competition_train.py --pairs 24 --held-out 64 --output competition-policy.json
+python -m pip install -r requirements-chipzen.txt
+python tests/chipzen_conformance.py
+```
+
+For scheduled play, run the same adapter on a stable host. A Colab runtime can disconnect, which stops the bot's lobby connection.

@@ -1,0 +1,237 @@
+{
+  "profile": {
+    "call_cushion": 0.045,
+    "value_edge": 0.19,
+    "position_bonus": 0.14,
+    "pot_fraction": 0.72,
+    "river_call_margin": 0.015,
+    "shallow_open_bonus": 0.03
+  },
+  "selected": "Value",
+  "candidate": "Value",
+  "candidate_profile": {
+    "call_cushion": 0.045,
+    "value_edge": 0.19,
+    "position_bonus": 0.14,
+    "pot_fraction": 0.72,
+    "river_call_margin": 0.015,
+    "shallow_open_bonus": 0.03
+  },
+  "screening": {
+    "Incumbent": {
+      "Incumbent": {
+        "pairs": 24,
+        "bb_per_100": 0.0,
+        "interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "Tight": {
+        "pairs": 24,
+        "bb_per_100": 44.79,
+        "interval_95": [
+          21.88,
+          65.62
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 24,
+        "bb_per_100": 46.88,
+        "interval_95": [
+          6.25,
+          84.38
+        ]
+      },
+      "Calling Station": {
+        "pairs": 24,
+        "bb_per_100": 420.0,
+        "interval_95": [
+          228.75,
+          637.72
+        ]
+      }
+    },
+    "Value": {
+      "Incumbent": {
+        "pairs": 24,
+        "bb_per_100": -77.71,
+        "interval_95": [
+          -212.5,
+          9.17
+        ]
+      },
+      "Tight": {
+        "pairs": 24,
+        "bb_per_100": 244.79,
+        "interval_95": [
+          17.71,
+          668.78
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 24,
+        "bb_per_100": 244.79,
+        "interval_95": [
+          3.1,
+          676.04
+        ]
+      },
+      "Calling Station": {
+        "pairs": 24,
+        "bb_per_100": 385.42,
+        "interval_95": [
+          192.9,
+          614.02
+        ]
+      }
+    },
+    "Pressure": {
+      "Incumbent": {
+        "pairs": 24,
+        "bb_per_100": -231.88,
+        "interval_95": [
+          -723.32,
+          185.83
+        ]
+      },
+      "Tight": {
+        "pairs": 24,
+        "bb_per_100": 53.12,
+        "interval_95": [
+          32.29,
+          72.92
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 24,
+        "bb_per_100": 51.04,
+        "interval_95": [
+          13.54,
+          82.29
+        ]
+      },
+      "Calling Station": {
+        "pairs": 24,
+        "bb_per_100": 323.75,
+        "interval_95": [
+          189.99,
+          461.47
+        ]
+      }
+    },
+    "River Defense": {
+      "Incumbent": {
+        "pairs": 24,
+        "bb_per_100": -12.71,
+        "interval_95": [
+          -30.42,
+          0.0
+        ]
+      },
+      "Tight": {
+        "pairs": 24,
+        "bb_per_100": 44.79,
+        "interval_95": [
+          21.88,
+          65.62
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 24,
+        "bb_per_100": 46.88,
+        "interval_95": [
+          6.25,
+          84.38
+        ]
+      },
+      "Calling Station": {
+        "pairs": 24,
+        "bb_per_100": 420.0,
+        "interval_95": [
+          228.75,
+          637.72
+        ]
+      }
+    },
+    "Selective": {
+      "Incumbent": {
+        "pairs": 24,
+        "bb_per_100": 16.67,
+        "interval_95": [
+          0.0,
+          38.15
+        ]
+      },
+      "Tight": {
+        "pairs": 24,
+        "bb_per_100": 44.79,
+        "interval_95": [
+          21.88,
+          65.62
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 24,
+        "bb_per_100": 46.88,
+        "interval_95": [
+          6.25,
+          84.38
+        ]
+      },
+      "Calling Station": {
+        "pairs": 24,
+        "bb_per_100": 420.0,
+        "interval_95": [
+          228.75,
+          637.72
+        ]
+      }
+    }
+  },
+  "evaluation": {
+    "Value": {
+      "Incumbent": {
+        "pairs": 64,
+        "bb_per_100": 243.44,
+        "interval_95": [
+          35.62,
+          508.12
+        ]
+      },
+      "Tight": {
+        "pairs": 64,
+        "bb_per_100": 83.44,
+        "interval_95": [
+          -15.0,
+          261.8
+        ]
+      },
+      "Loose-Aggressive": {
+        "pairs": 64,
+        "bb_per_100": 75.23,
+        "interval_95": [
+          -25.86,
+          254.18
+        ]
+      },
+      "Calling Station": {
+        "pairs": 64,
+        "bb_per_100": 276.48,
+        "interval_95": [
+          146.78,
+          422.04
+        ]
+      }
+    }
+  },
+  "config": {
+    "seed": 20000,
+    "screening_pairs": 24,
+    "holdout_seed": 20024,
+    "held_out_pairs": 64,
+    "stack": 1000,
+    "small_blind": 5,
+    "big_blind": 10
+  }
+}
