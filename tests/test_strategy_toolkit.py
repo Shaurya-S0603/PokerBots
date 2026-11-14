@@ -49,3 +49,25 @@ def test_button_pressure_and_value_can_play_a_paired_matchup():
   report = compare_strategies("Button Pressure", "Value", seed=27000, pairs=2, stack=1000, workers=1)
   assert report["hands"] == 4
   assert report["pairs"] == 2
+
+
+def test_pot_guard_tightens_only_against_large_heads_up_postflop_bets(monkeypatch):
+  from dataclasses import replace
+  from pokerbots_sdk import strategies
+
+  game = start_game(2)
+  state = observe(game, game.players[0])
+  captured = []
+  def decision(state, rng, *, profile, diagnostics):
+    captured.append(profile)
+    return "fold", None
+
+  monkeypatch.setattr(strategies, "equity_bot", decision)
+  strategy = load_strategy("Pot Guard")
+  strategy(state, Random(1))
+  flop = replace(state, board=(("2", "♣️"), ("3", "♣️"), ("4", "♣️")), pot=90)
+  for call in (10, 30):
+    strategy(replace(flop, legal={**flop.legal, "call_amount": call}), Random(1))
+  assert captured[:2] == [VALUE_PROFILE, VALUE_PROFILE]
+  assert captured[2].call_cushion > VALUE_PROFILE.call_cushion
+  assert captured[2].river_call_margin > VALUE_PROFILE.river_call_margin

@@ -25,4 +25,12 @@ def button_pressure(state, rng, *, diagnostics=None):
   return equity_bot(state, rng, profile=profile, diagnostics=diagnostics)
 
 
-TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure}
+def pot_guard(state, rng, *, diagnostics=None):
+  """Demand a larger equity cushion against substantial postflop bets."""
+  call = state.legal["call_amount"]
+  under_pressure = state.opponents == 1 and state.board and call > 0 and call * 3 >= state.pot
+  profile = replace(VALUE_PROFILE, call_cushion=.09, river_call_margin=.075) if under_pressure else VALUE_PROFILE
+  return equity_bot(state, rng, profile=profile, diagnostics=diagnostics)
+
+
+TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure, "Pot Guard": pot_guard}
