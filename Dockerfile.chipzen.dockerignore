@@ -1,0 +1,13 @@
+**
+!requirements-chipzen.txt
+!chipzen_hosted.py
+!chipzen_entry.py
+!baseline_v4.py
+!equity.py
+!fast_rank.py
+!poker_engine.py
+!pokerroom.py
+!pokerbots_sdk/
+!pokerbots_sdk/*.py
+!training/
+!training/competition-policy.json

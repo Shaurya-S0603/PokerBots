@@ -1,0 +1,14 @@
+FROM python:3.12-alpine
+
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /bot
+COPY requirements-chipzen.txt .
+RUN pip install --no-cache-dir -r requirements-chipzen.txt \
+    && adduser -D -u 10001 bot
+
+COPY chipzen_hosted.py chipzen_entry.py baseline_v4.py equity.py fast_rank.py poker_engine.py pokerroom.py ./
+COPY pokerbots_sdk/ ./pokerbots_sdk/
+COPY training/competition-policy.json ./training/competition-policy.json
+
+USER 10001:10001
+ENTRYPOINT ["python", "-m", "chipzen_hosted"]

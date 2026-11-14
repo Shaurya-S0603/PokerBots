@@ -1,0 +1,44 @@
+name: Chipzen Value upload
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'Dockerfile.chipzen*'
+      - 'chipzen_*.py'
+      - 'pokerbots_sdk/**'
+      - 'training/competition-policy.json'
+      - 'requirements-chipzen.txt'
+      - 'equity.py'
+      - 'fast_rank.py'
+      - 'baseline_v4.py'
+      - 'poker_engine.py'
+      - 'pokerroom.py'
+      - 'tests/chipzen_conformance.py'
+      - '.github/workflows/chipzen-image.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Linux image
+        run: docker build --platform linux/amd64 -f Dockerfile.chipzen -t pokerbots-value:chipzen .
+      - name: Check sandbox user and mock matches inside the image
+        run: |
+          test "$(docker run --rm --network none --entrypoint id pokerbots-value:chipzen -u)" = 10001
+          docker run --rm --network none --read-only --entrypoint python \
+            -v "$PWD/tests/chipzen_conformance.py:/bot/tests/chipzen_conformance.py:ro" \
+            pokerbots-value:chipzen /bot/tests/chipzen_conformance.py Value
+      - name: Export the upload archive
+        run: |
+          test "$(docker image inspect --format '{{.Size}}' pokerbots-value:chipzen)" -le 200000000
+          docker save pokerbots-value:chipzen | gzip > pokerbots-value-chipzen.tar.gz
+          gzip -t pokerbots-value-chipzen.tar.gz
+          test "$(wc -c < pokerbots-value-chipzen.tar.gz)" -le 250000000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pokerbots-value-chipzen
+          path: pokerbots-value-chipzen.tar.gz
+          if-no-files-found: error
+          compression-level: 0
