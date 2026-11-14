@@ -64,7 +64,7 @@ def observation(state, default_big_blind):
     stacks=((state.your_seat, state.your_stack), (1 - state.your_seat, opponent_stack)),
     current_bet=own_bet, table_bet=max(table_bet, big_blind) if not state.board else table_bet,
     big_blind=big_blind, pot=state.pot, late_position=state.your_seat == state.dealer_seat,
-    opponents=1, legal={**{name: name in valid for name in ("fold", "call", "check", "raise")},
+    opponents=1, legal={**{name: name in valid for name in ("fold", "call", "check", "raise", "all_in")},
       "call_amount": min(state.to_call, state.your_stack), "min_raise_total": state.min_raise,
       "max_raise_total": state.max_raise},
     effective_raise_total=min(state.max_raise, table_bet + opponent_stack),
@@ -102,7 +102,7 @@ class CompetitionBot(Bot):
     validate_decision(view, action, target)
     if action == "raise":
       return Action.raise_to(target)
-    return {"check": Action.check, "call": Action.call, "fold": Action.fold}[action]()
+    return {"check": Action.check, "call": Action.call, "fold": Action.fold, "all_in": Action.all_in}[action]()
 
 
 def main():

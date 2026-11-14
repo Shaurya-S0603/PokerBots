@@ -1,0 +1,430 @@
+{
+  "name": "One Above All",
+  "config": {
+    "screen_pairs_per_depth": 20,
+    "heads_up_holdout_pairs_per_depth": 320,
+    "heads_up_depths": [
+      15,
+      100
+    ],
+    "screen_seed_start": 126000,
+    "multiway_screen_seed_start": 180000,
+    "heads_up_holdout_seed_start": 200000,
+    "multiway_holdout_seed_start": 220000,
+    "multiway_starting_bb": 100,
+    "multiway_screen_rounds": 32,
+    "entrants": 24
+  },
+  "heads_up": {
+    "selected": "Line Range",
+    "finalist": "Line Range",
+    "incumbent": "Value",
+    "leaderboard": [
+      {
+        "name": "Line Range",
+        "bb_per_100": 110.20652173913044,
+        "by_depth": {
+          "15": 38.68478260869565,
+          "100": 181.72826086956522
+        }
+      },
+      {
+        "name": "Button Open Only",
+        "bb_per_100": 100.86956521739131,
+        "by_depth": {
+          "15": 28.119565217391305,
+          "100": 173.6195652173913
+        }
+      },
+      {
+        "name": "Range + Sizing",
+        "bb_per_100": 100.72282608695652,
+        "by_depth": {
+          "15": 28.75,
+          "100": 172.69565217391303
+        }
+      },
+      {
+        "name": "Heads-up Preflop",
+        "bb_per_100": 99.42934782608695,
+        "by_depth": {
+          "15": 39.52173913043478,
+          "100": 159.33695652173913
+        }
+      },
+      {
+        "name": "Big Blind Defense Only",
+        "bb_per_100": 84.73913043478261,
+        "by_depth": {
+          "15": 40.380434782608695,
+          "100": 129.09782608695653
+        }
+      },
+      {
+        "name": "Shallow Big Blind Defense",
+        "bb_per_100": 76.8913043478261,
+        "by_depth": {
+          "15": 36.119565217391305,
+          "100": 117.66304347826087
+        }
+      },
+      {
+        "name": "Selective Equity",
+        "bb_per_100": 65.69021739130434,
+        "by_depth": {
+          "15": 9.695652173913043,
+          "100": 121.68478260869566
+        }
+      },
+      {
+        "name": "Weighted River",
+        "bb_per_100": 63.25,
+        "by_depth": {
+          "15": 13.565217391304348,
+          "100": 112.93478260869566
+        }
+      },
+      {
+        "name": "Button Pressure",
+        "bb_per_100": 49.66847826086956,
+        "by_depth": {
+          "15": -1.9021739130434783,
+          "100": 101.23913043478261
+        }
+      },
+      {
+        "name": "Equity",
+        "bb_per_100": 16.293478260869566,
+        "by_depth": {
+          "15": 1.423913043478261,
+          "100": 31.16304347826087
+        }
+      },
+      {
+        "name": "Controlled Equity",
+        "bb_per_100": 11.592391304347828,
+        "by_depth": {
+          "15": -10.26086956521739,
+          "100": 33.44565217391305
+        }
+      },
+      {
+        "name": "River Defense Equity (generation 2)",
+        "bb_per_100": 10.668478260869566,
+        "by_depth": {
+          "15": 11.467391304347826,
+          "100": 9.869565217391305
+        }
+      },
+      {
+        "name": "Pot Guard",
+        "bb_per_100": 4.831521739130435,
+        "by_depth": {
+          "15": 7.076086956521739,
+          "100": 2.5869565217391304
+        }
+      },
+      {
+        "name": "Loose-Aggressive",
+        "bb_per_100": -3.4510869565217392,
+        "by_depth": {
+          "15": -21.17391304347826,
+          "100": 14.271739130434783
+        }
+      },
+      {
+        "name": "Value",
+        "bb_per_100": -5.423913043478262,
+        "by_depth": {
+          "15": 9.0,
+          "100": -19.847826086956523
+        }
+      },
+      {
+        "name": "River Defense Equity",
+        "bb_per_100": -6.858695652173914,
+        "by_depth": {
+          "15": 3.641304347826087,
+          "100": -17.358695652173914
+        }
+      },
+      {
+        "name": "Position Pressure Equity",
+        "bb_per_100": -9.543478260869565,
+        "by_depth": {
+          "15": 1.5543478260869565,
+          "100": -20.641304347826086
+        }
+      },
+      {
+        "name": "Pressure Equity",
+        "bb_per_100": -23.11413043478261,
+        "by_depth": {
+          "15": 18.57608695652174,
+          "100": -64.80434782608695
+        }
+      },
+      {
+        "name": "Positional Equity (incumbent)",
+        "bb_per_100": -26.152173913043477,
+        "by_depth": {
+          "15": 11.228260869565217,
+          "100": -63.53260869565217
+        }
+      },
+      {
+        "name": "Deep Value Equity",
+        "bb_per_100": -29.64673913043478,
+        "by_depth": {
+          "15": 3.0652173913043477,
+          "100": -62.358695652173914
+        }
+      },
+      {
+        "name": "Short-Stack Equity",
+        "bb_per_100": -50.38586956521739,
+        "by_depth": {
+          "15": -0.22826086956521738,
+          "100": -100.54347826086956
+        }
+      },
+      {
+        "name": "Tight",
+        "bb_per_100": -57.90217391304348,
+        "by_depth": {
+          "15": -20.717391304347824,
+          "100": -95.08695652173913
+        }
+      },
+      {
+        "name": "Calling Station",
+        "bb_per_100": -191.89673913043478,
+        "by_depth": {
+          "15": -155.27173913043478,
+          "100": -228.52173913043478
+        }
+      },
+      {
+        "name": "Random",
+        "bb_per_100": -390.47826086956525,
+        "by_depth": {
+          "15": -92.31521739130434,
+          "100": -688.6413043478261
+        }
+      }
+    ],
+    "holdout": {
+      "Value": {
+        "15": {
+          "bb_per_100": 44.109375,
+          "interval_95": [
+            24.780859375,
+            65.06484375
+          ]
+        },
+        "100": {
+          "bb_per_100": 186.953125,
+          "interval_95": [
+            115.21640625,
+            268.212890625
+          ]
+        }
+      },
+      "Button Open Only": {
+        "15": {
+          "bb_per_100": 18.515625,
+          "interval_95": [
+            4.03125,
+            34.234765625
+          ]
+        },
+        "100": {
+          "bb_per_100": -29.28125,
+          "interval_95": [
+            -97.99375,
+            36.548046875
+          ]
+        }
+      },
+      "Range + Sizing": {
+        "15": {
+          "bb_per_100": 12.40625,
+          "interval_95": [
+            3.452734375,
+            23.578515625
+          ]
+        },
+        "100": {
+          "bb_per_100": 32.125,
+          "interval_95": [
+            7.453125,
+            65.771484375
+          ]
+        }
+      },
+      "Heads-up Preflop": {
+        "15": {
+          "bb_per_100": 3.4375,
+          "interval_95": [
+            -15.45390625,
+            21.518359375
+          ]
+        },
+        "100": {
+          "bb_per_100": 51.96875,
+          "interval_95": [
+            1.1609375,
+            112.501171875
+          ]
+        }
+      }
+    },
+    "incumbent_edge": {
+      "bb_per_100": 115.53125,
+      "interval_95": [
+        75.75703125,
+        157.16796875
+      ]
+    }
+  },
+  "multiway": {
+    "selected": "Line Range",
+    "finalist": "Line Range",
+    "incumbent": "Position Pressure Equity",
+    "leaderboard": [
+      {
+        "name": "Line Range",
+        "bb_per_100": 307.77777777777777,
+        "hands": 153
+      },
+      {
+        "name": "Pressure Equity",
+        "bb_per_100": 272.5806451612903,
+        "hands": 155
+      },
+      {
+        "name": "Position Pressure Equity",
+        "bb_per_100": 242.32258064516128,
+        "hands": 155
+      },
+      {
+        "name": "Heads-up Preflop",
+        "bb_per_100": 242.26666666666668,
+        "hands": 150
+      },
+      {
+        "name": "Shallow Big Blind Defense",
+        "bb_per_100": 167.01986754966887,
+        "hands": 151
+      },
+      {
+        "name": "Deep Value Equity",
+        "bb_per_100": 132.1153846153846,
+        "hands": 156
+      },
+      {
+        "name": "Tight",
+        "bb_per_100": 109.30379746835443,
+        "hands": 158
+      },
+      {
+        "name": "Button Open Only",
+        "bb_per_100": 101.63398692810458,
+        "hands": 153
+      },
+      {
+        "name": "Pot Guard",
+        "bb_per_100": 99.0909090909091,
+        "hands": 154
+      },
+      {
+        "name": "Value",
+        "bb_per_100": 94.87341772151899,
+        "hands": 158
+      },
+      {
+        "name": "Big Blind Defense Only",
+        "bb_per_100": 87.27848101265823,
+        "hands": 158
+      },
+      {
+        "name": "Button Pressure",
+        "bb_per_100": 80.64935064935065,
+        "hands": 154
+      },
+      {
+        "name": "River Defense Equity",
+        "bb_per_100": 72.38709677419355,
+        "hands": 155
+      },
+      {
+        "name": "Selective Equity",
+        "bb_per_100": 21.70886075949367,
+        "hands": 158
+      },
+      {
+        "name": "River Defense Equity (generation 2)",
+        "bb_per_100": -32.532467532467535,
+        "hands": 154
+      },
+      {
+        "name": "Loose-Aggressive",
+        "bb_per_100": -65.23178807947019,
+        "hands": 151
+      },
+      {
+        "name": "Controlled Equity",
+        "bb_per_100": -66.79738562091504,
+        "hands": 153
+      },
+      {
+        "name": "Short-Stack Equity",
+        "bb_per_100": -71.17647058823529,
+        "hands": 153
+      },
+      {
+        "name": "Positional Equity (incumbent)",
+        "bb_per_100": -73.65384615384616,
+        "hands": 156
+      },
+      {
+        "name": "Range + Sizing",
+        "bb_per_100": -81.6025641025641,
+        "hands": 156
+      },
+      {
+        "name": "Equity",
+        "bb_per_100": -93.58974358974359,
+        "hands": 156
+      },
+      {
+        "name": "Weighted River",
+        "bb_per_100": -132.01298701298703,
+        "hands": 154
+      },
+      {
+        "name": "Calling Station",
+        "bb_per_100": -500.8333333333333,
+        "hands": 156
+      },
+      {
+        "name": "Random",
+        "bb_per_100": -901.6129032258065,
+        "hands": 155
+      }
+    ],
+    "holdout_seed_blocks": 160,
+    "holdout_opponents": [
+      "Pressure Equity",
+      "Heads-up Preflop",
+      "Shallow Big Blind Defense"
+    ],
+    "incumbent_edge": {
+      "bb_per_100": 116.95,
+      "interval_95": [
+        22.610625000000002,
+        210.61906249999998
+      ]
+    }
+  }
+}
