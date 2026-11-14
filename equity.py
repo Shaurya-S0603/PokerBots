@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from itertools import combinations
 
-from poker_engine import compare, highest_hand
+from fast_rank import rank_hand
 from pokerroom import ranks, suits
 
 DECK = tuple((rank, suit) for rank in ranks for suit in suits)
@@ -34,13 +34,13 @@ def _known_cards(hole, board, board_sizes):
 
 def exact_river_equity(hole, board):
   hole, board, unseen = _known_cards(hole, board, (5,))
-  hero = highest_hand(hole + board)
+  hero = rank_hand(hole + board)
   wins = ties = losses = 0
   for opponent in combinations(unseen, 2):
-    winners = compare({0: hero, 1: highest_hand(opponent + board)})
-    if len(winners) == 2:
+    other = rank_hand(opponent + board)
+    if hero == other:
       ties += 1
-    elif winners[0] == 0:
+    elif hero > other:
       wins += 1
     else:
       losses += 1
@@ -54,17 +54,18 @@ def sample_equity(hole, board, opponents, trials, rng, *, checkpoints=None):
   if type(trials) is not int or trials < 1:
     raise ValueError("Expected a positive trial count")
   missing = 5 - len(board)
-  hero_on_river = highest_hand(hole + board) if missing == 0 else None
+  hero_on_river = rank_hand(hole + board) if missing == 0 else None
   wins = ties = losses = 0
   shares = 0.0
   for completed in range(1, trials + 1):
     dealt = rng.sample(unseen, missing + 2 * opponents)
     runout = board + tuple(dealt[:missing])
-    hands = {0: hero_on_river if hero_on_river is not None else highest_hand(hole + runout)}
+    hands = {0: hero_on_river if hero_on_river is not None else rank_hand(hole + runout)}
     for seat in range(1, opponents + 1):
       start = missing + 2 * (seat - 1)
-      hands[seat] = highest_hand(tuple(dealt[start:start + 2]) + runout)
-    winners = compare(hands)
+      hands[seat] = rank_hand(tuple(dealt[start:start + 2]) + runout)
+    best = max(hands.values())
+    winners = [seat for seat, score in hands.items() if score == best]
     if 0 not in winners:
       losses += 1
     elif len(winners) == 1:
