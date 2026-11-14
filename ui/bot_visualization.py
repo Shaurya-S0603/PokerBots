@@ -34,7 +34,10 @@ def render_bot_visualization(records, completed_hands, stats, names):
       if turn.get("decision_basis"):
         st.caption(f"Decision rule · {turn['decision_basis']}")
       if "pot_odds" in turn:
-        st.caption(f"Pot odds {turn['pot_odds']:.1%} · Call threshold {turn['call_threshold']:.1%}")
+        label = f"Pot odds {turn['pot_odds']:.1%}"
+        if "call_threshold" in turn:
+          label += f" · Call threshold {turn['call_threshold']:.1%}"
+        st.caption(label)
       if "weighted_equity" in turn:
         st.metric("Weighted river equity", f"{turn['weighted_equity']:.1%}")
       if turn["method"] == "Tight fallback":
