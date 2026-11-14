@@ -1,4 +1,4 @@
-"""Entrypoint for the hosted Chipzen Value bot."""
+"""Entrypoint for the selected hosted Chipzen strategy."""
 
 import asyncio
 import logging
@@ -7,6 +7,7 @@ import os
 from chipzen import run_bot
 
 from chipzen_entry import CompetitionBot
+from pokerbots_sdk import load_strategy
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
   if not url:
     raise SystemExit("Chipzen must provide CHIPZEN_WS_URL")
   logging.basicConfig(level=logging.INFO)
-  asyncio.run(run_bot(url, CompetitionBot(), token=os.environ.get("CHIPZEN_TOKEN"),
+  strategy = load_strategy(os.environ.get("POKERBOTS_STRATEGY", "Value"))
+  asyncio.run(run_bot(url, CompetitionBot(strategy=strategy), token=os.environ.get("CHIPZEN_TOKEN"),
     ticket=os.environ.get("CHIPZEN_TICKET")))
 
 

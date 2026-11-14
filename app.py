@@ -6,10 +6,11 @@ from time import monotonic
 import streamlit as st
 import streamlit.components.v1 as components
 
-from arena import BotArena, STRATEGIES, apply_decision, equity_bot, observe
+from arena import BotArena, STRATEGIES
 from poker_engine import start_game
 from ui.benchmark_dashboard import render_benchmarks
-from ui.bot_visualization import CHAMPION, PROFILE, render_bot_visualization
+from pokerbots_sdk.champion_policy import TITLE
+from ui.bot_visualization import render_bot_visualization
 from ui.render import card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -73,7 +74,7 @@ def _player(player_id):
 
 
 def _start_game(count, chips, small, big, mode, names, arena=None):
-  human_bots = BotArena(randbits(64), ["Equity"] * count) if mode == "Human vs Bots" else None
+  human_bots = BotArena(randbits(64), [TITLE] * count) if mode == "Human vs Bots" else None
   bot_match = arena or human_bots
   game = start_game(count, chips, small, big, deck_rng=bot_match.deck_rng if bot_match else None)
   st.session_state.human_bots = human_bots
@@ -156,15 +157,9 @@ def _play_bot_turn(before):
   arena = st.session_state.arena
   diagnostics = {}
   try:
-    if arena:
-      model = arena.styles[current - 1]
-      action, ok = arena.act(game, player, diagnostics=diagnostics)
-    else:
-      model = CHAMPION
-      view = observe(game, player)
-      rng = st.session_state.human_bots.bot_rngs[current - 1]
-      action, target = equity_bot(view, rng, profile=PROFILE, diagnostics=diagnostics)
-      action, ok = apply_decision(game, player, view, action, target)
+    bot_match = arena or st.session_state.human_bots
+    model = bot_match.styles[current - 1]
+    action, ok = bot_match.act(game, player, diagnostics=diagnostics)
   except ValueError as error:
     st.session_state.bot_error = str(error)
     return False
@@ -529,7 +524,7 @@ def _render_menu():
   count = st.slider("Number of players", 2, 10, 5)
   mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots", "Bot Arena"])
   if mode == "Human vs Bots":
-    st.caption(f"Opponent model · {CHAMPION}")
+    st.caption(f"Opponent model · {TITLE}")
   with st.form("new_game", clear_on_submit=False):
     c1, c2, c3 = st.columns(3)
     with c1:

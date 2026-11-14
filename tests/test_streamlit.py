@@ -17,7 +17,7 @@ def test_setup_controls_follow_player_count_and_mode_before_dealing():
   assert all(item.label != "Bot difficulty" for item in app.selectbox)
   button(app, "Deal the first hand").click().run()
   assert not app.exception
-  assert app.session_state.human_bots.styles == ("Equity", "Equity")
+  assert app.session_state.human_bots.styles == ("One Above All", "One Above All")
   assert len(app.session_state.game.players) == 2
 
 

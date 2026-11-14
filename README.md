@@ -19,11 +19,17 @@ The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity.
 
 **Equity** in Bot Arena uses position-based opening ranges when facing only the big blind. It uses equity for responses to raises and postflop decisions. The Arena opening rule is separate from the frozen benchmark and Human vs Bots training policies. **Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
 
-## Training winner and bot visualization
+## One Above All
 
-Human vs Bots uses the winner saved in `training/champion.json`. To reproduce generation 3, run `python train_generation.py new-human-history.json` with the completed Human vs Bots export. The human defaults to seat 1. The trainer starts from the archived generation 2 champion, combines public human action counts from both games, and uses the newest game’s starting stack. To reproduce generation 2, use `--generation 2 arena-history.json human-history.json`. It rotates candidates through starting seats, runs paired screening matches, and promotes the winner of the final elimination match. Separate seed pairs check the winner against the previous champion and the practice opponent. The saved report contains aggregates and parameters rather than raw hand histories. Deploy the updated champion record to use the new winner.
+**Human vs Bots** uses One Above All. It selects a policy for two-player hands and another for
+multiway hands from the saved Arena results. **Bot visualization → One Above All** shows the
+standings and the fresh-deal comparison with each incumbent. **Simulation** shows completed bot
+decisions, and **Training match** keeps the earlier generation results.
 
-Open **Bot visualization** from the menu or game sidebar. **Simulation** shows actual bot decision estimates for completed hands, including outcome counts and cumulative Monte Carlo win rate and pot share. Heads-up river decisions are enumerated exactly. **Training match** shows the latest tournament and its winner.
+Run `python champion_arena.py` to repeat the tournament. The heads-up round robin swaps seats at
+15 and 100 BB. The multiway screen rotates each entrant through every seat at its assigned tables.
+Each screen leader faces the incumbent on fresh deals. The incumbent keeps its place when the
+95% bootstrap interval for the leader's advantage includes zero.
 
 ## Offline benchmarks
 
@@ -116,7 +122,7 @@ legal moves. The supplied RNG keeps seeded matches repeatable. Return
 `(action, None)` for check, call, or fold, or `("raise", total)` for the
 total street bet. The adapters validate the decision before sending it
 to the engine or Chipzen. Use only moves listed in `state.legal`; the
-Chipzen adapter exposes check, call, fold, and raise.
+Chipzen adapter exposes the actions offered by the match.
 
 **Value** and **Button Pressure** are selectable in Bot Arena. To add a
 custom callable to a scripted Arena, pass a mapping to
@@ -132,25 +138,21 @@ python chipzen_entry.py --strategy my_bot:decide
 
 The remote command needs the same Chipzen credentials as the notebook.
 
-### Upload Value to Chipzen
+### Upload One Above All to Chipzen
 
-Open the **Chipzen Value upload** workflow in GitHub Actions. Run it on
-`main`, download the `pokerbots-value-chipzen` artifact, and unzip the
-GitHub download. Upload the inner `pokerbots-value-chipzen.tar.gz` at
-[Chipzen's upload page](https://chipzen.ai/get-started-upload). The hosted
-entrypoint uses the bundled Value policy and the match credentials provided
-by Chipzen. Colab and remote API keys are unnecessary for the hosted bot.
-
-To build the same archive with Docker:
+Open the **Chipzen upload** workflow in GitHub Actions. Download the
+`pokerbots-one-above-all-chipzen` artifact and unzip it. Upload the inner
+`pokerbots-one-above-all-chipzen.tar.gz` at [Chipzen's upload page](https://chipzen.ai/get-started-upload).
+The hosted entrypoint uses the heads-up policy selected by the Arena.
 
 ```bash
-docker build --platform linux/amd64 -f Dockerfile.chipzen -t pokerbots-value:chipzen .
-docker save pokerbots-value:chipzen | gzip > pokerbots-value-chipzen.tar.gz
+docker build --platform linux/amd64 -f Dockerfile.chipzen --build-arg 'POKERBOTS_STRATEGY=One Above All' -t pokerbots-one-above-all:chipzen .
+docker save pokerbots-one-above-all:chipzen | gzip > pokerbots-one-above-all-chipzen.tar.gz
 ```
 
 **Pot Guard** is an experimental heads-up strategy. It uses Value's settings
 until the postflop call costs at least one-third of the displayed pot, then
-requires a larger equity margin. The Chipzen upload still defaults to Value.
+requires a larger equity margin.
 To reproduce the local held-out comparison:
 
 ```bash

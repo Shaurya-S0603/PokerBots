@@ -10,4 +10,4 @@
 !pokerbots_sdk/
 !pokerbots_sdk/*.py
 !training/
-!training/competition-policy.json
+!training/*.json

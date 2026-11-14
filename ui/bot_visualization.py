@@ -3,11 +3,10 @@ import json
 
 import streamlit as st
 
-from arena import EquityProfile
+from pokerbots_sdk.champion_policy import TITLE, selection
 
 TRAINING = json.loads((Path(__file__).resolve().parents[1] / "training" / "champion.json").read_text())
 CHAMPION = TRAINING["champion"]
-PROFILE = EquityProfile(**TRAINING["profile"])
 BENCHMARKS = Path(__file__).resolve().parents[1] / "benchmarks"
 REPORTS = {"Betting-line challengers · 100 BB": "betting-line-experiment.json",
   "Betting-line challengers · 15 BB": "betting-line-shallow.json",
@@ -16,7 +15,7 @@ REPORTS = {"Betting-line challengers · 100 BB": "betting-line-experiment.json",
 
 def render_bot_visualization(records, completed_hands, stats, names):
   st.title("Bot visualization")
-  simulation, training, replays = st.tabs(["Simulation", "Training match", "Replay comparison"])
+  simulation, arena_title, training, replays = st.tabs(["Simulation", TITLE, "Training match", "Replay comparison"])
   with simulation:
     eligible = {hand: turns for hand, turns in records.items() if hand in completed_hands}
     st.caption("Decision estimates become available after each hand settles.")
@@ -45,6 +44,8 @@ def render_bot_visualization(records, completed_hands, stats, names):
         st.metric("Weighted equity", f"{turn['weighted_equity']:.1%}")
       if turn["method"] == "Tight fallback":
         st.caption("The bot used Tight for this partial call or multiway all-in.")
+      elif turn["method"] == "Rule-based":
+        st.caption("This policy uses hand and betting rules.")
       elif turn["method"] == "Preflop range":
         st.caption(f"Strength score {turn['preflop_strength']:.2f} · "
           f"Threshold {turn['preflop_strength_threshold']:.2f} · "
@@ -68,6 +69,8 @@ def render_bot_visualization(records, completed_hands, stats, names):
       if actual and actual["hands"]:
         st.caption(f"Actual session hands won or split: {actual['wins']}/{actual['hands']} "
           f"({actual['wins'] / actual['hands']:.1%}).")
+  with arena_title:
+    render_champion_arena()
   with training:
     match = TRAINING["training"]
     st.subheader(CHAMPION)
@@ -85,10 +88,29 @@ def render_bot_visualization(records, completed_hands, stats, names):
           ("Human-style practice bot", TRAINING["evaluation"]["against_human_style_proxy"]))], hide_index=True)
       games = len(TRAINING.get("human_sources", [TRAINING["human_source"]]))
       st.caption(f"The practice bot uses public action frequencies from {games} uploaded games. Its results do not predict how you would play.")
-    st.caption("Human vs Bots uses this tournament winner. One match does not establish which policy is strongest over many deals.")
+    st.caption("Archived training match.")
 
   with replays:
     render_river_experiment()
+
+
+
+def render_champion_arena():
+  report = selection()
+  config = report["config"]
+  st.caption(f"{config['entrants']} entrants · Heads-up at 15 and 100 BB · Multiway at 100 BB")
+  for mode, label in (("heads_up", "Heads-up"), ("multiway", "Multiway")):
+    section = report[mode]
+    st.subheader(f"{label} · {section['selected']}")
+    if edge := section["incumbent_edge"]:
+      low, high = edge["interval_95"]
+      st.caption(f"Holdout · {section['finalist']} vs {section['incumbent']} · "
+        f"{edge['bb_per_100']:+.2f} bb/100 [{low:+.2f}, {high:+.2f}]")
+    st.dataframe([{"Rank": position, "Entrant": row["name"],
+      "bb/100": round(row["bb_per_100"], 2),
+      **({"15 BB": round(row["by_depth"]["15"], 2), "100 BB": round(row["by_depth"]["100"], 2)}
+        if mode == "heads_up" else {"Hands": row["hands"]})}
+      for position, row in enumerate(section["leaderboard"], 1)], hide_index=True)
 
 
 def render_river_experiment():
