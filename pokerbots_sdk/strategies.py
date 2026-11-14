@@ -99,18 +99,23 @@ def range_and_sizing(state, rng, *, diagnostics=None):
   return line_range(state, rng, diagnostics=diagnostics, price_bets=True)
 
 
-def heads_up_preflop(state, rng, *, diagnostics=None, scope="all"):
+def heads_up_preflop(state, rng, *, diagnostics=None, scope="all", max_depth=None):
   if state.opponents != 1 or state.board:
     return range_and_sizing(state, rng, diagnostics=diagnostics)
 
   call = state.legal["call_amount"]
-  depth = state.effective_raise_total / state.big_blind
+  effective_total = state.effective_raise_total
+  if max_depth is not None and state.has_all_in_opponent:
+    effective_total = min(state.current_bet + state.stack, state.table_bet)
+  depth = effective_total / state.big_blind
   strength = preflop_strength(state.hole)
   prior = [step for step in state.betting_line if step.street == "preflop"]
   raises = [step for step in prior if step.action == "raise"]
   button_open = state.late_position and not prior and call and state.table_bet <= state.big_blind
   blind_defense = not state.late_position and call and len(raises) == 1 and raises[0].opponent
-  if (scope == "button" and not button_open) or (scope == "blind" and not blind_defense):
+  if ((scope == "button" and not button_open)
+      or (scope == "blind" and not blind_defense)
+      or (max_depth is not None and depth > max_depth)):
     return range_and_sizing(state, rng, diagnostics=diagnostics)
 
   if button_open:
@@ -160,7 +165,12 @@ def big_blind_defense_only(state, rng, *, diagnostics=None):
   return heads_up_preflop(state, rng, diagnostics=diagnostics, scope="blind")
 
 
+def shallow_big_blind_defense(state, rng, *, diagnostics=None):
+  return heads_up_preflop(state, rng, diagnostics=diagnostics, scope="blind", max_depth=15)
+
+
 TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure, "Pot Guard": pot_guard,
   "Weighted River": weighted_river, "Line Range": line_range, "Range + Sizing": range_and_sizing,
   "Heads-up Preflop": heads_up_preflop, "Button Open Only": button_open_only,
-  "Big Blind Defense Only": big_blind_defense_only}
+  "Big Blind Defense Only": big_blind_defense_only,
+  "Shallow Big Blind Defense": shallow_big_blind_defense}

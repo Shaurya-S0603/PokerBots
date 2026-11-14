@@ -93,10 +93,14 @@ def render_bot_visualization(records, completed_hands, stats, names):
 
 def render_river_experiment():
   available = {name: filename for name, filename in REPORTS.items() if (BENCHMARKS / filename).exists()}
-  preflop_path = BENCHMARKS / "preflop-experiment.json"
-  preflop_reports = json.loads(preflop_path.read_text()) if preflop_path.exists() else []
-  preflop = {f"Preflop ablation · {run['config']['stack'] // run['config']['big_blind']} BB": run
-    for run in preflop_reports}
+  preflop = {}
+  for label, filename in (("Shallow defense", "shallow-defense-experiment.json"),
+      ("Preflop ablation", "preflop-experiment.json")):
+    path = BENCHMARKS / filename
+    if path.exists():
+      for run in json.loads(path.read_text()):
+        depth = run["config"]["stack"] // run["config"]["big_blind"]
+        preflop[f"{label} · {depth} BB"] = run
   if not (available or preflop):
     st.info("Run an offline experiment to load the replay comparisons.")
     return
