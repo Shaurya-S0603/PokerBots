@@ -83,3 +83,23 @@ def test_preflop_ablations_only_change_their_target_decisions():
   reraised = observe(game, button)
   for strategy in (button_open_only, big_blind_defense_only):
     assert strategy(reraised, Random(0)) == range_and_sizing(reraised, Random(0))
+
+
+@pytest.mark.parametrize("stack,open_to", [(150, 25), (151, 25), (250, 250)])
+def test_shallow_defense_gates_at_fifteen_effective_blinds(stack, open_to):
+  from pokerbots_sdk.strategies import big_blind_defense_only, range_and_sizing, shallow_big_blind_defense
+
+  game = start_game(2, starting_chips=stack)
+  button, blind = game.players
+  assert game.raise_bet(button, open_to - button.current_bet)
+  blind.hole_cards = list(cards("Ks Td"))
+  view = observe(game, blind)
+  rng = Random(0)
+  diagnostics = {}
+  result = shallow_big_blind_defense(view, rng, diagnostics=diagnostics)
+  if stack == 150:
+    assert diagnostics["decision_basis"] == "Big blind defense"
+    assert result == big_blind_defense_only(view, Random(0))
+  else:
+    assert diagnostics["method"] != "Preflop range"
+    assert result == range_and_sizing(view, Random(0))
