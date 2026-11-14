@@ -131,3 +131,19 @@ python chipzen_entry.py --strategy my_bot:decide
 ```
 
 The remote command needs the same Chipzen credentials as the notebook.
+
+### Upload Value to Chipzen
+
+Open the **Chipzen Value upload** workflow in GitHub Actions. Run it on
+`main`, download the `pokerbots-value-chipzen` artifact, and unzip the
+GitHub download. Upload the inner `pokerbots-value-chipzen.tar.gz` at
+[Chipzen's upload page](https://chipzen.ai/get-started-upload). The hosted
+entrypoint uses the bundled Value policy and the match credentials provided
+by Chipzen. Colab and remote API keys are unnecessary for the hosted bot.
+
+To build the same archive with Docker:
+
+```bash
+docker build --platform linux/amd64 -f Dockerfile.chipzen -t pokerbots-value:chipzen .
+docker save pokerbots-value:chipzen | gzip > pokerbots-value-chipzen.tar.gz
+```

@@ -8,9 +8,10 @@ from chipzen_entry import CompetitionBot
 from pokerbots_sdk import TOOLKIT_STRATEGIES
 
 
-def main():
+def main(names=()):
   ok = True
-  for name, strategy in TOOLKIT_STRATEGIES.items():
+  for name in names or TOOLKIT_STRATEGIES:
+    strategy = TOOLKIT_STRATEGIES[name]
     results = run_conformance_checks(CompetitionBot(strategy=strategy, seed=42), timeout_s=3)
     for result in results:
       print(f"{name}: {result.severity}: {result.name}: {result.message}")
@@ -19,4 +20,4 @@ def main():
 
 
 if __name__ == "__main__":
-  raise SystemExit(main())
+  raise SystemExit(main(sys.argv[1:]))
