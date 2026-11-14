@@ -2,6 +2,7 @@ from random import Random
 
 from baseline_v4 import BASELINES, calling_station, loose_aggressive, random_bot, tight
 from pokerbots_sdk import Observation, TOOLKIT_STRATEGIES, validate_decision
+from pokerbots_sdk.champion_policy import TITLE, one_above_all
 from pokerbots_sdk.model import LineAction, OpponentBet
 from pokerbots_sdk.equity_policy import (
   EQUITY_TRIALS_LARGE_TABLE, EQUITY_TRIALS_SMALL_TABLE, EquityProfile, equity_bot,
@@ -50,6 +51,8 @@ class BotArena:
     style = self.styles[seat]
     if style in self.custom_strategies:
       action, target = self.custom_strategies[style](view, self.bot_rngs[seat])
+    elif style == TITLE:
+      action, target = one_above_all(view, self.bot_rngs[seat], diagnostics=diagnostics)
     elif style == "Equity":
       action, target = equity_bot(view, self.bot_rngs[seat], diagnostics=diagnostics, arena_opening=True)
     elif style in TOOLKIT_STRATEGIES:
@@ -67,4 +70,4 @@ def apply_decision(game, player, view, action, target):
 
 
 
-STRATEGIES = {**BASELINES, "Equity": equity_bot, **TOOLKIT_STRATEGIES}
+STRATEGIES = {**BASELINES, "Equity": equity_bot, **TOOLKIT_STRATEGIES, TITLE: one_above_all}

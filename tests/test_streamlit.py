@@ -163,3 +163,21 @@ def test_visualization_hides_in_progress_estimates_then_shows_completed_decision
   button(app, "Bot visualization").click().run()
   assert not app.exception
   assert {metric.label for metric in app.metric} == {"Win rate", "Equity (pot share)", "Outcomes checked"}
+
+
+def test_human_bot_turn_resolves_champion_with_stale_strategy_registries(monkeypatch):
+  import arena
+
+  app = AppTest.from_file(str(APP_PATH)).run()
+  app.slider[0].set_value(3).run()
+  app.selectbox[0].select("Human vs Bots").run()
+  button(app, "Deal the first hand").click().run()
+  monkeypatch.delitem(arena.TOOLKIT_STRATEGIES, "One Above All")
+  monkeypatch.delitem(arena.STRATEGIES, "One Above All")
+  app.session_state.bot_pacing = "Instant"
+  button(app, "Fold").click().run()
+  assert not app.exception
+  assert app.session_state.bot_error is None
+  assert any(event["player_id"] == 2 for event in app.session_state.history)
+  assert any(turn.get("champion_entrant") == "Line Range"
+    for turns in app.session_state.bot_simulations.values() for turn in turns)
