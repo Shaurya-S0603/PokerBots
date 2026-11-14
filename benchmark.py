@@ -40,6 +40,7 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
   large_calls = []
   times = []
   vpip = pfr = False
+  limped = opened = faced_limp_raise = folded_after_limp = False
   for _ in range(500):
     if game.hand_over:
       outcome = {"equity_seat": equity_seat, "net_chips": game.players[equity_seat - 1].stack - config.stack,
@@ -47,6 +48,10 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
       if track_calls:
         outcome["large_calls"] = large_calls
         outcome["lost_pot"] = not game.payouts.get(equity_seat, 0)
+        outcome["button_limp"] = limped
+        outcome["button_open"] = opened
+        outcome["faced_limp_raise"] = faced_limp_raise
+        outcome["folded_after_limp_raise"] = folded_after_limp
       return outcome, times
     player = game.players[game.current_player]
     view = observe(game, player)
@@ -63,6 +68,13 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
               and (action == "call" or (action == "all_in" and call == view.stack))):
             large_calls.append((game.phase, call))
       if not view.board:
+        if view.late_position and not view.betting_line:
+          limped = action == "call"
+          opened = action == "raise"
+        if limped and view.legal["call"] and any(step.opponent and step.action == "raise"
+            for step in view.betting_line):
+          faced_limp_raise = True
+          folded_after_limp |= action == "fold"
         vpip |= action in {"call", "raise", "all_in"}
         pfr |= action == "raise" or (action == "all_in" and view.current_bet + view.stack > view.table_bet)
     try:
