@@ -2,6 +2,7 @@ from random import Random
 
 from baseline_v4 import BASELINES, calling_station, loose_aggressive, random_bot, tight
 from pokerbots_sdk import Observation, TOOLKIT_STRATEGIES, validate_decision
+from pokerbots_sdk.model import OpponentBet
 from pokerbots_sdk.equity_policy import (
   EQUITY_TRIALS_LARGE_TABLE, EQUITY_TRIALS_SMALL_TABLE, EquityProfile, equity_bot,
 )
@@ -27,6 +28,8 @@ def observe(game, player):
     opponents=len(opponents), legal=game.legal_actions(player),
     effective_raise_total=min(own["current_bet"] + own["stack"], respond_to),
     has_all_in_opponent=any(seat["all_in"] for seat in opponents),
+    opponent_bets=tuple(OpponentBet(street, increment, pot)
+      for seat, street, increment, pot in game.aggressive_actions if seat != player.player_id),
   )
 
 

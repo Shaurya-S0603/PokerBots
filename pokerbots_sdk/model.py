@@ -6,6 +6,13 @@ from typing import Protocol
 
 
 @dataclass(frozen=True)
+class OpponentBet:
+  street: str
+  increment: int
+  pot_before: int
+
+
+@dataclass(frozen=True)
 class Observation:
   hole: tuple
   board: tuple
@@ -20,6 +27,7 @@ class Observation:
   legal: dict
   effective_raise_total: int
   has_all_in_opponent: bool
+  opponent_bets: tuple[OpponentBet, ...] = ()
 
 
 class Strategy(Protocol):
