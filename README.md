@@ -107,3 +107,27 @@ python tests/chipzen_conformance.py
 ```
 
 For scheduled play, run the same adapter on a stable host. A Colab runtime can disconnect, which stops the bot's lobby connection.
+
+### Write a strategy once
+
+A strategy is a callable accepting `(state, rng)`. It receives a public
+`pokerbots_sdk.Observation` with its own hole cards, the board, stacks, and
+legal moves. The supplied RNG keeps seeded matches repeatable. Return
+`(action, None)` for check, call, or fold, or `("raise", total)` for the
+total street bet. The adapters validate the decision before sending it
+to the engine or Chipzen. Use only moves listed in `state.legal`; the
+Chipzen adapter exposes check, call, fold, and raise.
+
+**Value** and **Button Pressure** are selectable in Bot Arena. To add a
+custom callable to a scripted Arena, pass a mapping to
+`BotArena(seed, styles, strategies={"My strategy": decide})` and use its
+name in the seat list. In Colab or at the command line, put your Python
+module in the project root, then reference its callable as
+`my_bot:decide`. Compare it against Value before live play:
+
+```bash
+python strategy_matchup.py --candidate my_bot:decide --control Value
+python chipzen_entry.py --strategy my_bot:decide
+```
+
+The remote command needs the same Chipzen credentials as the notebook.
