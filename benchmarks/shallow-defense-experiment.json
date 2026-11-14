@@ -1,0 +1,6242 @@
+[
+  {
+    "config": {
+      "stack": 150,
+      "small_blind": 5,
+      "big_blind": 10,
+      "seed_start": 112000,
+      "pairs_per_opponent": 800,
+      "bootstrap_samples": 3000,
+      "decision_clock": "process CPU time",
+      "rng": "independent stream per decision",
+      "opponents": [
+        "Aggressive barreling",
+        "Frequent overbetting",
+        "Passive folding",
+        "Bluff-heavy barreling"
+      ],
+      "policies": [
+        "Value",
+        "Range + Sizing",
+        "Big Blind Defense Only",
+        "Shallow Big Blind Defense"
+      ]
+    },
+    "results": [
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -4038,
+        "bb_per_100": -25.2375,
+        "interval_95": [
+          -47.33218750000001,
+          -1.925
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8475,
+        "pfr": 0.174375,
+        "decision_ms_median": 7.195538,
+        "decision_ms_p95": 10.956626,
+        "opponent": "Aggressive barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 10.25,
+          "big_blind_bb_per_100": -60.725
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 267,
+            "calls_on_lost_hands": 174,
+            "chips_paid_on_lost_hands": 6962
+          },
+          "river": {
+            "calls": 149,
+            "calls_on_lost_hands": 109,
+            "chips_paid_on_lost_hands": 5604
+          }
+        },
+        "big_blind_responses": {
+          "call": 533,
+          "raise": 20,
+          "fold": 6
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 2193,
+        "bb_per_100": 13.70625,
+        "interval_95": [
+          -5.026562500000001,
+          32.114218750000006
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8475,
+        "pfr": 0.174375,
+        "decision_ms_median": 13.120794,
+        "decision_ms_p95": 51.4046,
+        "opponent": "Aggressive barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 37.425,
+          "big_blind_bb_per_100": -10.0125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 146,
+            "calls_on_lost_hands": 90,
+            "chips_paid_on_lost_hands": 2858
+          },
+          "river": {
+            "calls": 42,
+            "calls_on_lost_hands": 24,
+            "chips_paid_on_lost_hands": 921
+          }
+        },
+        "big_blind_responses": {
+          "call": 533,
+          "raise": 20,
+          "fold": 6
+        },
+        "delta_vs_value": 38.94375,
+        "delta_interval_95": [
+          22.1975,
+          56.18218750000001
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 1309,
+        "bb_per_100": 8.18125,
+        "interval_95": [
+          -9.082656250000001,
+          25.182500000000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.765,
+        "pfr": 0.2575,
+        "decision_ms_median": 8.4101745,
+        "decision_ms_p95": 27.037261100000002,
+        "opponent": "Aggressive barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 37.425,
+          "big_blind_bb_per_100": -21.0625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 121,
+            "calls_on_lost_hands": 79,
+            "chips_paid_on_lost_hands": 2293
+          },
+          "river": {
+            "calls": 36,
+            "calls_on_lost_hands": 20,
+            "chips_paid_on_lost_hands": 764
+          }
+        },
+        "big_blind_responses": {
+          "call": 268,
+          "raise": 153,
+          "fold": 138
+        },
+        "delta_vs_value": 33.41875,
+        "delta_interval_95": [
+          12.319062500000001,
+          55.581875000000004
+        ],
+        "delta_vs_range_sizing": -5.525,
+        "delta_range_sizing_interval_95": [
+          -18.20046875,
+          7.275312500000001
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -11.05,
+            [
+              -36.4009375,
+              14.550625000000002
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 1309,
+        "bb_per_100": 8.18125,
+        "interval_95": [
+          -9.082656250000001,
+          25.182500000000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.765,
+        "pfr": 0.2575,
+        "decision_ms_median": 8.4101745,
+        "decision_ms_p95": 27.037261100000002,
+        "opponent": "Aggressive barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 37.425,
+          "big_blind_bb_per_100": -21.0625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 121,
+            "calls_on_lost_hands": 79,
+            "chips_paid_on_lost_hands": 2293
+          },
+          "river": {
+            "calls": 36,
+            "calls_on_lost_hands": 20,
+            "chips_paid_on_lost_hands": 764
+          }
+        },
+        "big_blind_responses": {
+          "call": 268,
+          "raise": 153,
+          "fold": 138
+        },
+        "delta_vs_value": 33.41875,
+        "delta_interval_95": [
+          12.319062500000001,
+          55.581875000000004
+        ],
+        "delta_vs_range_sizing": -5.525,
+        "delta_range_sizing_interval_95": [
+          -18.20046875,
+          7.275312500000001
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -11.05,
+            [
+              -36.4009375,
+              14.550625000000002
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -255,
+        "bb_per_100": -1.59375,
+        "interval_95": [
+          -24.1403125,
+          21.65078125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8275,
+        "pfr": 0.174375,
+        "decision_ms_median": 8.107343,
+        "decision_ms_p95": 12.277283800000001,
+        "opponent": "Frequent overbetting",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.2734375,
+          "button_bb_per_100": 28.3625,
+          "big_blind_bb_per_100": -31.55
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 101,
+            "calls_on_lost_hands": 54,
+            "chips_paid_on_lost_hands": 3327
+          },
+          "river": {
+            "calls": 81,
+            "calls_on_lost_hands": 50,
+            "chips_paid_on_lost_hands": 3857
+          }
+        },
+        "big_blind_responses": {
+          "call": 501,
+          "raise": 20,
+          "fold": 38
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 3640,
+        "bb_per_100": 22.75,
+        "interval_95": [
+          3.5682812500000005,
+          42.5315625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8275,
+        "pfr": 0.174375,
+        "decision_ms_median": 17.958548,
+        "decision_ms_p95": 30.796065400000003,
+        "opponent": "Frequent overbetting",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.2734375,
+          "button_bb_per_100": 40.5375,
+          "big_blind_bb_per_100": 4.9625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 51,
+            "calls_on_lost_hands": 23,
+            "chips_paid_on_lost_hands": 1357
+          },
+          "river": {
+            "calls": 30,
+            "calls_on_lost_hands": 8,
+            "chips_paid_on_lost_hands": 565
+          }
+        },
+        "big_blind_responses": {
+          "call": 501,
+          "raise": 20,
+          "fold": 38
+        },
+        "delta_vs_value": 24.34375,
+        "delta_interval_95": [
+          7.692500000000001,
+          40.63781250000001
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 2963,
+        "bb_per_100": 18.51875,
+        "interval_95": [
+          1.66171875,
+          35.928593750000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.754375,
+        "pfr": 0.2575,
+        "decision_ms_median": 16.823135999999998,
+        "decision_ms_p95": 28.130706100000005,
+        "opponent": "Frequent overbetting",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.2734375,
+          "button_bb_per_100": 40.5375,
+          "big_blind_bb_per_100": -3.5
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 44,
+            "calls_on_lost_hands": 22,
+            "chips_paid_on_lost_hands": 1279
+          },
+          "river": {
+            "calls": 23,
+            "calls_on_lost_hands": 8,
+            "chips_paid_on_lost_hands": 565
+          }
+        },
+        "big_blind_responses": {
+          "call": 251,
+          "raise": 153,
+          "fold": 155
+        },
+        "delta_vs_value": 20.1125,
+        "delta_interval_95": [
+          -0.36406250000000007,
+          40.18140625
+        ],
+        "delta_vs_range_sizing": -4.23125,
+        "delta_range_sizing_interval_95": [
+          -17.3009375,
+          8.2825
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -8.4625,
+            [
+              -34.601875,
+              16.565
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 2963,
+        "bb_per_100": 18.51875,
+        "interval_95": [
+          1.66171875,
+          35.928593750000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.754375,
+        "pfr": 0.2575,
+        "decision_ms_median": 16.823135999999998,
+        "decision_ms_p95": 28.130706100000005,
+        "opponent": "Frequent overbetting",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.2734375,
+          "button_bb_per_100": 40.5375,
+          "big_blind_bb_per_100": -3.5
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 44,
+            "calls_on_lost_hands": 22,
+            "chips_paid_on_lost_hands": 1279
+          },
+          "river": {
+            "calls": 23,
+            "calls_on_lost_hands": 8,
+            "chips_paid_on_lost_hands": 565
+          }
+        },
+        "big_blind_responses": {
+          "call": 251,
+          "raise": 153,
+          "fold": 155
+        },
+        "delta_vs_value": 20.1125,
+        "delta_interval_95": [
+          -0.36406250000000007,
+          40.18140625
+        ],
+        "delta_vs_range_sizing": -4.23125,
+        "delta_range_sizing_interval_95": [
+          -17.3009375,
+          8.2825
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -8.4625,
+            [
+              -34.601875,
+              16.565
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5820,
+        "bb_per_100": 36.375,
+        "interval_95": [
+          31.606093750000003,
+          41.250156249999996
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.49875,
+        "pfr": 0.15875,
+        "decision_ms_median": 8.371488,
+        "decision_ms_p95": 12.616325999999999,
+        "opponent": "Passive folding",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 27.3625,
+          "big_blind_bb_per_100": 45.3875
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5923,
+        "bb_per_100": 37.01875,
+        "interval_95": [
+          32.5871875,
+          41.544375
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.49875,
+        "pfr": 0.15875,
+        "decision_ms_median": 16.604827,
+        "decision_ms_p95": 23.1695032,
+        "opponent": "Passive folding",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 28.225,
+          "big_blind_bb_per_100": 45.8125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.64375,
+        "delta_interval_95": [
+          -0.61890625,
+          2.1501562499999998
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5923,
+        "bb_per_100": 37.01875,
+        "interval_95": [
+          32.5871875,
+          41.544375
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.49875,
+        "pfr": 0.15875,
+        "decision_ms_median": 16.604827,
+        "decision_ms_p95": 23.7292177,
+        "opponent": "Passive folding",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 28.225,
+          "big_blind_bb_per_100": 45.8125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.64375,
+        "delta_interval_95": [
+          -0.61890625,
+          2.1501562499999998
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5923,
+        "bb_per_100": 37.01875,
+        "interval_95": [
+          32.5871875,
+          41.544375
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.49875,
+        "pfr": 0.15875,
+        "decision_ms_median": 16.604827,
+        "decision_ms_p95": 23.7292177,
+        "opponent": "Passive folding",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 28.225,
+          "big_blind_bb_per_100": 45.8125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.64375,
+        "delta_interval_95": [
+          -0.61890625,
+          2.1501562499999998
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -1480,
+        "bb_per_100": -9.25,
+        "interval_95": [
+          -33.3390625,
+          16.75671875
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8475,
+        "pfr": 0.174375,
+        "decision_ms_median": 3.916706,
+        "decision_ms_p95": 5.635436,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 29.4375,
+          "big_blind_bb_per_100": -47.9375
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 317,
+            "calls_on_lost_hands": 188,
+            "chips_paid_on_lost_hands": 8069
+          },
+          "river": {
+            "calls": 180,
+            "calls_on_lost_hands": 99,
+            "chips_paid_on_lost_hands": 5623
+          }
+        },
+        "big_blind_responses": {
+          "call": 533,
+          "raise": 20,
+          "fold": 6
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -494,
+        "bb_per_100": -3.0875,
+        "interval_95": [
+          -24.463437500000005,
+          17.057500000000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.8475,
+        "pfr": 0.174375,
+        "decision_ms_median": 8.367913,
+        "decision_ms_p95": 29.997212,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 27.2125,
+          "big_blind_bb_per_100": -33.3875
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 152,
+            "calls_on_lost_hands": 98,
+            "chips_paid_on_lost_hands": 3451
+          },
+          "river": {
+            "calls": 44,
+            "calls_on_lost_hands": 17,
+            "chips_paid_on_lost_hands": 682
+          }
+        },
+        "big_blind_responses": {
+          "call": 533,
+          "raise": 20,
+          "fold": 6
+        },
+        "delta_vs_value": 6.1625,
+        "delta_interval_95": [
+          -16.094375,
+          27.769375000000004
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -787,
+        "bb_per_100": -4.91875,
+        "interval_95": [
+          -23.521875,
+          13.357500000000002
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.765,
+        "pfr": 0.2575,
+        "decision_ms_median": 8.307086,
+        "decision_ms_p95": 31.1868129,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 27.2125,
+          "big_blind_bb_per_100": -37.05
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 124,
+            "calls_on_lost_hands": 82,
+            "chips_paid_on_lost_hands": 2618
+          },
+          "river": {
+            "calls": 37,
+            "calls_on_lost_hands": 15,
+            "chips_paid_on_lost_hands": 583
+          }
+        },
+        "big_blind_responses": {
+          "call": 268,
+          "raise": 153,
+          "fold": 138
+        },
+        "delta_vs_value": 4.33125,
+        "delta_interval_95": [
+          -20.196875000000002,
+          28.59453125
+        ],
+        "delta_vs_range_sizing": -1.83125,
+        "delta_range_sizing_interval_95": [
+          -15.946250000000003,
+          11.76890625
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -3.6625,
+            [
+              -31.892500000000005,
+              23.5378125
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -787,
+        "bb_per_100": -4.91875,
+        "interval_95": [
+          -23.521875,
+          13.357500000000002
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.765,
+        "pfr": 0.2575,
+        "decision_ms_median": 8.307086,
+        "decision_ms_p95": 31.1868129,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.68,
+          "button_open_raise_rate": 0.31625,
+          "faced_raise_after_limp": 128,
+          "fold_after_limp_raise_rate": 0.109375,
+          "button_bb_per_100": 27.2125,
+          "big_blind_bb_per_100": -37.05
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 124,
+            "calls_on_lost_hands": 82,
+            "chips_paid_on_lost_hands": 2618
+          },
+          "river": {
+            "calls": 37,
+            "calls_on_lost_hands": 15,
+            "chips_paid_on_lost_hands": 583
+          }
+        },
+        "big_blind_responses": {
+          "call": 268,
+          "raise": 153,
+          "fold": 138
+        },
+        "delta_vs_value": 4.33125,
+        "delta_interval_95": [
+          -20.196875000000002,
+          28.59453125
+        ],
+        "delta_vs_range_sizing": -1.83125,
+        "delta_range_sizing_interval_95": [
+          -15.946250000000003,
+          11.76890625
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -3.6625,
+            [
+              -31.892500000000005,
+              23.5378125
+            ]
+          ]
+        }
+      }
+    ],
+    "fixtures": [
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 48,
+        "hole": "Kh 8d",
+        "board": "Kc Th 6h 7s 9h",
+        "stacks": [
+          1792,
+          2496
+        ],
+        "pot": 15712,
+        "call": 0,
+        "big_blind": 200,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 200,
+        "opponent_bets": [],
+        "replay_action": "raise to 1792",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            1320,
+            300
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            1900,
+            4540
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            4636,
+            11076
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 3,
+        "hole": "Kc 9h",
+        "board": "3c 8h 8d Ac 2c",
+        "stacks": [
+          9150,
+          6850
+        ],
+        "pot": 4000,
+        "call": 2400,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 2400,
+        "opponent_bets": [
+          [
+            "turn",
+            400,
+            800
+          ],
+          [
+            "river",
+            2400,
+            1600
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            344
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            400,
+            800
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2400,
+            1600
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": null,
+            "call_threshold": 0.39,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 4,
+        "hole": "7d 6s",
+        "board": "3c 6c 2c 3s 9c",
+        "stacks": [
+          11150,
+          0
+        ],
+        "pot": 8850,
+        "call": 4850,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 4850,
+        "opponent_bets": [
+          [
+            "flop",
+            250,
+            500
+          ],
+          [
+            "turn",
+            1500,
+            1000
+          ],
+          [
+            "river",
+            4850,
+            4000
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            250,
+            500
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            1500,
+            1000
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            4850,
+            4000
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": null,
+            "call_threshold": 0.369014598540146,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 9,
+        "hole": "Qc 3c",
+        "board": "Kd Kc 2h 3h",
+        "stacks": [
+          10550,
+          0
+        ],
+        "pot": 9450,
+        "call": 6250,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 6250,
+        "opponent_bets": [
+          [
+            "flop",
+            1200,
+            800
+          ],
+          [
+            "turn",
+            6250,
+            3200
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            200
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            1200,
+            800
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            6250,
+            3200
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": null,
+            "call_threshold": 0.4430891719745223,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "pebble",
+        "source": "https://chipzen.ai/match/52c6f936-9694-4cb2-942a-ac6c2b78b437",
+        "hand": 87,
+        "hole": "4c 2c",
+        "board": "Th Tc 9c 2s Qc",
+        "stacks": [
+          16632,
+          1977
+        ],
+        "pot": 1391,
+        "call": 591,
+        "big_blind": 400,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 591,
+        "opponent_bets": [
+          [
+            "river",
+            591,
+            800
+          ]
+        ],
+        "replay_action": "raise to 2018",
+        "betting_line": [
+          [
+            true,
+            "river",
+            "raise",
+            591,
+            800
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": null,
+            "call_threshold": 0.31318365287588296,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 2,
+        "hole": "Ks 7s",
+        "board": "9c 6h Ac 8h 4c",
+        "stacks": [
+          8286,
+          6356
+        ],
+        "pot": 5358,
+        "call": 2130,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 2130,
+        "opponent_bets": [
+          [
+            "flop",
+            396,
+            600
+          ],
+          [
+            "turn",
+            918,
+            1392
+          ],
+          [
+            "river",
+            2130,
+            3228
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            300,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            396,
+            600
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            918,
+            1392
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2130,
+            3228
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": null,
+            "call_threshold": 0.2994551282051282,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 26,
+        "hole": "Jd Ts",
+        "board": "Ac Jh 3s 6c 2c",
+        "stacks": [
+          4604,
+          10038
+        ],
+        "pot": 5358,
+        "call": 0,
+        "big_blind": 150,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 3857",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            450,
+            225
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            648,
+            1548
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            1581,
+            3777
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 3857,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 25,
+        "hole": "Qs Td",
+        "board": "Tc 8h 5d 5c Ad",
+        "stacks": [
+          12657,
+          5557
+        ],
+        "pot": 1786,
+        "call": 0,
+        "big_blind": 150,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 1285",
+        "betting_line": [
+          [
+            true,
+            "flop",
+            "call",
+            216,
+            516
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            527,
+            1259
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1285,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 5,
+        "hole": "8h 5s",
+        "board": "6d 4s 5c Ad 8s",
+        "stacks": [
+          5300,
+          12700
+        ],
+        "pot": 2000,
+        "call": 0,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 100,
+        "opponent_bets": [
+          [
+            "turn",
+            750,
+            500
+          ]
+        ],
+        "replay_action": "raise to 1440",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            200
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            750,
+            500
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "config": {
+      "stack": 250,
+      "small_blind": 5,
+      "big_blind": 10,
+      "seed_start": 112800,
+      "pairs_per_opponent": 800,
+      "bootstrap_samples": 3000,
+      "decision_clock": "process CPU time",
+      "rng": "independent stream per decision",
+      "opponents": [
+        "Aggressive barreling",
+        "Frequent overbetting",
+        "Passive folding",
+        "Bluff-heavy barreling"
+      ],
+      "policies": [
+        "Value",
+        "Range + Sizing",
+        "Big Blind Defense Only",
+        "Shallow Big Blind Defense"
+      ]
+    },
+    "results": [
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": -364,
+        "bb_per_100": -2.275,
+        "interval_95": [
+          -35.125625,
+          29.6259375
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 8.286464500000001,
+        "decision_ms_p95": 12.6803069,
+        "opponent": "Aggressive barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": -15.875,
+          "big_blind_bb_per_100": 11.325
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 297,
+            "calls_on_lost_hands": 180,
+            "chips_paid_on_lost_hands": 6990
+          },
+          "river": {
+            "calls": 148,
+            "calls_on_lost_hands": 101,
+            "chips_paid_on_lost_hands": 5968
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4594,
+        "bb_per_100": 28.7125,
+        "interval_95": [
+          2.0309375,
+          57.05734375000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 11.940372,
+        "decision_ms_p95": 52.703701,
+        "opponent": "Aggressive barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 23.3875,
+          "big_blind_bb_per_100": 34.0375
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 172,
+            "calls_on_lost_hands": 106,
+            "chips_paid_on_lost_hands": 3903
+          },
+          "river": {
+            "calls": 53,
+            "calls_on_lost_hands": 29,
+            "chips_paid_on_lost_hands": 1202
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": 30.9875,
+        "delta_interval_95": [
+          7.804843750000001,
+          54.507656250000004
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5099,
+        "bb_per_100": 31.86875,
+        "interval_95": [
+          4.659531250000001,
+          59.58765625000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.766875,
+        "pfr": 0.238125,
+        "decision_ms_median": 10.622888,
+        "decision_ms_p95": 47.327072,
+        "opponent": "Aggressive barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 23.3875,
+          "big_blind_bb_per_100": 40.35
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 138,
+            "calls_on_lost_hands": 86,
+            "chips_paid_on_lost_hands": 3266
+          },
+          "river": {
+            "calls": 47,
+            "calls_on_lost_hands": 26,
+            "chips_paid_on_lost_hands": 1033
+          }
+        },
+        "big_blind_responses": {
+          "call": 294,
+          "fold": 121,
+          "raise": 131
+        },
+        "delta_vs_value": 34.14375,
+        "delta_interval_95": [
+          7.692968750000001,
+          61.78953125
+        ],
+        "delta_vs_range_sizing": 3.15625,
+        "delta_range_sizing_interval_95": [
+          -13.401406249999999,
+          19.475
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            6.3125,
+            [
+              -26.802812499999998,
+              38.95
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4594,
+        "bb_per_100": 28.7125,
+        "interval_95": [
+          2.0309375,
+          57.05734375000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 11.940372,
+        "decision_ms_p95": 52.703701,
+        "opponent": "Aggressive barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 23.3875,
+          "big_blind_bb_per_100": 34.0375
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 172,
+            "calls_on_lost_hands": 106,
+            "chips_paid_on_lost_hands": 3903
+          },
+          "river": {
+            "calls": 53,
+            "calls_on_lost_hands": 29,
+            "chips_paid_on_lost_hands": 1202
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": 30.9875,
+        "delta_interval_95": [
+          7.804843750000001,
+          54.507656250000004
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 1660,
+        "bb_per_100": 10.375,
+        "interval_95": [
+          -25.040000000000003,
+          45.11734375000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.82,
+        "pfr": 0.168125,
+        "decision_ms_median": 5.934229,
+        "decision_ms_p95": 11.4080665,
+        "opponent": "Frequent overbetting",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.28368794326241137,
+          "button_bb_per_100": -16.3625,
+          "big_blind_bb_per_100": 37.1125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 144,
+            "calls_on_lost_hands": 80,
+            "chips_paid_on_lost_hands": 7570
+          },
+          "river": {
+            "calls": 83,
+            "calls_on_lost_hands": 49,
+            "chips_paid_on_lost_hands": 4616
+          }
+        },
+        "big_blind_responses": {
+          "call": 491,
+          "raise": 19,
+          "fold": 36
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 3935,
+        "bb_per_100": 24.59375,
+        "interval_95": [
+          -4.338125000000001,
+          54.356406250000006
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.82,
+        "pfr": 0.168125,
+        "decision_ms_median": 15.9489475,
+        "decision_ms_p95": 28.085685899999998,
+        "opponent": "Frequent overbetting",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.28368794326241137,
+          "button_bb_per_100": 8.525,
+          "big_blind_bb_per_100": 40.6625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 62,
+            "calls_on_lost_hands": 35,
+            "chips_paid_on_lost_hands": 3101
+          },
+          "river": {
+            "calls": 29,
+            "calls_on_lost_hands": 13,
+            "chips_paid_on_lost_hands": 944
+          }
+        },
+        "big_blind_responses": {
+          "call": 491,
+          "raise": 19,
+          "fold": 36
+        },
+        "delta_vs_value": 14.21875,
+        "delta_interval_95": [
+          -11.259687500000002,
+          41.9628125
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 3883,
+        "bb_per_100": 24.26875,
+        "interval_95": [
+          -3.21375,
+          52.59578125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.75625,
+        "pfr": 0.238125,
+        "decision_ms_median": 15.672323,
+        "decision_ms_p95": 27.1997852,
+        "opponent": "Frequent overbetting",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.28368794326241137,
+          "button_bb_per_100": 8.525,
+          "big_blind_bb_per_100": 40.0125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 49,
+            "calls_on_lost_hands": 27,
+            "chips_paid_on_lost_hands": 2164
+          },
+          "river": {
+            "calls": 23,
+            "calls_on_lost_hands": 10,
+            "chips_paid_on_lost_hands": 601
+          }
+        },
+        "big_blind_responses": {
+          "call": 277,
+          "fold": 138,
+          "raise": 131
+        },
+        "delta_vs_value": 13.89375,
+        "delta_interval_95": [
+          -15.157187500000001,
+          44.759062500000006
+        ],
+        "delta_vs_range_sizing": -0.325,
+        "delta_range_sizing_interval_95": [
+          -17.01921875,
+          15.825625000000002
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -0.65,
+            [
+              -34.0384375,
+              31.651250000000005
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 3935,
+        "bb_per_100": 24.59375,
+        "interval_95": [
+          -4.338125000000001,
+          54.356406250000006
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.82,
+        "pfr": 0.168125,
+        "decision_ms_median": 15.9489475,
+        "decision_ms_p95": 28.085685899999998,
+        "opponent": "Frequent overbetting",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.28368794326241137,
+          "button_bb_per_100": 8.525,
+          "big_blind_bb_per_100": 40.6625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 62,
+            "calls_on_lost_hands": 35,
+            "chips_paid_on_lost_hands": 3101
+          },
+          "river": {
+            "calls": 29,
+            "calls_on_lost_hands": 13,
+            "chips_paid_on_lost_hands": 944
+          }
+        },
+        "big_blind_responses": {
+          "call": 491,
+          "raise": 19,
+          "fold": 36
+        },
+        "delta_vs_value": 14.21875,
+        "delta_interval_95": [
+          -11.259687500000002,
+          41.9628125
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4765,
+        "bb_per_100": 29.78125,
+        "interval_95": [
+          23.042812500000004,
+          36.600625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.500625,
+        "pfr": 0.155,
+        "decision_ms_median": 8.444244,
+        "decision_ms_p95": 12.5537666,
+        "opponent": "Passive folding",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 21.2375,
+          "big_blind_bb_per_100": 38.325
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5011,
+        "bb_per_100": 31.31875,
+        "interval_95": [
+          26.11234375,
+          36.732343750000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.500625,
+        "pfr": 0.155,
+        "decision_ms_median": 16.704787,
+        "decision_ms_p95": 23.508029,
+        "opponent": "Passive folding",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 22.675,
+          "big_blind_bb_per_100": 39.9625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 1.5375,
+        "delta_interval_95": [
+          -1.3625,
+          4.5003125
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5011,
+        "bb_per_100": 31.31875,
+        "interval_95": [
+          26.11234375,
+          36.732343750000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.500625,
+        "pfr": 0.155,
+        "decision_ms_median": 16.5802115,
+        "decision_ms_p95": 23.8638335,
+        "opponent": "Passive folding",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 22.675,
+          "big_blind_bb_per_100": 39.9625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 1.5375,
+        "delta_interval_95": [
+          -1.3625,
+          4.5003125
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5011,
+        "bb_per_100": 31.31875,
+        "interval_95": [
+          26.11234375,
+          36.732343750000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.500625,
+        "pfr": 0.155,
+        "decision_ms_median": 16.704787,
+        "decision_ms_p95": 23.508029,
+        "opponent": "Passive folding",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 22.675,
+          "big_blind_bb_per_100": 39.9625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 1.5375,
+        "delta_interval_95": [
+          -1.3625,
+          4.5003125
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5794,
+        "bb_per_100": 36.2125,
+        "interval_95": [
+          -0.6693750000000002,
+          72.6453125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 8.681405,
+        "decision_ms_p95": 13.135306199999999,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 1.1875,
+          "big_blind_bb_per_100": 71.2375
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 349,
+            "calls_on_lost_hands": 187,
+            "chips_paid_on_lost_hands": 7609
+          },
+          "river": {
+            "calls": 188,
+            "calls_on_lost_hands": 99,
+            "chips_paid_on_lost_hands": 6151
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 498,
+        "bb_per_100": 3.1125,
+        "interval_95": [
+          -25.76921875,
+          32.46578125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 17.853377000000002,
+        "decision_ms_p95": 66.75581824999999,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 20.8,
+          "big_blind_bb_per_100": -14.575
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 193,
+            "calls_on_lost_hands": 130,
+            "chips_paid_on_lost_hands": 5131
+          },
+          "river": {
+            "calls": 65,
+            "calls_on_lost_hands": 27,
+            "chips_paid_on_lost_hands": 1238
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": -33.1,
+        "delta_interval_95": [
+          -65.68796875000001,
+          -2.4418750000000005
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 2169,
+        "bb_per_100": 13.55625,
+        "interval_95": [
+          -14.83140625,
+          42.406406249999996
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.766875,
+        "pfr": 0.238125,
+        "decision_ms_median": 9.872594,
+        "decision_ms_p95": 46.974931399999996,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 20.8,
+          "big_blind_bb_per_100": 6.3125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 150,
+            "calls_on_lost_hands": 99,
+            "chips_paid_on_lost_hands": 3847
+          },
+          "river": {
+            "calls": 56,
+            "calls_on_lost_hands": 25,
+            "chips_paid_on_lost_hands": 1098
+          }
+        },
+        "big_blind_responses": {
+          "call": 294,
+          "fold": 121,
+          "raise": 131
+        },
+        "delta_vs_value": -22.65625,
+        "delta_interval_95": [
+          -56.4390625,
+          9.76890625
+        ],
+        "delta_vs_range_sizing": 10.44375,
+        "delta_range_sizing_interval_95": [
+          -7.07703125,
+          27.595156250000002
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            20.8875,
+            [
+              -14.1540625,
+              55.190312500000005
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 498,
+        "bb_per_100": 3.1125,
+        "interval_95": [
+          -25.76921875,
+          32.46578125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.83875,
+        "pfr": 0.168125,
+        "decision_ms_median": 17.853377000000002,
+        "decision_ms_p95": 66.75581824999999,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.69125,
+          "button_open_raise_rate": 0.30375,
+          "faced_raise_after_limp": 141,
+          "fold_after_limp_raise_rate": 0.09929078014184398,
+          "button_bb_per_100": 20.8,
+          "big_blind_bb_per_100": -14.575
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 193,
+            "calls_on_lost_hands": 130,
+            "chips_paid_on_lost_hands": 5131
+          },
+          "river": {
+            "calls": 65,
+            "calls_on_lost_hands": 27,
+            "chips_paid_on_lost_hands": 1238
+          }
+        },
+        "big_blind_responses": {
+          "call": 521,
+          "raise": 19,
+          "fold": 6
+        },
+        "delta_vs_value": -33.1,
+        "delta_interval_95": [
+          -65.68796875000001,
+          -2.4418750000000005
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    ],
+    "fixtures": [
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 48,
+        "hole": "Kh 8d",
+        "board": "Kc Th 6h 7s 9h",
+        "stacks": [
+          1792,
+          2496
+        ],
+        "pot": 15712,
+        "call": 0,
+        "big_blind": 200,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 200,
+        "opponent_bets": [],
+        "replay_action": "raise to 1792",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            1320,
+            300
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            1900,
+            4540
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            4636,
+            11076
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 3,
+        "hole": "Kc 9h",
+        "board": "3c 8h 8d Ac 2c",
+        "stacks": [
+          9150,
+          6850
+        ],
+        "pot": 4000,
+        "call": 2400,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 2400,
+        "opponent_bets": [
+          [
+            "turn",
+            400,
+            800
+          ],
+          [
+            "river",
+            2400,
+            1600
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            344
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            400,
+            800
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2400,
+            1600
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": null,
+            "call_threshold": 0.39,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 4,
+        "hole": "7d 6s",
+        "board": "3c 6c 2c 3s 9c",
+        "stacks": [
+          11150,
+          0
+        ],
+        "pot": 8850,
+        "call": 4850,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 4850,
+        "opponent_bets": [
+          [
+            "flop",
+            250,
+            500
+          ],
+          [
+            "turn",
+            1500,
+            1000
+          ],
+          [
+            "river",
+            4850,
+            4000
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            250,
+            500
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            1500,
+            1000
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            4850,
+            4000
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": null,
+            "call_threshold": 0.369014598540146,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 9,
+        "hole": "Qc 3c",
+        "board": "Kd Kc 2h 3h",
+        "stacks": [
+          10550,
+          0
+        ],
+        "pot": 9450,
+        "call": 6250,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 6250,
+        "opponent_bets": [
+          [
+            "flop",
+            1200,
+            800
+          ],
+          [
+            "turn",
+            6250,
+            3200
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            200
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            1200,
+            800
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            6250,
+            3200
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": null,
+            "call_threshold": 0.4430891719745223,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "pebble",
+        "source": "https://chipzen.ai/match/52c6f936-9694-4cb2-942a-ac6c2b78b437",
+        "hand": 87,
+        "hole": "4c 2c",
+        "board": "Th Tc 9c 2s Qc",
+        "stacks": [
+          16632,
+          1977
+        ],
+        "pot": 1391,
+        "call": 591,
+        "big_blind": 400,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 591,
+        "opponent_bets": [
+          [
+            "river",
+            591,
+            800
+          ]
+        ],
+        "replay_action": "raise to 2018",
+        "betting_line": [
+          [
+            true,
+            "river",
+            "raise",
+            591,
+            800
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": null,
+            "call_threshold": 0.31318365287588296,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 2,
+        "hole": "Ks 7s",
+        "board": "9c 6h Ac 8h 4c",
+        "stacks": [
+          8286,
+          6356
+        ],
+        "pot": 5358,
+        "call": 2130,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 2130,
+        "opponent_bets": [
+          [
+            "flop",
+            396,
+            600
+          ],
+          [
+            "turn",
+            918,
+            1392
+          ],
+          [
+            "river",
+            2130,
+            3228
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            300,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            396,
+            600
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            918,
+            1392
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2130,
+            3228
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": null,
+            "call_threshold": 0.2994551282051282,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 26,
+        "hole": "Jd Ts",
+        "board": "Ac Jh 3s 6c 2c",
+        "stacks": [
+          4604,
+          10038
+        ],
+        "pot": 5358,
+        "call": 0,
+        "big_blind": 150,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 3857",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            450,
+            225
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            648,
+            1548
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            1581,
+            3777
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 3857,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 25,
+        "hole": "Qs Td",
+        "board": "Tc 8h 5d 5c Ad",
+        "stacks": [
+          12657,
+          5557
+        ],
+        "pot": 1786,
+        "call": 0,
+        "big_blind": 150,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 1285",
+        "betting_line": [
+          [
+            true,
+            "flop",
+            "call",
+            216,
+            516
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            527,
+            1259
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1285,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 5,
+        "hole": "8h 5s",
+        "board": "6d 4s 5c Ad 8s",
+        "stacks": [
+          5300,
+          12700
+        ],
+        "pot": 2000,
+        "call": 0,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 100,
+        "opponent_bets": [
+          [
+            "turn",
+            750,
+            500
+          ]
+        ],
+        "replay_action": "raise to 1440",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            200
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            750,
+            500
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "config": {
+      "stack": 400,
+      "small_blind": 5,
+      "big_blind": 10,
+      "seed_start": 113600,
+      "pairs_per_opponent": 800,
+      "bootstrap_samples": 3000,
+      "decision_clock": "process CPU time",
+      "rng": "independent stream per decision",
+      "opponents": [
+        "Aggressive barreling",
+        "Frequent overbetting",
+        "Passive folding",
+        "Bluff-heavy barreling"
+      ],
+      "policies": [
+        "Value",
+        "Range + Sizing",
+        "Big Blind Defense Only",
+        "Shallow Big Blind Defense"
+      ]
+    },
+    "results": [
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 1978,
+        "bb_per_100": 12.3625,
+        "interval_95": [
+          -30.90703125,
+          57.05093750000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 7.726585,
+        "decision_ms_p95": 12.6911352,
+        "opponent": "Aggressive barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 42.125,
+          "big_blind_bb_per_100": -17.4
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 314,
+            "calls_on_lost_hands": 184,
+            "chips_paid_on_lost_hands": 7528
+          },
+          "river": {
+            "calls": 175,
+            "calls_on_lost_hands": 121,
+            "chips_paid_on_lost_hands": 9953
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 7069,
+        "bb_per_100": 44.18125,
+        "interval_95": [
+          5.7865625000000005,
+          83.09640625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 9.506382,
+        "decision_ms_p95": 33.5453002,
+        "opponent": "Aggressive barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 78.7625,
+          "big_blind_bb_per_100": 9.6
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 183,
+            "calls_on_lost_hands": 105,
+            "chips_paid_on_lost_hands": 3675
+          },
+          "river": {
+            "calls": 46,
+            "calls_on_lost_hands": 23,
+            "chips_paid_on_lost_hands": 937
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": 31.81875,
+        "delta_interval_95": [
+          3.62359375,
+          58.806562500000005
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 6277,
+        "bb_per_100": 39.23125,
+        "interval_95": [
+          5.16171875,
+          75.85828125
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.78,
+        "pfr": 0.2475,
+        "decision_ms_median": 9.0376115,
+        "decision_ms_p95": 30.23557965,
+        "opponent": "Aggressive barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 78.7625,
+          "big_blind_bb_per_100": -0.3
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 141,
+            "calls_on_lost_hands": 80,
+            "chips_paid_on_lost_hands": 2663
+          },
+          "river": {
+            "calls": 40,
+            "calls_on_lost_hands": 20,
+            "chips_paid_on_lost_hands": 809
+          }
+        },
+        "big_blind_responses": {
+          "call": 298,
+          "fold": 114,
+          "raise": 144
+        },
+        "delta_vs_value": 26.86875,
+        "delta_interval_95": [
+          -9.2065625,
+          61.52375000000001
+        ],
+        "delta_vs_range_sizing": -4.95,
+        "delta_range_sizing_interval_95": [
+          -28.0815625,
+          17.464218750000004
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            -9.9,
+            [
+              -56.163125,
+              34.92843750000001
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 7069,
+        "bb_per_100": 44.18125,
+        "interval_95": [
+          5.7865625000000005,
+          83.09640625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 9.506382,
+        "decision_ms_p95": 33.5453002,
+        "opponent": "Aggressive barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 78.7625,
+          "big_blind_bb_per_100": 9.6
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 183,
+            "calls_on_lost_hands": 105,
+            "chips_paid_on_lost_hands": 3675
+          },
+          "river": {
+            "calls": 46,
+            "calls_on_lost_hands": 23,
+            "chips_paid_on_lost_hands": 937
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": 31.81875,
+        "delta_interval_95": [
+          3.62359375,
+          58.806562500000005
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 2953,
+        "bb_per_100": 18.45625,
+        "interval_95": [
+          -30.55375,
+          67.87625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.825625,
+        "pfr": 0.173125,
+        "decision_ms_median": 8.2625235,
+        "decision_ms_p95": 12.777872499999999,
+        "opponent": "Frequent overbetting",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.36363636363636365,
+          "button_bb_per_100": 55.475,
+          "big_blind_bb_per_100": -18.5625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 182,
+            "calls_on_lost_hands": 93,
+            "chips_paid_on_lost_hands": 12221
+          },
+          "river": {
+            "calls": 84,
+            "calls_on_lost_hands": 56,
+            "chips_paid_on_lost_hands": 9655
+          }
+        },
+        "big_blind_responses": {
+          "call": 490,
+          "fold": 41,
+          "raise": 25
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4105,
+        "bb_per_100": 25.65625,
+        "interval_95": [
+          -9.09375,
+          63.958906250000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.825625,
+        "pfr": 0.173125,
+        "decision_ms_median": 10.523879,
+        "decision_ms_p95": 28.283831049999996,
+        "opponent": "Frequent overbetting",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.36363636363636365,
+          "button_bb_per_100": 80.2,
+          "big_blind_bb_per_100": -28.8875
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 72,
+            "calls_on_lost_hands": 38,
+            "chips_paid_on_lost_hands": 4335
+          },
+          "river": {
+            "calls": 11,
+            "calls_on_lost_hands": 5,
+            "chips_paid_on_lost_hands": 433
+          }
+        },
+        "big_blind_responses": {
+          "call": 490,
+          "fold": 41,
+          "raise": 25
+        },
+        "delta_vs_value": 7.2,
+        "delta_interval_95": [
+          -34.37625,
+          47.643750000000004
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 6104,
+        "bb_per_100": 38.15,
+        "interval_95": [
+          4.534375000000001,
+          75.36281249999999
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.77,
+        "pfr": 0.2475,
+        "decision_ms_median": 9.429389,
+        "decision_ms_p95": 23.698957,
+        "opponent": "Frequent overbetting",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.36363636363636365,
+          "button_bb_per_100": 80.2,
+          "big_blind_bb_per_100": -3.9
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 55,
+            "calls_on_lost_hands": 26,
+            "chips_paid_on_lost_hands": 3012
+          },
+          "river": {
+            "calls": 10,
+            "calls_on_lost_hands": 4,
+            "chips_paid_on_lost_hands": 355
+          }
+        },
+        "big_blind_responses": {
+          "call": 282,
+          "fold": 130,
+          "raise": 144
+        },
+        "delta_vs_value": 19.69375,
+        "delta_interval_95": [
+          -24.6253125,
+          63.24437500000001
+        ],
+        "delta_vs_range_sizing": 12.49375,
+        "delta_range_sizing_interval_95": [
+          -7.715000000000001,
+          32.98468750000001
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            24.9875,
+            [
+              -15.430000000000001,
+              65.96937500000001
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4105,
+        "bb_per_100": 25.65625,
+        "interval_95": [
+          -9.09375,
+          63.958906250000005
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.825625,
+        "pfr": 0.173125,
+        "decision_ms_median": 10.523879,
+        "decision_ms_p95": 28.283831049999996,
+        "opponent": "Frequent overbetting",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.36363636363636365,
+          "button_bb_per_100": 80.2,
+          "big_blind_bb_per_100": -28.8875
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 72,
+            "calls_on_lost_hands": 38,
+            "chips_paid_on_lost_hands": 4335
+          },
+          "river": {
+            "calls": 11,
+            "calls_on_lost_hands": 5,
+            "chips_paid_on_lost_hands": 433
+          }
+        },
+        "big_blind_responses": {
+          "call": 490,
+          "fold": 41,
+          "raise": 25
+        },
+        "delta_vs_value": 7.2,
+        "delta_interval_95": [
+          -34.37625,
+          47.643750000000004
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4695,
+        "bb_per_100": 29.34375,
+        "interval_95": [
+          22.34984375,
+          36.04406250000001
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.50125,
+        "pfr": 0.155,
+        "decision_ms_median": 7.7173964999999995,
+        "decision_ms_p95": 11.225233399999999,
+        "opponent": "Passive folding",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 24.975,
+          "big_blind_bb_per_100": 33.7125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5213,
+        "bb_per_100": 32.58125,
+        "interval_95": [
+          26.168593750000003,
+          38.350625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.50125,
+        "pfr": 0.155,
+        "decision_ms_median": 13.449766499999999,
+        "decision_ms_p95": 20.22577725,
+        "opponent": "Passive folding",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 29.4625,
+          "big_blind_bb_per_100": 35.7
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 3.2375,
+        "delta_interval_95": [
+          0.85578125,
+          6.03140625
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5213,
+        "bb_per_100": 32.58125,
+        "interval_95": [
+          26.168593750000003,
+          38.350625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.50125,
+        "pfr": 0.155,
+        "decision_ms_median": 13.9984175,
+        "decision_ms_p95": 20.6817201,
+        "opponent": "Passive folding",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 29.4625,
+          "big_blind_bb_per_100": 35.7
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 3.2375,
+        "delta_interval_95": [
+          0.85578125,
+          6.03140625
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5213,
+        "bb_per_100": 32.58125,
+        "interval_95": [
+          26.168593750000003,
+          38.350625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.50125,
+        "pfr": 0.155,
+        "decision_ms_median": 13.449766499999999,
+        "decision_ms_p95": 20.22577725,
+        "opponent": "Passive folding",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 0,
+          "fold_after_limp_raise_rate": null,
+          "button_bb_per_100": 29.4625,
+          "big_blind_bb_per_100": 35.7
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          },
+          "river": {
+            "calls": 0,
+            "calls_on_lost_hands": 0,
+            "chips_paid_on_lost_hands": 0
+          }
+        },
+        "big_blind_responses": {},
+        "delta_vs_value": 3.2375,
+        "delta_interval_95": [
+          0.85578125,
+          6.03140625
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5988,
+        "bb_per_100": 37.425,
+        "interval_95": [
+          -8.17921875,
+          85.37531249999999
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 3.876055,
+        "decision_ms_p95": 5.467944,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Value",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 68.9875,
+          "big_blind_bb_per_100": 5.8625
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 370,
+            "calls_on_lost_hands": 200,
+            "chips_paid_on_lost_hands": 8655
+          },
+          "river": {
+            "calls": 235,
+            "calls_on_lost_hands": 124,
+            "chips_paid_on_lost_hands": 11651
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": 0.0,
+        "delta_interval_95": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4862,
+        "bb_per_100": 30.3875,
+        "interval_95": [
+          -9.288437499999999,
+          70.44796875000002
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 8.40964,
+        "decision_ms_p95": 28.760983699999997,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Range + Sizing",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 72.7875,
+          "big_blind_bb_per_100": -12.0125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 198,
+            "calls_on_lost_hands": 122,
+            "chips_paid_on_lost_hands": 4535
+          },
+          "river": {
+            "calls": 58,
+            "calls_on_lost_hands": 20,
+            "chips_paid_on_lost_hands": 955
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": -7.0375,
+        "delta_interval_95": [
+          -42.39468750000001,
+          27.181406250000002
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 5132,
+        "bb_per_100": 32.075,
+        "interval_95": [
+          -3.9010937500000002,
+          70.12765625
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.78,
+        "pfr": 0.2475,
+        "decision_ms_median": 8.208363,
+        "decision_ms_p95": 27.7159746,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Big Blind Defense Only",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 72.7875,
+          "big_blind_bb_per_100": -8.6375
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 154,
+            "calls_on_lost_hands": 91,
+            "chips_paid_on_lost_hands": 3144
+          },
+          "river": {
+            "calls": 47,
+            "calls_on_lost_hands": 17,
+            "chips_paid_on_lost_hands": 786
+          }
+        },
+        "big_blind_responses": {
+          "call": 298,
+          "fold": 114,
+          "raise": 144
+        },
+        "delta_vs_value": -5.35,
+        "delta_interval_95": [
+          -46.6396875,
+          34.387656250000006
+        ],
+        "delta_vs_range_sizing": 1.6875,
+        "delta_range_sizing_interval_95": [
+          -22.278593750000006,
+          24.93890625
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            3.375,
+            [
+              -44.55718750000001,
+              49.8778125
+            ]
+          ]
+        }
+      },
+      {
+        "attempted_hands": 1600,
+        "hands": 1600,
+        "pairs": 800,
+        "net_chips": 4862,
+        "bb_per_100": 30.3875,
+        "interval_95": [
+          -9.288437499999999,
+          70.44796875000002
+        ],
+        "illegal_actions": 0,
+        "vpip": 0.85,
+        "pfr": 0.173125,
+        "decision_ms_median": 8.40964,
+        "decision_ms_p95": 28.760983699999997,
+        "opponent": "Bluff-heavy barreling",
+        "strategy": "Shallow Big Blind Defense",
+        "position": {
+          "button_limp_rate": 0.6925,
+          "button_open_raise_rate": 0.305,
+          "faced_raise_after_limp": 143,
+          "fold_after_limp_raise_rate": 0.1048951048951049,
+          "button_bb_per_100": 72.7875,
+          "big_blind_bb_per_100": -12.0125
+        },
+        "large_call_losses": {
+          "turn": {
+            "calls": 198,
+            "calls_on_lost_hands": 122,
+            "chips_paid_on_lost_hands": 4535
+          },
+          "river": {
+            "calls": 58,
+            "calls_on_lost_hands": 20,
+            "chips_paid_on_lost_hands": 955
+          }
+        },
+        "big_blind_responses": {
+          "call": 529,
+          "raise": 25,
+          "fold": 2
+        },
+        "delta_vs_value": -7.0375,
+        "delta_interval_95": [
+          -42.39468750000001,
+          27.181406250000002
+        ],
+        "delta_vs_range_sizing": 0.0,
+        "delta_range_sizing_interval_95": [
+          0.0,
+          0.0
+        ],
+        "position_delta_vs_range_sizing": {
+          "button": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ],
+          "big_blind": [
+            0.0,
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    ],
+    "fixtures": [
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 48,
+        "hole": "Kh 8d",
+        "board": "Kc Th 6h 7s 9h",
+        "stacks": [
+          1792,
+          2496
+        ],
+        "pot": 15712,
+        "call": 0,
+        "big_blind": 200,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 200,
+        "opponent_bets": [],
+        "replay_action": "raise to 1792",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            1320,
+            300
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            1900,
+            4540
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            4636,
+            11076
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1792,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 13779.920883045252
+              },
+              {
+                "action": "raise",
+                "amount": 1792,
+                "ev_chips": 14570.050693217432,
+                "worse_call_mass": 0.4948480334159881,
+                "better_fold_mass": 0.0015406278248952044,
+                "better_call_mass": 0.075490763419865
+              }
+            ],
+            "uniform_equity": 0.8818181818181818,
+            "weighted_equity": 0.8770316244300694,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 3,
+        "hole": "Kc 9h",
+        "board": "3c 8h 8d Ac 2c",
+        "stacks": [
+          9150,
+          6850
+        ],
+        "pot": 4000,
+        "call": 2400,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 2400,
+        "opponent_bets": [
+          [
+            "turn",
+            400,
+            800
+          ],
+          [
+            "river",
+            2400,
+            1600
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            344
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            400,
+            800
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2400,
+            1600
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": null,
+            "call_threshold": 0.39,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.375,
+            "bet_options": null,
+            "uniform_equity": 0.43383838383838386,
+            "weighted_equity": 0.20333909908942957,
+            "call_threshold": 0.39,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 4,
+        "hole": "7d 6s",
+        "board": "3c 6c 2c 3s 9c",
+        "stacks": [
+          11150,
+          0
+        ],
+        "pot": 8850,
+        "call": 4850,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 4850,
+        "opponent_bets": [
+          [
+            "flop",
+            250,
+            500
+          ],
+          [
+            "turn",
+            1500,
+            1000
+          ],
+          [
+            "river",
+            4850,
+            4000
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            250,
+            500
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            1500,
+            1000
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            4850,
+            4000
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": null,
+            "call_threshold": 0.369014598540146,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.354014598540146,
+            "bet_options": null,
+            "uniform_equity": 0.3929292929292929,
+            "weighted_equity": 0.10196643105147477,
+            "call_threshold": 0.369014598540146,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 9,
+        "hole": "Qc 3c",
+        "board": "Kd Kc 2h 3h",
+        "stacks": [
+          10550,
+          0
+        ],
+        "pot": 9450,
+        "call": 6250,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 6250,
+        "opponent_bets": [
+          [
+            "flop",
+            1200,
+            800
+          ],
+          [
+            "turn",
+            6250,
+            3200
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            400,
+            200
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            1200,
+            800
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            6250,
+            3200
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": null,
+            "call_threshold": 0.4430891719745223,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.3980891719745223,
+            "bet_options": null,
+            "uniform_equity": 0.724609375,
+            "weighted_equity": 0.36557373403677684,
+            "call_threshold": 0.4430891719745223,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "pebble",
+        "source": "https://chipzen.ai/match/52c6f936-9694-4cb2-942a-ac6c2b78b437",
+        "hand": 87,
+        "hole": "4c 2c",
+        "board": "Th Tc 9c 2s Qc",
+        "stacks": [
+          16632,
+          1977
+        ],
+        "pot": 1391,
+        "call": 591,
+        "big_blind": 400,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 591,
+        "opponent_bets": [
+          [
+            "river",
+            591,
+            800
+          ]
+        ],
+        "replay_action": "raise to 2018",
+        "betting_line": [
+          [
+            true,
+            "river",
+            "raise",
+            591,
+            800
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": null,
+            "call_threshold": 0.31318365287588296,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 2018,
+            "pot_odds": 0.29818365287588294,
+            "bet_options": null,
+            "uniform_equity": 0.9474747474747475,
+            "weighted_equity": 0.9014420094995862,
+            "call_threshold": 0.31318365287588296,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 2,
+        "hole": "Ks 7s",
+        "board": "9c 6h Ac 8h 4c",
+        "stacks": [
+          8286,
+          6356
+        ],
+        "pot": 5358,
+        "call": 2130,
+        "big_blind": 100,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 2130,
+        "opponent_bets": [
+          [
+            "flop",
+            396,
+            600
+          ],
+          [
+            "turn",
+            918,
+            1392
+          ],
+          [
+            "river",
+            2130,
+            3228
+          ]
+        ],
+        "replay_action": "call",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            300,
+            150
+          ],
+          [
+            true,
+            "flop",
+            "raise",
+            396,
+            600
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            918,
+            1392
+          ],
+          [
+            true,
+            "river",
+            "raise",
+            2130,
+            3228
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "call",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": null,
+            "call_threshold": 0.2994551282051282,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Big Blind Defense Only": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "fold",
+            "raise_to": null,
+            "pot_odds": 0.2844551282051282,
+            "bet_options": null,
+            "uniform_equity": 0.3090909090909091,
+            "weighted_equity": 0.09107725947397088,
+            "call_threshold": 0.2994551282051282,
+            "basis": "Opponent betting line"
+          }
+        }
+      },
+      {
+        "opponent": "Plodder8",
+        "source": "https://chipzen.ai/match/a6545add-1898-4558-8c5d-25f937ccb0c0",
+        "hand": 26,
+        "hole": "Jd Ts",
+        "board": "Ac Jh 3s 6c 2c",
+        "stacks": [
+          4604,
+          10038
+        ],
+        "pot": 5358,
+        "call": 0,
+        "big_blind": 150,
+        "button": false,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 3857",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            450,
+            225
+          ],
+          [
+            true,
+            "flop",
+            "call",
+            648,
+            1548
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            1581,
+            3777
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 3857,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 3047.004553677346
+              },
+              {
+                "action": "raise",
+                "amount": 1786,
+                "ev_chips": 3222.8365994440346,
+                "worse_call_mass": 0.06648674643050903,
+                "better_fold_mass": 0.11271678225939456,
+                "better_call_mass": 0.31494588060516393
+              },
+              {
+                "action": "raise",
+                "amount": 3857,
+                "ev_chips": 3726.6711154164764,
+                "worse_call_mass": 0.022601162037946883,
+                "better_fold_mass": 0.24125806051880702,
+                "better_call_mass": 0.18640460234575165
+              }
+            ],
+            "uniform_equity": 0.7257575757575757,
+            "weighted_equity": 0.5686831940420579,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "fledge",
+        "source": "https://chipzen.ai/match/08d196e4-7fde-4f6b-a427-17f414325b80",
+        "hand": 25,
+        "hole": "Qs Td",
+        "board": "Tc 8h 5d 5c Ad",
+        "stacks": [
+          12657,
+          5557
+        ],
+        "pot": 1786,
+        "call": 0,
+        "big_blind": 150,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 150,
+        "opponent_bets": [],
+        "replay_action": "raise to 1285",
+        "betting_line": [
+          [
+            true,
+            "flop",
+            "call",
+            216,
+            516
+          ],
+          [
+            true,
+            "turn",
+            "call",
+            527,
+            1259
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1285,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "check",
+            "raise_to": null,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1171.2904985067148
+              },
+              {
+                "action": "raise",
+                "amount": 595,
+                "ev_chips": 1279.9909903047442,
+                "worse_call_mass": 0.049737079808262655,
+                "better_fold_mass": 0.07091694545296112,
+                "better_call_mass": 0.21635883253215352
+              },
+              {
+                "action": "raise",
+                "amount": 1285,
+                "ev_chips": 1395.6777347938032,
+                "worse_call_mass": 0.0239564509853268,
+                "better_fold_mass": 0.15147606901674088,
+                "better_call_mass": 0.13579970896837398
+              }
+            ],
+            "uniform_equity": 0.7272727272727273,
+            "weighted_equity": 0.6558177483240284,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      },
+      {
+        "opponent": "PluriBot",
+        "source": "https://chipzen.ai/match/44346856-5957-4b6d-931d-ca2bbe48c9f9",
+        "hand": 5,
+        "hole": "8h 5s",
+        "board": "6d 4s 5c Ad 8s",
+        "stacks": [
+          5300,
+          12700
+        ],
+        "pot": 2000,
+        "call": 0,
+        "big_blind": 100,
+        "button": true,
+        "current_bet": 0,
+        "min_increment": 100,
+        "opponent_bets": [
+          [
+            "turn",
+            750,
+            500
+          ]
+        ],
+        "replay_action": "raise to 1440",
+        "betting_line": [
+          [
+            true,
+            "preflop",
+            "raise",
+            250,
+            200
+          ],
+          [
+            true,
+            "turn",
+            "raise",
+            750,
+            500
+          ]
+        ],
+        "decisions": {
+          "Value": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": null,
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": null,
+            "call_threshold": null,
+            "basis": null
+          },
+          "Range + Sizing": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Big Blind Defense Only": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          },
+          "Shallow Big Blind Defense": {
+            "action": "raise",
+            "raise_to": 1440,
+            "pot_odds": null,
+            "bet_options": [
+              {
+                "action": "check",
+                "amount": 0,
+                "ev_chips": 1427.4075145689362
+              },
+              {
+                "action": "raise",
+                "amount": 666,
+                "ev_chips": 1417.2230790651813,
+                "worse_call_mass": 0.2002949076915204,
+                "better_fold_mass": 0.016836263443018504,
+                "better_call_mass": 0.2681702341677026
+              },
+              {
+                "action": "raise",
+                "amount": 1440,
+                "ev_chips": 1531.5988152152818,
+                "worse_call_mass": 0.09258360119666027,
+                "better_fold_mass": 0.11019913975022091,
+                "better_call_mass": 0.1748073578604998
+              }
+            ],
+            "uniform_equity": 0.7626262626262627,
+            "weighted_equity": 0.7137037572844682,
+            "call_threshold": null,
+            "basis": "Bet EV against continuing range"
+          }
+        }
+      }
+    ]
+  }
+]
