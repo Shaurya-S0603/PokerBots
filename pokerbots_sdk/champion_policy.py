@@ -17,7 +17,7 @@ SELECTION = TRAINING / "one-above-all.json"
 @lru_cache(maxsize=1)
 def roster():
   entrants = {**BASELINES, "Equity": partial(equity_bot, arena_opening=True),
-    **{name: policy for name, policy in TOOLKIT_STRATEGIES.items() if name != TITLE}}
+    **TOOLKIT_STRATEGIES}
   seen = set()
   for filename in ("champion.json", "generation-2.json", "generation-1.json"):
     archive = json.loads((TRAINING / filename).read_text())
