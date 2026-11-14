@@ -33,4 +33,17 @@ def pot_guard(state, rng, *, diagnostics=None):
   return equity_bot(state, rng, profile=profile, diagnostics=diagnostics)
 
 
-TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure, "Pot Guard": pot_guard}
+def weighted_river(state, rng, *, diagnostics=None):
+  """Test range-weighted showdown equity on heads-up river calls."""
+  weights = None
+  if state.opponents == 1 and len(state.board) == 5 and state.legal["call"]:
+    last_bet = next((bet for bet in reversed(state.opponent_bets) if bet.street == "river"), None)
+    if last_bet and last_bet.pot_before > 0:
+      size = min(last_bet.increment / last_bet.pot_before, 2)
+      prior_streets = {bet.street for bet in state.opponent_bets if bet.street in {"flop", "turn"}}
+      weights = (1.0, 1 / (1 + 2 * size + len(prior_streets)))
+  return equity_bot(state, rng, profile=VALUE_PROFILE, diagnostics=diagnostics, river_weights=weights)
+
+
+TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure, "Pot Guard": pot_guard,
+  "Weighted River": weighted_river}

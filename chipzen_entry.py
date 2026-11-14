@@ -13,6 +13,7 @@ from chipzen import Action, Bot, run_external_bot
 
 from pokerbots_sdk import Observation, load_strategy, validate_decision, value
 from pokerbots_sdk.equity_policy import EquityProfile, equity_bot
+from pokerbots_sdk.model import OpponentBet
 
 SUITS = {"h": "♥️", "d": "♦️", "c": "♣️", "s": "♠️"}
 DEFAULT_POLICY = Path(__file__).resolve().parent / "training" / "competition-policy.json"
@@ -20,6 +21,31 @@ DEFAULT_POLICY = Path(__file__).resolve().parent / "training" / "competition-pol
 
 def _cards(cards):
   return tuple(("10" if card.rank == "T" else card.rank, SUITS[card.suit]) for card in cards)
+
+
+def opponent_bets(history, own_seat):
+  pot = 0
+  street = None
+  committed = {}
+  bets = []
+  for entry in history:
+    phase, seat, action, amount = (entry[key] for key in ("phase", "seat", "action", "amount"))
+    if phase != street:
+      street = phase
+      committed.clear()
+    already_paid = committed.get(seat, 0)
+    if action == "raise":
+      increment = amount - max(committed.values(), default=0)
+      if seat != own_seat and increment > 0:
+        bets.append(OpponentBet(street, increment, pot))
+      pot += amount - already_paid
+      committed[seat] = amount
+    elif action in {"post_small_blind", "post_big_blind", "call"}:
+      pot += amount
+      committed[seat] = already_paid + amount
+    elif action == "post_ante":
+      pot += amount
+  return tuple(bets)
 
 
 def observation(state, default_big_blind):
@@ -39,6 +65,7 @@ def observation(state, default_big_blind):
       "max_raise_total": state.max_raise},
     effective_raise_total=min(state.max_raise, table_bet + opponent_stack),
     has_all_in_opponent=opponent_stack == 0,
+    opponent_bets=opponent_bets(state.action_history, state.your_seat),
   )
 
 

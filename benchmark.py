@@ -30,19 +30,24 @@ class Config:
       raise ValueError("Require 0 < small blind < big blind <= starting stack")
 
 
-def play_hand(seed, equity_seat, opponent, config):
+def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, opponent_policy=None, track_calls=False):
   arena = BotArena(seed, ("Equity", opponent))
   game = start_game(2, config.stack, config.small_blind, config.big_blind, deck_rng=arena.deck_rng)
   # Hash the hole cards by seat and the remaining deck before either bot acts.
   deal = [*[p.hole_cards for p in game.players], game.deck]
   deal_hash = sha256(json.dumps(deal).encode()).hexdigest()
-  strategies = {equity_seat: equity_bot, 3 - equity_seat: BASELINES[opponent]}
+  strategies = {equity_seat: candidate, 3 - equity_seat: opponent_policy or BASELINES[opponent]}
+  large_calls = []
   times = []
   vpip = pfr = False
   for _ in range(500):
     if game.hand_over:
-      return {"equity_seat": equity_seat, "net_chips": game.players[equity_seat - 1].stack - config.stack,
-        "deal_hash": deal_hash, "vpip": vpip, "pfr": pfr, "illegal_actions": 0}, times
+      outcome = {"equity_seat": equity_seat, "net_chips": game.players[equity_seat - 1].stack - config.stack,
+        "deal_hash": deal_hash, "vpip": vpip, "pfr": pfr, "illegal_actions": 0}
+      if track_calls:
+        outcome["large_calls"] = large_calls
+        outcome["lost_pot"] = not game.payouts.get(equity_seat, 0)
+      return outcome, times
     player = game.players[game.current_player]
     view = observe(game, player)
     rng = arena.bot_rngs[player.player_id - 1]
@@ -50,6 +55,13 @@ def play_hand(seed, equity_seat, opponent, config):
     action, target = strategies[player.player_id](view, rng)
     if player.player_id == equity_seat:
       times.append((perf_counter_ns() - action_started) / 1_000_000)
+      if track_calls and len(view.board) in {4, 5} and view.legal["call"]:
+        call = view.legal["call_amount"]
+        if view.opponent_bets:
+          bet = view.opponent_bets[-1]
+          if (bet.street == game.phase and call * 3 >= 2 * bet.pot_before
+              and (action == "call" or (action == "all_in" and call == view.stack))):
+            large_calls.append((game.phase, call))
       if not view.board:
         vpip |= action in {"call", "raise", "all_in"}
         pfr |= action == "raise" or (action == "all_in" and view.current_bet + view.stack > view.table_bet)
@@ -65,9 +77,9 @@ def play_hand(seed, equity_seat, opponent, config):
   raise RuntimeError("Hand exceeded the benchmark action limit")
 
 
-def play_pair(seed, opponent, config):
-  first, times_first = play_hand(seed, 1, opponent, config)
-  second, times_second = play_hand(seed, 2, opponent, config)
+def play_pair(seed, opponent, config, **options):
+  first, times_first = play_hand(seed, 1, opponent, config, **options)
+  second, times_second = play_hand(seed, 2, opponent, config, **options)
   if first["deal_hash"] != second["deal_hash"]:
     raise RuntimeError("Seat swap changed the deal")
   return {"pair_id": seed, "hands": [first, second]}, times_first + times_second

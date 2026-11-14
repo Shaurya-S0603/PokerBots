@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from baseline_v4 import RANKS, calling_station, tight
-from equity import exact_river_equity, sample_equity
+from equity import exact_river_equity, river_range_equities, sample_equity
 
 
 EQUITY_TRIALS_SMALL_TABLE = 256
@@ -47,7 +47,7 @@ def _sized_raise(view, increment):
   return "raise", min(maximum, max(minimum, view.table_bet + increment))
 
 
-def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_opening=False):
+def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_opening=False, river_weights=None):
   legal = view.legal
   call = legal["call_amount"]
   # A partial call or multiway all-in can expose less than the displayed pot.
@@ -57,8 +57,12 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_op
     return tight(view, rng)
 
   curve = [] if diagnostics is not None else None
+  weighted = None
   if len(view.board) == 5 and view.opponents == 1:
-    result = exact_river_equity(view.hole, view.board)
+    if river_weights is not None:
+      result, weighted = river_range_equities(view.hole, view.board, *river_weights)
+    else:
+      result = exact_river_equity(view.hole, view.board)
     method = "Exact enumeration"
   else:
     trials = EQUITY_TRIALS_SMALL_TABLE if view.opponents <= 3 else EQUITY_TRIALS_LARGE_TABLE
@@ -68,6 +72,11 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_op
   if diagnostics is not None:
     diagnostics.update(method=method, opponents=view.opponents, wins=result.wins,
       ties=result.ties, losses=result.losses, equity=share, curve=curve)
+    if legal["call"]:
+      diagnostics["pot_odds"] = call / (view.pot + call)
+    if weighted is not None:
+      diagnostics["weighted_equity"] = weighted
+      diagnostics["decision_basis"] = "Weighted river call, uniform equity for raises"
 
   # Facing only the blind is an opening decision. Comparing a showdown against
   # every seated opponent to immediate pot odds folds too many multiway opens.
@@ -80,7 +89,10 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_op
       return opening
 
   cushion = profile.call_cushion if len(view.board) < 5 else profile.river_call_margin
-  if legal["call"] and share < call / (view.pot + call) + cushion:
+  call_threshold = call / (view.pot + call) + cushion if legal["call"] else None
+  if diagnostics is not None and call_threshold is not None:
+    diagnostics["call_threshold"] = call_threshold
+  if call_threshold is not None and share < call_threshold:
     return "fold", None
 
   value_threshold = max(0.35, 1 / (view.opponents + 1) + profile.value_edge)
@@ -94,5 +106,7 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_op
     raise_action = _sized_raise(view, raise_size)
     if raise_action:
       return raise_action
+  if weighted is not None and weighted < call_threshold:
+    return "fold", None
   return calling_station(view, rng)
 

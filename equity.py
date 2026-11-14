@@ -1,5 +1,6 @@
 """Showdown equity against uniformly distributed unknown cards."""
 
+from collections import Counter
 from dataclasses import dataclass
 from itertools import combinations
 
@@ -46,6 +47,32 @@ def exact_river_equity(hole, board):
       losses += 1
   return EquityResult(wins, ties, losses, (wins + ties / 2) / (wins + ties + losses))
 
+
+def river_range_equities(hole, board, strong_weight, bluff_weight):
+  """Return uniform and weighted equity from the same exact enumeration.
+
+  Score each opponent holding by the fraction of remaining
+  combinations it beats, counting equal ranks halfway. Interpolate between
+  the bluff floor and value weight using the fourth power of that percentile.
+  """
+  hole, board, unseen = _known_cards(hole, board, (5,))
+  hero = rank_hand(hole + board)
+  scores = Counter(rank_hand(opponent + board) for opponent in combinations(unseen, 2))
+  total = sum(scores.values())
+  weaker = wins = ties = 0
+  weighted_total = weighted_share = 0.0
+  for score, count in sorted(scores.items()):
+    percentile = (weaker + count / 2) / total
+    weight = count * (bluff_weight + (strong_weight - bluff_weight) * percentile ** 4)
+    if hero >= score:
+      weighted_share += weight if hero > score else weight / 2
+      if hero > score:
+        wins += count
+      else:
+        ties += count
+    weaker += count
+    weighted_total += weight
+  return EquityResult(wins, ties, total - wins - ties, (wins + ties / 2) / total), weighted_share / weighted_total
 
 def sample_equity(hole, board, opponents, trials, rng, *, checkpoints=None):
   hole, board, unseen = _known_cards(hole, board, (0, 3, 4, 5))

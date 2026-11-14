@@ -8,11 +8,12 @@ from arena import EquityProfile
 TRAINING = json.loads((Path(__file__).resolve().parents[1] / "training" / "champion.json").read_text())
 CHAMPION = TRAINING["champion"]
 PROFILE = EquityProfile(**TRAINING["profile"])
+RIVER_REPORT = Path(__file__).resolve().parents[1] / "benchmarks" / "river-experiment.json"
 
 
 def render_bot_visualization(records, completed_hands, stats, names):
   st.title("Bot visualization")
-  simulation, training = st.tabs(["Simulation", "Training match"])
+  simulation, training, replays = st.tabs(["Simulation", "Training match", "Replay comparison"])
   with simulation:
     eligible = {hand: turns for hand, turns in records.items() if hand in completed_hands}
     st.caption("Decision estimates become available after each hand settles.")
@@ -32,6 +33,13 @@ def render_bot_visualization(records, completed_hands, stats, names):
       st.text(f"{board} · Pot {turn['pot']:,} chips")
       if turn.get("decision_basis"):
         st.caption(f"Decision rule · {turn['decision_basis']}")
+      if "pot_odds" in turn:
+        label = f"Pot odds {turn['pot_odds']:.1%}"
+        if "call_threshold" in turn:
+          label += f" · Call threshold {turn['call_threshold']:.1%}"
+        st.caption(label)
+      if "weighted_equity" in turn:
+        st.metric("Weighted river equity", f"{turn['weighted_equity']:.1%}")
       if turn["method"] == "Tight fallback":
         st.caption("The bot used Tight for this partial call or multiway all-in.")
       else:
@@ -68,3 +76,50 @@ def render_bot_visualization(records, completed_hands, stats, names):
       games = len(TRAINING.get("human_sources", [TRAINING["human_source"]]))
       st.caption(f"The practice bot uses public action frequencies from {games} uploaded games. Its results do not predict how you would play.")
     st.caption("Human vs Bots uses this tournament winner. One match does not establish which policy is strongest over many deals.")
+
+  with replays:
+    render_river_experiment()
+
+
+def render_river_experiment():
+  if not RIVER_REPORT.exists():
+    st.info("Run the offline river experiment to load the replay comparisons.")
+    return
+  report = json.loads(RIVER_REPORT.read_text())
+  st.subheader("Chipzen decision fixtures")
+  fixture = st.selectbox("Replay decision", report["fixtures"],
+    format_func=lambda item: f"{item['opponent']} · Hand {item['hand']} · "
+      f"{'River' if len(item['board'].split()) == 5 else 'Turn'}")
+  st.caption(f"Hole cards {fixture['hole']} · Board {fixture['board']} · "
+    f"Pot {fixture['pot']:,} · To call {fixture['call']:,} · Replay action {fixture['replay_action']}")
+  st.link_button("Open Chipzen replay", fixture["source"])
+
+  def percent(value):
+    return f"{value:.1%}" if value is not None else "—"
+
+  rows = []
+  for name, decision in fixture["decisions"].items():
+    action = decision["action"]
+    if decision["raise_to"] is not None:
+      action = f"raise to {decision['raise_to']:,}"
+    rows.append({"Policy": name, "Action": action, "Pot odds": percent(decision["pot_odds"]),
+      "Uniform equity": percent(decision["uniform_equity"]),
+      "Weighted equity": percent(decision["weighted_equity"]),
+      "Call threshold": percent(decision["call_threshold"])})
+  st.dataframe(rows, hide_index=True)
+  st.caption("The weighting applies to heads-up river calls facing a recorded bet. Raises use uniform equity.")
+
+  st.subheader("Fresh seat-swapped deals")
+  config = report["config"]
+  st.caption(f"{config['pairs_per_opponent']} seed pairs per matchup · "
+    f"{config['stack'] / config['big_blind']:g} BB starting stack")
+  st.dataframe([{"Opponent": row["opponent"], "Policy": row["strategy"],
+    "bb/100": f"{row['bb_per_100']:+.2f}",
+    "95% interval": f"{row['interval_95'][0]:+.2f} to {row['interval_95'][1]:+.2f}",
+    "Δ vs Value": f"{row['delta_vs_value']:+.2f}",
+    "Δ 95% interval": f"{row['delta_interval_95'][0]:+.2f} to {row['delta_interval_95'][1]:+.2f}",
+    "Turn chips lost": row["large_call_losses"]["turn"]["chips_paid_on_lost_hands"],
+    "River chips lost": row["large_call_losses"]["river"]["chips_paid_on_lost_hands"],
+    "p95 decision (ms)": round(row["decision_ms_p95"], 2)} for row in report["results"]], hide_index=True)
+  st.caption("Chip losses count calls costing at least two-thirds of the pot before the latest opponent bet, "
+    "on hands where the bot received no payout.")
