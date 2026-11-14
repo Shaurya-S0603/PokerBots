@@ -147,3 +147,12 @@ To build the same archive with Docker:
 docker build --platform linux/amd64 -f Dockerfile.chipzen -t pokerbots-value:chipzen .
 docker save pokerbots-value:chipzen | gzip > pokerbots-value-chipzen.tar.gz
 ```
+
+**Pot Guard** is an experimental heads-up strategy. It uses Value's settings
+until the postflop call costs at least one-third of the displayed pot, then
+requires a larger equity margin. The Chipzen upload still defaults to Value.
+To reproduce the local held-out comparison:
+
+```bash
+python strategy_matchup.py --candidate "Pot Guard" --control Value --seed 62000 --pairs 160 --stack 1000
+```
