@@ -99,7 +99,7 @@ def range_and_sizing(state, rng, *, diagnostics=None):
   return line_range(state, rng, diagnostics=diagnostics, price_bets=True)
 
 
-def heads_up_preflop(state, rng, *, diagnostics=None):
+def heads_up_preflop(state, rng, *, diagnostics=None, scope="all"):
   if state.opponents != 1 or state.board:
     return range_and_sizing(state, rng, diagnostics=diagnostics)
 
@@ -108,7 +108,12 @@ def heads_up_preflop(state, rng, *, diagnostics=None):
   strength = preflop_strength(state.hole)
   prior = [step for step in state.betting_line if step.street == "preflop"]
   raises = [step for step in prior if step.action == "raise"]
-  if state.late_position and not prior and call and state.table_bet <= state.big_blind:
+  button_open = state.late_position and not prior and call and state.table_bet <= state.big_blind
+  blind_defense = not state.late_position and call and len(raises) == 1 and raises[0].opponent
+  if (scope == "button" and not button_open) or (scope == "blind" and not blind_defense):
+    return range_and_sizing(state, rng, diagnostics=diagnostics)
+
+  if button_open:
     basis = "Button open"
     opening = _sized_raise(state, state.big_blind if depth <= 15 else state.big_blind * 3 // 2)
     threshold = .48 if depth <= 15 else .43
@@ -147,6 +152,15 @@ def heads_up_preflop(state, rng, *, diagnostics=None):
   return action
 
 
+def button_open_only(state, rng, *, diagnostics=None):
+  return heads_up_preflop(state, rng, diagnostics=diagnostics, scope="button")
+
+
+def big_blind_defense_only(state, rng, *, diagnostics=None):
+  return heads_up_preflop(state, rng, diagnostics=diagnostics, scope="blind")
+
+
 TOOLKIT_STRATEGIES = {"Value": value, "Button Pressure": button_pressure, "Pot Guard": pot_guard,
   "Weighted River": weighted_river, "Line Range": line_range, "Range + Sizing": range_and_sizing,
-  "Heads-up Preflop": heads_up_preflop}
+  "Heads-up Preflop": heads_up_preflop, "Button Open Only": button_open_only,
+  "Big Blind Defense Only": big_blind_defense_only}

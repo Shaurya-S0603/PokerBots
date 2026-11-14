@@ -30,7 +30,7 @@ class Config:
       raise ValueError("Require 0 < small blind < big blind <= starting stack")
 
 
-def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, opponent_policy=None, track_calls=False):
+def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, opponent_policy=None, track_calls=False, clock=perf_counter_ns, independent_decisions=False):
   arena = BotArena(seed, ("Equity", opponent))
   game = start_game(2, config.stack, config.small_blind, config.big_blind, deck_rng=arena.deck_rng)
   # Hash the hole cards by seat and the remaining deck before either bot acts.
@@ -41,6 +41,8 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
   times = []
   vpip = pfr = False
   limped = opened = faced_limp_raise = folded_after_limp = False
+  faced_open = False
+  open_response = None
   for _ in range(500):
     if game.hand_over:
       outcome = {"equity_seat": equity_seat, "net_chips": game.players[equity_seat - 1].stack - config.stack,
@@ -52,14 +54,17 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
         outcome["button_open"] = opened
         outcome["faced_limp_raise"] = faced_limp_raise
         outcome["folded_after_limp_raise"] = folded_after_limp
+        outcome["big_blind_open_response"] = open_response
       return outcome, times
     player = game.players[game.current_player]
     view = observe(game, player)
     rng = arena.bot_rngs[player.player_id - 1]
-    action_started = perf_counter_ns()
+    if independent_decisions:
+      rng = Random(rng.getrandbits(64))
+    action_started = clock()
     action, target = strategies[player.player_id](view, rng)
     if player.player_id == equity_seat:
-      times.append((perf_counter_ns() - action_started) / 1_000_000)
+      times.append((clock() - action_started) / 1_000_000)
       if track_calls and len(view.board) in {4, 5} and view.legal["call"]:
         call = view.legal["call_amount"]
         if view.opponent_bets:
@@ -75,6 +80,11 @@ def play_hand(seed, equity_seat, opponent, config, *, candidate=equity_bot, oppo
             for step in view.betting_line):
           faced_limp_raise = True
           folded_after_limp |= action == "fold"
+        if track_calls and not faced_open and not view.late_position and view.legal["call"]:
+          raises = [step for step in view.betting_line if step.action == "raise"]
+          if len(raises) == 1 and raises[0].opponent:
+            faced_open = True
+            open_response = action
         vpip |= action in {"call", "raise", "all_in"}
         pfr |= action == "raise" or (action == "all_in" and view.current_bet + view.stack > view.table_bet)
     try:
