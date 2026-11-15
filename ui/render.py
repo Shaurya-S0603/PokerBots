@@ -10,7 +10,7 @@ PHASE_NAMES = {"preflop": "Preflop", "flop": "Flop", "turn": "Turn", "river": "R
 
 def card_html(card=None, hidden=False, empty=False, highlight=False):
   if empty:
-    return '<span class="play-card play-card--empty" role="img" aria-label="Empty card slot">?</span>'
+    return '<span class="play-card play-card--empty" role="img" aria-label="Empty card slot"></span>'
   if hidden or not card:
     return '<span class="play-card play-card--back" role="img" aria-label="Face-down card"><span aria-hidden="true">♠</span></span>'
   rank, suit = card
@@ -28,7 +28,7 @@ def card_html(card=None, hidden=False, empty=False, highlight=False):
 def seat_html(player, state, name, index, total, last_action="", is_bot=False):
   seat_id = player["player_id"]
   angle = math.pi + (2 * math.pi * index / total)
-  left = 50 + 42 * math.sin(angle)
+  left = 50 + 37 * math.sin(angle)
   top = 50 - 37 * math.cos(angle)
   classes = ["seat"]
   if state["current_player"] == seat_id:
@@ -86,6 +86,7 @@ def table_html(state, names=None, last_actions=None, bot_ids=None):
   current = state["current_player"]
   status = "Pots settled" if state["hand_over"] else f"{names.get(current, f'Player {current}') if current else 'Players'} to act"
   replacements = {
+    "__MANY_SEATS__": " data-many-seats" if len(people) > 6 else "",
     "__HAND__": str(state["hand_number"]),
     "__PHASE_LABEL__": PHASE_NAMES.get(state["phase"], state["phase"]),
     "__POT__": f"{state['pot']:,}",
