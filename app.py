@@ -10,7 +10,7 @@ import streamlit as st
 from arena import BotArena, apply_decision, observe
 from poker_engine import start_game
 from pokerbots_sdk.hive_policy import hive_mind
-from ui.render import AVATAR_DATA, ashwing_avatar, card_html, table_html
+from ui.render import AVATAR_DATA, card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
 from ui.showdown import best_five, pot_explanation
@@ -48,6 +48,7 @@ def _init_state():
     "finished_hand": None,
     "flash": None,
     "turn_clock": None,
+    "visible_board": None,
     "chat": [],
     "chat_counts": {},
     "chat_events": set(),
@@ -174,7 +175,7 @@ def _render_clock(turn):
     _expire_turn(turn)
     left = min(TURN_SECONDS, max(0, ceil(active[1] - monotonic())))
     if left <= 10 and st.session_state.game_mode == ASHWING:
-      # Refresh the game once so the separate chat panel shows the new line.
+      # Refresh the whole table so the speech bubble shows the new line.
       key = ("thinking", turn[1], None)
       if key not in st.session_state.chat_events:
         _say("thinking", turn[1])
@@ -290,7 +291,13 @@ def _render_table(state):
     if st.session_state.game_mode == LOCAL and st.session_state.revealed_player == current:
       shown = st.session_state.game.get_state(current)
   bot_ids = {p.player_id for p in st.session_state.game.players if p.player_id != 1} if st.session_state.game_mode == ASHWING else set()
-  markup = table_html(shown, st.session_state.player_names, st.session_state.last_actions, bot_ids)
+  hand = (st.session_state.game_id, state["hand_number"])
+  previous = st.session_state.visible_board
+  previous_count = previous[2] if previous and previous[:2] == hand else 0
+  st.session_state.visible_board = (*hand, len(state["board"]))
+  chat = st.session_state.chat
+  markup = table_html(shown, st.session_state.player_names, st.session_state.last_actions, bot_ids,
+    reveal_board_from=previous_count, bot_line=chat[-1] if chat else "")
   st.markdown(markup, unsafe_allow_html=True)
 
 
@@ -595,10 +602,8 @@ def _render_table_chat():
   if not chat:
     return
   rows = "".join(f"<li>{html.escape(line)}</li>" for line in reversed(chat))
-  st.markdown('<section class="room-chat" aria-label="Ashwing chat"><div class="room-chat__title">'
-    + ashwing_avatar() + '<h3>Ashwing chat</h3></div>'
-    f'<ol class="room-chat__messages" aria-live="polite">{rows}</ol></section>',
-    unsafe_allow_html=True)
+  with st.expander("Ashwing chat"):
+    st.markdown(f'<ol class="room-chat__messages">{rows}</ol>', unsafe_allow_html=True)
 
 
 def _table_heading(state):

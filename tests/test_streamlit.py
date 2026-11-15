@@ -183,11 +183,16 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   app.run()
   assert [event["action"] for event in app.session_state.history] == ["call", "check"]
   assert app.session_state.game.phase == "flop"
+  assert sum(item.value.count('play-card--reveal"') for item in app.markdown) == 3
+  app.run()
+  assert all('play-card--reveal"' not in item.value for item in app.markdown)
   button(app, "Leave game").click().run()
   button(app, "Play Ashwing").click().run()
   deal(app)
   first_line = list(app.session_state.chat)
+  assert any('room-speech--seat' in item.value and first_line[0] in item.value for item in app.markdown)
   app.run()
   assert len(first_line) == 1 and app.session_state.chat == first_line
   button(app, "Fold").click().run()
   assert len(app.session_state.chat) == 2
+  assert any('room-speech--seat' in item.value and app.session_state.chat[-1] in item.value for item in app.markdown)

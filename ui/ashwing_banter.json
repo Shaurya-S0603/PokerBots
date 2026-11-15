@@ -1,36 +1,36 @@
 {
   "start": [
-    "Ashwing at your table. I brought a deck, a chip stack, and an unreasonable amount of confidence.",
-    "Welcome to the felt. The chips are real to me."
+    "I am Ashwing. The shadows can wait. I have a title to defend.",
+    "Deal. I wore burgundy tonight so even my reflection would feel underdressed."
   ],
   "win": [
-    "I'll just borrow those chips. For an indefinite period.",
-    "The pot has been safely relocated to my stack.",
-    "A clean getaway. The chips never saw it coming."
+    "Naturally. Even the river wanted my autograph.",
+    "Another pot for the throne. I should have brought a larger throne.",
+    "A masterclass. I would applaud, but I do love this pose."
   ],
   "loss": [
-    "A good hand. I'll be over here reviewing the footage.",
-    "Fair play. I was hoping you wouldn't notice that line.",
-    "Nicely done. The felt remembers."
+    "You won the pot. I won the lighting. An acceptable split.",
+    "A worthy hand. Enjoy it while I compose my comeback speech.",
+    "I suppose even the moon is allowed to eclipse me once."
   ],
   "blunder": [
-    "That was an expensive way to find the fold button.",
-    "Big pot, small exit. I've taken that door myself."
+    "An expensive exit. I prefer mine with a cape and a standing ovation.",
+    "Such a dramatic fold. I almost forgot whose scene this was."
   ],
   "thinking": [
-    "Take your time. I'm trying to look like I have a plan.",
-    "The suspense is doing wonders for my poker face."
+    "Take your time. I can hold this magnificent profile for hours.",
+    "Still weighing the odds? Behold, I have begun to pose."
   ],
   "timeout": [
-    "Clock's up. The dealer's taking this one."
+    "The clock has spoken. It was starting to upstage me."
   ],
   "eliminated": [
-    "My last chip! Tell the others it went out in a blaze of slightly questionable glory."
+    "My last chip? Impossible. I still have three speeches prepared."
   ],
   "match_win": [
-    "That's the match. I'll be insufferable about this for exactly one hand."
+    "The throne is mine. Hold the applause until I turn toward the light."
   ],
   "match_loss": [
-    "You got me. Somebody lower the lights before they see me tip my cap."
+    "So the shadow falls. You have my respect. I'll be back in a better cape."
   ]
 }
