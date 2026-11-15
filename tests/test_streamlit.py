@@ -28,7 +28,7 @@ def test_pass_and_play_resume_hides_cards_and_reruns_do_not_pay_twice():
   button(app, "Deal the first hand").click().run()
   button(app, "Reveal my cards").click().run()
   first_fold_key = button(app, "Fold").key
-  button(app, "Main menu").click().run()
+  button(app, "Leave game").click().run()
   button(app, "Resume current game").click().run()
   assert all("Your private hole cards" not in item.value for item in app.markdown)
   button(app, "Reveal my cards").click().run()
@@ -111,7 +111,7 @@ def test_ashwing_turn_does_not_depend_on_the_arena_registry(monkeypatch):
   assert any(event["player_id"] == 2 for event in app.session_state.history)
   assert any(turn.get("model") == "Ashwing"
     for turns in app.session_state.bot_simulations.values() for turn in turns)
-  button(app, "Bot visualization").click().run()
+  button(app, "Bot logs").click().run()
   assert not app.exception
   assert app.session_state.screen == "visualization"
   button(app, "Back to table").click().run()
@@ -145,7 +145,7 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   app.run()
   assert [event["action"] for event in app.session_state.history] == ["call", "check"]
   assert app.session_state.game.phase == "flop"
-  button(app, "Main menu").click().run()
+  button(app, "Leave game").click().run()
   button(app, "Play Ashwing").click().run()
   first_line = list(app.session_state.chat)
   app.run()
@@ -154,9 +154,11 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   assert len(app.session_state.chat) == 2
 
 
-def test_poker_puzzle_has_feedback():
+def test_lobby_only_offers_play_modes_and_ashwing_avatar_is_shown_in_game():
   app = AppTest.from_file(str(APP_PATH)).run()
-  button(app, "Poker puzzles").click().run()
-  app.radio[0].set_value("25%")
-  button(app, "Check answer").click().run()
-  assert app.success
+  assert "Poker puzzles" not in {item.label for item in app.button}
+  assert all(item.label != "Play online ↗" for item in app.get("link_button"))
+  assert any("room-club-portrait" in item.value and "ashwing-avatar" in item.value for item in app.markdown)
+  button(app, "Play Ashwing").click().run()
+  assert not app.exception
+  assert any('class="seat__identity"><img class="ashwing-avatar"' in item.value for item in app.markdown)

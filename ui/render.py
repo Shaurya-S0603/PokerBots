@@ -1,11 +1,16 @@
+from base64 import b64encode
 import html
 import math
 from pathlib import Path
 
 TEMPLATE = (Path(__file__).parent / "table.html").read_text(encoding="utf-8")
+AVATAR_DATA = b64encode(Path(__file__).with_name("ashwing-avatar.webp").read_bytes()).decode("ascii")
 SUIT_NAMES = {"♣️": "clubs", "♦️": "diamonds", "♠️": "spades", "♥️": "hearts"}
 RANK_NAMES = {"A": "Ace", "K": "King", "Q": "Queen", "J": "Jack", "10": "Ten"}
-PHASE_NAMES = {"preflop": "Preflop", "flop": "Flop", "turn": "Turn", "river": "River", "showdown": "Showdown", "hand_over": "Hand complete"}
+
+
+def ashwing_avatar():
+  return f'<img class="ashwing-avatar" src="data:image/webp;base64,{AVATAR_DATA}" alt="" width="89" height="89">'
 
 
 def card_html(card=None, hidden=False, empty=False, highlight=False):
@@ -71,11 +76,13 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
   if status:
     details.append(status)
   accessible = html.escape(", ".join(details), quote=True)
+  bet = f'<span>{player["current_bet"]:,} bet</span>' if player["current_bet"] else ""
   return (f'<article class="{" ".join(classes)}" style="--seat-x:{left:.2f}%;--seat-y:{top:.2f}%" aria-label="{accessible}">'
+    f'<div class="seat__identity">{ashwing_avatar() if is_bot else ""}<div class="seat__player">'
     f'<span class="seat__name" title="{safe_name}">{safe_name}</span>'
-    f'<div class="seat__stack">{player["stack"]:,} chips · {player["current_bet"]:,} bet</div>'
+    f'<div class="seat__stack"><strong>{player["stack"]:,}</strong> chips</div></div></div>'
     f'<div class="{cards_class}"{private}>{card_markup}</div>'
-    f'<div class="seat__footer">{marker_html}<span>{safe_status}</span></div></article>')
+    f'<div class="seat__footer">{marker_html}{bet}<span>{safe_status}</span></div></article>')
 
 
 def table_html(state, names=None, last_actions=None, bot_ids=None):
@@ -90,8 +97,6 @@ def table_html(state, names=None, last_actions=None, bot_ids=None):
   status = "Pots settled" if state["hand_over"] else f"{names.get(current, f'Player {current}') if current else 'Players'} to act"
   replacements = {
     "__SEAT_LAYOUT__": " data-heads-up" if len(people) == 2 else " data-many-seats" if len(people) > 6 else "",
-    "__HAND__": str(state["hand_number"]),
-    "__PHASE_LABEL__": PHASE_NAMES.get(state["phase"], state["phase"]),
     "__POT__": f"{state['pot']:,}",
     "__BOARD__": board,
     "__SEATS__": seats,

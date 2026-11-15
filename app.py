@@ -12,7 +12,7 @@ from poker_engine import start_game
 from ui.benchmark_dashboard import render_benchmarks
 from pokerbots_sdk.hive_policy import hive_mind
 from ui.bot_visualization import render_bot_visualization
-from ui.render import card_html, table_html
+from ui.render import ashwing_avatar, card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
 from ui.showdown import best_five, pot_explanation
@@ -26,7 +26,6 @@ ASHWING = "Human vs Ashwing"
 BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 TURN_SECONDS = 30
 BANTER = json.loads((ROOT / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
-PUZZLES = json.loads((ROOT / "ui" / "poker_puzzles.json").read_text(encoding="utf-8"))
 
 
 def _init_state():
@@ -55,6 +54,8 @@ def _init_state():
     "bot_pacing": "Quick",
     "bot_due": None,
   }
+  if st.session_state.get("screen") == "puzzles":
+    st.session_state.screen = "menu"
   if st.session_state.get("game_mode") in {"Human vs Bots", "Bot Arena"}:
     st.session_state.update(game_mode=LOCAL, screen="menu", game=None, hand_records={})
   for key, value in defaults.items():
@@ -198,7 +199,7 @@ def _apply_action(action, player, amount=None, *, timed_out=False):
     _log_action(action, player.player_id, before)
     st.session_state.revealed_player = None
     st.session_state.turn_clock = None
-    st.session_state.flash = ("info", f"Time expired. {_name(player.player_id)} {action}s.") if timed_out else None
+    st.session_state.flash = ("info", f"Time expired · Automatic {action}.") if timed_out else None
     if (action == "fold" and not timed_out and before["phase"] in ("turn", "river")
         and before["pot"] >= 12 * before["big_blind"] and player.total_bet >= 6 * before["big_blind"]):
       _say("blunder", before["hand_number"])
@@ -317,29 +318,30 @@ def _render_actions(state):
   player = _player(current)
   legal = st.session_state.game.legal_actions(player)
   _render_clock(turn)
+  passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
+  actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
+  can_raise = legal.get("raise", False)
+  available = []
+  if can_raise:
+    maximum = legal["max_raise_total"]
+    minimum = min(legal["min_raise_total"], maximum)
+    pot_after_call = state["pot"] + legal["call_amount"]
+    presets = [("½ pot", state["table_bet"] + pot_after_call // 2), ("Pot", state["table_bet"] + pot_after_call)]
+    available = [(label, amount) for label, amount in presets if minimum <= amount < maximum]
   with st.container(key="move_buttons"):
-    columns = st.columns(3, gap="small")
-    passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
-    actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
-    for column, (label, action) in zip(columns, actions):
+    widths = [1, 1.15] + ([1, 1.8] + [1.05] * len(available) if can_raise else []) + [1]
+    fold, call, *sizing, all_in = st.columns(widths, gap="small", vertical_alignment="center")
+    for column, (label, action) in zip((fold, call, all_in), actions):
       if column.button(label, key=f"{action}_{key}", disabled=not legal.get(action, False),
           type="primary" if action in ("check", "call") else "secondary", use_container_width=True):
         _apply_action(action, player)
-  if not legal.get("raise"):
-    return
-  maximum = legal["max_raise_total"]
-  minimum = min(legal["min_raise_total"], maximum)
-  pot_after_call = state["pot"] + legal["call_amount"]
-  presets = [("½ pot", state["table_bet"] + pot_after_call // 2), ("Pot", state["table_bet"] + pot_after_call)]
-  with st.container(key="bet_sizes"):
-    amount_column, raise_column = st.columns([3, 2], gap="small", vertical_alignment="bottom")
-    target = amount_column.number_input("Raise to", min_value=minimum, max_value=maximum,
-      value=minimum, step=1, key=f"raise_to_{key}")
-    if raise_column.button("Raise", key=f"raise_{key}", use_container_width=True):
-      _apply_action("raise", player, int(target) - player.current_bet)
-    available = [(label, amount) for label, amount in presets if minimum <= amount < maximum]
-    if available:
-      for column, (label, amount) in zip(st.columns(2, gap="small"), available):
+    if can_raise:
+      raise_column, amount_column, *preset_columns = sizing
+      target = amount_column.number_input("Raise to", min_value=minimum, max_value=maximum,
+        value=minimum, step=1, key=f"raise_to_{key}", label_visibility="collapsed")
+      if raise_column.button("Raise", key=f"raise_{key}", use_container_width=True):
+        _apply_action("raise", player, int(target) - player.current_bet)
+      for column, (label, amount) in zip(preset_columns, available):
         if column.button(f"{label} {amount:,}", key=f"preset_{label}_{key}", use_container_width=True):
           _apply_action("raise", player, amount - player.current_bet)
 
@@ -480,49 +482,32 @@ def _masthead():
     unsafe_allow_html=True)
 
 
+def _deal(count, chips, small, big, mode, names):
+  st.markdown('<div class="deal-overlay" role="status"><div class="deal-deck" aria-hidden="true">'
+    '<i></i><i></i><i></i></div><strong>Dealing you in…</strong></div>', unsafe_allow_html=True)
+  _start_game(count, chips, small, big, mode, names)
+  st.rerun()
+
+
 def _render_lobby_hero():
   with st.container(key="club_hero"):
     st.markdown('<div class="room-club-hero"><div><h1>Take a seat.</h1>'
-      '<p>Play No-Limit Hold’em with friends or face Ashwing, the cardsharp who always has a line.</p>'
-      '</div><div class="room-club-aces" aria-hidden="true"><span>A ♠</span><span>A ♦</span></div></div>',
+      '<p>Play No-Limit Hold’em against Ashwing or share a table on one device.</p>'
+      '</div><div class="room-club-portrait">' + ashwing_avatar() + '<span>Ashwing</span></div></div>',
       unsafe_allow_html=True)
-    play, local, puzzles, online = st.columns([1.25, 1.1, 1, 1], gap="small")
+    play, local = st.columns(2, gap="small")
     if play.button("Play Ashwing", type="primary", use_container_width=True):
-      _start_game(2, 1000, 5, 10, ASHWING, ["You", "Ashwing"])
-      st.rerun()
+      _deal(2, 1000, 5, 10, ASHWING, ["You", "Ashwing"])
     if local.button("Pass-and-play", use_container_width=True):
-      _start_game(2, 1000, 5, 10, LOCAL, ["Player 1", "Player 2"])
-      st.rerun()
-    if puzzles.button("Poker puzzles", use_container_width=True):
-      st.session_state.screen = "puzzles"
-      st.rerun()
-    online.link_button("Play online ↗", "https://chipzen.ai/", use_container_width=True)
-
-
-def _render_puzzles():
-  if st.button("Back to menu"):
-    st.session_state.screen = "menu"
-    st.rerun()
-  st.title("Poker puzzles")
-  index = st.selectbox("Choose a puzzle", range(len(PUZZLES)), format_func=lambda i: PUZZLES[i]["title"])
-  puzzle = PUZZLES[index]
-  with st.form(f"puzzle_{index}"):
-    st.subheader(puzzle["title"])
-    answer = st.radio(puzzle["question"], puzzle["choices"], index=None)
-    if st.form_submit_button("Check answer", type="primary"):
-      if answer is None:
-        st.warning("Choose an answer first.")
-      elif answer == puzzle["choices"][puzzle["answer"]]:
-        st.success(puzzle["explanation"])
-      else:
-        st.info(f"Answer · {puzzle['choices'][puzzle['answer']]}. {puzzle['explanation']}")
+      _deal(2, 1000, 5, 10, LOCAL, ["Player 1", "Player 2"])
 
 
 def _render_menu():
   _render_lobby_hero()
-  setup, info = st.columns([2.05, 1], gap="medium")
-  with setup, st.container(border=True, key="lobby_setup"):
-    st.subheader("Customize a table")
+  if st.session_state.game is not None and st.button("Resume current game", use_container_width=True):
+    st.session_state.screen = "table"
+    st.rerun()
+  with st.expander("Customize a table"):
     mode = st.radio("Game mode", [LOCAL, ASHWING], horizontal=True)
     vs_ashwing = mode == ASHWING
     st.caption("Play heads-up or add up to four more Ashwing seats." if vs_ashwing
@@ -553,28 +538,15 @@ def _render_menu():
         elif len({value.casefold() for value in clean}) != len(clean) or any(not value for value in clean):
           st.error("Enter a distinct, nonempty name for each player.")
         else:
-          _start_game(count, int(chips), int(small), int(big), mode, clean)
-          st.rerun()
-    if st.session_state.game is not None and st.button("Resume current game", use_container_width=True):
-      st.session_state.screen = "table"
+          _deal(count, int(chips), int(small), int(big), mode, clean)
+  with st.sidebar, st.expander("PokerRoom tools"):
+    if st.button("Bot visualization", use_container_width=True):
+      _open_visualization("menu")
+    if st.button("Bot benchmarks", use_container_width=True):
+      st.session_state.screen = "benchmarks"
       st.rerun()
-  with info:
-    with st.container(border=True, key="ashwing_profile"):
-      st.markdown('<div class="room-profile"><div class="room-profile__cards" aria-hidden="true">'
-        '<span>♠</span><span>♦</span></div><h2>Ashwing</h2>'
-        '<p>Reads betting patterns heads-up and recalculates its equity in multiway pots.</p></div>',
-        unsafe_allow_html=True)
-      if st.button("Bot visualization", use_container_width=True):
-        _open_visualization("menu")
-      if st.button("Bot benchmarks", use_container_width=True):
-        st.session_state.screen = "benchmarks"
-        st.rerun()
-      if st.session_state.hand_records and st.button("Hand history", use_container_width=True):
-        _open_history()
-  with st.expander("How to play"):
-    st.markdown("Use any five cards from your two hole cards and the shared board. Fold, check, call or raise "
-      "as betting moves from preflop to the river. The last player in the hand wins without a showdown. "
-      "At showdown, the strongest eligible hand wins each pot.")
+    if st.session_state.hand_records and st.button("Hand history", use_container_width=True):
+      _open_history()
 
 
 def _render_sidebar():
@@ -612,10 +584,6 @@ def _render_action_log(state):
   st.markdown(f'<section class="room-log" aria-label="Action log"><h3>Action log</h3>'
     f'<div class="room-streets" aria-label="Betting streets">{stages}</div>'
     f'<ol class="room-events">{"".join(rows)}</ol></section>', unsafe_allow_html=True)
-  if st.button("Hand history", use_container_width=True):
-    _open_history()
-  if st.session_state.game_mode == ASHWING and st.button("Bot visualization", use_container_width=True):
-    _open_visualization("table")
 
 
 def _render_table_chat():
@@ -623,24 +591,27 @@ def _render_table_chat():
   if not chat:
     return
   rows = "".join(f"<li>{html.escape(line)}</li>" for line in reversed(chat))
-  st.markdown('<section class="room-chat" aria-label="Ashwing chat"><h3>Ashwing chat</h3>'
+  st.markdown('<section class="room-chat" aria-label="Ashwing chat"><h3>' + ashwing_avatar() + 'Ashwing chat</h3>'
     f'<ol class="room-chat__messages" aria-live="polite">{rows}</ol></section>',
     unsafe_allow_html=True)
 
 
 def _table_heading(state):
-  details, nav = st.columns([4, 1])
-  with details:
-    phase = state["phase"].replace("_", " ").title()
-    st.markdown(f'<div class="room-table-heading"><small>{st.session_state.game_mode}</small>'
-      f'<h2>Hand {state["hand_number"]} · {phase}</h2></div>', unsafe_allow_html=True)
-  with nav:
-    if st.button("Main menu", use_container_width=True):
+  with st.container(key="table_nav"):
+    leave, details, history, logs = st.columns([1.15, 1.7, 1, 1], gap="small", vertical_alignment="center")
+    if leave.button("Leave game", use_container_width=True):
       if st.session_state.game_mode == LOCAL:
         st.session_state.revealed_player = None
       st.session_state.bot_due = None
       st.session_state.screen = "menu"
       st.rerun()
+    phase = state["phase"].replace("_", " ").title()
+    details.markdown(f'<div class="room-table-heading"><h2><span>{phase}</span>'
+      f' <small>Hand {state["hand_number"]}</small></h2></div>', unsafe_allow_html=True)
+    if history.button("History", use_container_width=True):
+      _open_history()
+    if st.session_state.game_mode == ASHWING and logs.button("Bot logs", use_container_width=True):
+      _open_visualization("table")
 
 
 def _open_visualization(return_to):
@@ -653,10 +624,8 @@ def _open_visualization(return_to):
 def main():
   _init_state()
   _inject_css()
-  _masthead()
-  if st.session_state.screen == "puzzles":
-    _render_puzzles()
-    return
+  if st.session_state.screen != "table":
+    _masthead()
   if st.session_state.screen == "visualization":
     destination = st.session_state.visualization_return
     if st.button(f"Back to {destination}"):
@@ -701,18 +670,17 @@ def main():
     else:
       st.caption(message)
     st.session_state.flash = None
-  table, log = st.columns([2.45, 1], gap="medium")
-  with table:
-    _render_table(state)
-    with st.container(border=True, key="table_controls"):
-      if _bot_to_act(state):
-        _render_paced_bot(state, delay)
-      else:
-        st.session_state.bot_due = None
-        _render_actions(state)
-  with log, st.container(border=True, key="table_log"):
+  _render_table(state)
+  with st.container(key="table_controls"):
+    if _bot_to_act(state):
+      _render_paced_bot(state, delay)
+    else:
+      st.session_state.bot_due = None
+      _render_actions(state)
+  with st.container(key="table_log"):
     _render_table_chat()
-    _render_action_log(state)
+    with st.expander("Hand action log"):
+      _render_action_log(state)
 
 
 if __name__ == "__main__":
