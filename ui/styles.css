@@ -118,14 +118,37 @@ h1, h2, h3 { letter-spacing: -.035em; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 
-/* Lobby and deal transition */
-.st-key-club_hero { max-width: 790px; margin: 0 auto; padding: clamp(18px, 4vw, 42px); background: radial-gradient(ellipse at 85% 15%, #19342e, #101827 58%, #0b111d); border: 1px solid var(--panel-line); border-radius: 18px; }
-.room-club-hero { display: flex; align-items: center; justify-content: space-between; gap: clamp(12px, 4vw, 36px); }
-.room-club-hero h1 { margin: 0; padding: 0; font-size: clamp(2rem, 5vw, 4rem); color: var(--ink); }
-.room-club-hero p { max-width: 29rem; color: var(--ink-soft); margin: .5rem 0 0; }
-.room-club-portrait { display: grid; justify-items: center; gap: 5px; font-size: .78rem; font-weight: 700; }
+/* Lobby, room setup, and deal transition */
+.st-key-room_lobby { max-width: 820px; margin: clamp(1rem, 7svh, 5rem) auto 0; }
+.st-key-room_lobby h1 { text-align: center; font-size: clamp(2.5rem, 6vw, 4.4rem); padding: 0; }
+.st-key-room_lobby [data-testid="stCaptionContainer"] { text-align: center; color: var(--ink-soft); }
+.st-key-room_lobby [data-testid="stHorizontalBlock"] { flex-wrap: nowrap; margin: .65rem 0; }
+.st-key-room_lobby [data-testid="stColumn"] { min-width: 0 !important; flex: 1 1 0; }
+:is(.st-key-mode_ashwing, .st-key-mode_local) .stButton button {
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(.65rem, 3vw, 1.25rem);
+  min-height: clamp(175px, 35svh, 300px); border-radius: 15px; padding: 1rem .35rem;
+  background: radial-gradient(ellipse at 50% 25%, #1a352e, #0f1725 75%);
+  border: 1px solid #34584c;
+}
+:is(.st-key-mode_ashwing, .st-key-mode_local) .stButton button:hover {
+  background: radial-gradient(ellipse at 50% 25%, #20483b, #142436 75%);
+}
+:is(.st-key-mode_ashwing, .st-key-mode_local) .stButton p { font-size: clamp(.9rem, 2.6vw, 1.3rem); font-weight: 750; }
+:is(.st-key-mode_ashwing, .st-key-mode_local) button::before {
+  content: ""; display: block; height: clamp(55px, 12vw, 88px); width: clamp(55px, 12vw, 88px);
+  border-radius: 19%; background-size: cover; background-position: center; flex: none;
+}
+.st-key-mode_ashwing button::before { border: 1px solid #a3514a; box-shadow: 0 0 27px #d85e4738; }
+.st-key-mode_local button::before {
+  width: clamp(38px, 9vw, 61px); border-radius: 8px;
+  border: 1px solid #55a189; box-shadow: 5px 3px 0 #11281f, 6px 4px 0 #326658, -5px 3px 0 #11281f, -6px 4px 0 #326658;
+  background: repeating-linear-gradient(45deg, #075139 0 5px, #0b6144 5px 8px);
+}
+.st-key-room_setup { max-width: 670px; margin: 0 auto; padding: clamp(14px, 4vw, 32px); background: #101827; border: 1px solid var(--panel-line); border-radius: 16px; }
+.st-key-room_setup h1 { padding: 0; font-size: clamp(1.95rem, 5vw, 3rem); }
+.st-key-room_setup h3 { padding-bottom: 0; font-size: 1.08rem; }
+.st-key-room_setup [data-testid="stCaptionContainer"] { color: var(--ink-soft); }
 .ashwing-avatar { display: block; object-fit: cover; border-radius: 25%; border: 1px solid #a3514a; }
-.room-club-portrait .ashwing-avatar { width: clamp(56px, 12vw, 104px); height: auto; box-shadow: 0 0 26px #c24b4140; }
 .deal-overlay { position: fixed; z-index: 999; inset: 0; display: grid; align-content: center; justify-items: center; gap: 2rem; background: #050914; }
 .deal-deck { position: relative; width: 76px; height: 76px; }
 .deal-deck i { position: absolute; inset: 4px 11px; border: 1px solid #3eae8b; border-radius: 8px; background: repeating-linear-gradient(45deg, #09543c 0 5px, #0d7252 5px 9px); transform-origin: 50% 90%; animation: deal-fan .28s ease-out both; }
@@ -142,7 +165,7 @@ h1, h2, h3 { letter-spacing: -.035em; }
 .st-key-table_nav [data-testid="stColumn"] { min-width: 0 !important; }
 .st-key-table_nav .stButton button { min-height: 36px; border-color: transparent; background: transparent; color: #c0ccdb; padding: .1rem .3rem; }
 .room-table-heading h2 { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; margin: 0; padding: 0; font-size: .85rem; letter-spacing: 0; }
-.room-table-heading h2 span { background: #202b3c; padding: .28rem .48rem; border-radius: 5px; }
+.room-table-heading .room-street { background: #202b3c; padding: .28rem .48rem; border-radius: 5px; }
 .room-table-heading small { color: var(--ink-soft); font-size: .74rem; }
 .room { border: 0; background: transparent; }
 .table-stage { height: clamp(330px, 57svh, 620px); background: transparent; }
@@ -182,8 +205,9 @@ h1, h2, h3 { letter-spacing: -.035em; }
 .room[data-heads-up] .seat__badge[title="Small blind"] { color: #edf9ff; background: #086589; }
 .room[data-heads-up] .seat__badge[title="Big blind"] { color: #fff6ef; background: #9e4c16; }
 .st-key-table_controls, .st-key-table_log { width: min(100%, 760px); margin: 0 auto; }
-.room-chat h3 { display: flex; gap: .55rem; align-items: center; font-size: 1rem; padding: 0 0 .4rem; margin: 0; }
-.room-chat h3 .ashwing-avatar { width: 29px; height: 29px; }
+.room-chat__title { display: flex; gap: .55rem; align-items: center; padding-bottom: .4rem; }
+.room-chat h3 { font-size: 1rem; padding: 0; margin: 0; }
+.room-chat__title .ashwing-avatar { width: 29px; height: 29px; }
 .stApp .room-chat__messages { list-style: none; padding: 0; margin: 0 0 .4rem; max-height: 124px; overflow: auto; }
 .room-chat__messages li { width: fit-content; max-width: 95%; background: #182334; color: var(--ink); border: 1px solid #2b3c52; border-radius: 3px 10px 10px 10px; margin-bottom: .3rem; padding: .4rem .55rem; font-size: .82rem; }
 .room-clock { display: flex; align-items: center; gap: 8px; color: #f5d88e; font-size: .8rem; font-weight: 750; font-variant-numeric: tabular-nums; }

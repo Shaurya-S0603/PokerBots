@@ -39,7 +39,13 @@ def check_table(browser, width):
   page.on("pageerror", lambda error: errors.append(str(error)))
   page.goto(URL)
   expect(page.get_by_role("button", name="Play Ashwing")).to_be_visible()
+  expect(page.get_by_role("slider")).to_have_count(0)
   page.get_by_role("button", name="Pass-and-play").click()
+  expect(page.get_by_role("heading", name="Customize Room")).to_be_visible()
+  expect(page.get_by_role("spinbutton", name="Starting stack")).to_have_value("1000")
+  expect(page.get_by_role("region", name="No-Limit Texas Hold'em poker table")).to_have_count(0)
+  page.get_by_role("button", name="Deal the first hand").click()
+  expect(page.get_by_text("Dealing you in…", exact=True)).to_be_visible()
   page.get_by_role("button", name="Reveal my cards").click()
   expect(page.get_by_role("group", name="Your private hole cards")).to_be_visible()
   expect(page.get_by_role("timer")).to_be_visible()
@@ -81,12 +87,14 @@ def check_table(browser, width):
 def check_paced_bot(browser, width, count):
   page = browser.new_page(viewport={"width": width, "height": 900})
   page.goto(URL)
-  page.get_by_text("Customize a table", exact=True).click()
-  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
-  page.get_by_text("Human vs Ashwing", exact=True).click()
-  expect(page.get_by_text("Play heads-up or add up to four more Ashwing seats.", exact=True)).to_be_visible()
+  page.get_by_role("button", name="Play Ashwing", exact=True).click()
+  expect(page.get_by_role("heading", name="Customize Room")).to_be_visible()
+  expect(page.get_by_role("textbox", name="Your name")).to_be_visible()
   set_player_count(page, count)
   page.get_by_role("button", name="Deal the first hand").click()
+  expect(page.get_by_text("Dealing you in…", exact=True)).to_be_visible()
+  expect(page.get_by_role("button", name="History", exact=True)).to_be_visible()
+  expect(page.get_by_role("button", name="Bot logs", exact=True)).to_have_count(0)
   label = "Ashwing" if count == 2 else "Ashwing 1"
   expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
   avatar = page.locator(".seat .ashwing-avatar").first
@@ -104,32 +112,6 @@ def check_paced_bot(browser, width, count):
   page.close()
 
 
-def check_benchmarks(browser):
-  page = browser.new_page(viewport={"width": 1440, "height": 900})
-  page.goto(URL)
-  page.get_by_role("button", name="Expand sidebar").click()
-  page.get_by_text("PokerRoom tools", exact=True).click()
-  page.get_by_role("button", name="Bot benchmarks", exact=True).click()
-  expect(page.get_by_role("heading", name="Bot benchmarks", exact=True)).to_be_visible()
-  expect(page.get_by_test_id("stDataFrame")).to_be_visible()
-  with page.expect_download() as download:
-    page.get_by_role("button", name="Download benchmark report").click()
-  report = json.loads(download.value.path().read_text(encoding="utf-8"))
-  assert len(report["results"]) == 4 and report["config"]["split"] == "evaluation"
-  page.get_by_role("button", name="Back to menu").click()
-  expect(page.get_by_role("button", name="Play Ashwing")).to_be_visible()
-  if page.get_by_role("button", name="Expand sidebar").is_visible():
-    page.get_by_role("button", name="Expand sidebar").click()
-  visualization = page.get_by_role("button", name="Bot visualization", exact=True)
-  if not visualization.is_visible():
-    page.get_by_text("PokerRoom tools", exact=True).click()
-  visualization.click()
-  expect(page.get_by_role("heading", name="Bot visualization", exact=True)).to_be_visible()
-  page.get_by_role("tab", name="Training match", exact=True).click()
-  expect(page.get_by_role("heading", name="Held-out evaluation", exact=True)).to_be_visible()
-  page.close()
-
-
 if __name__ == "__main__":
   command = [sys.executable, "-m", "streamlit", "run", "app.py",
     "--server.port=8511", "--server.headless=true", "--browser.gatherUsageStats=false"]
@@ -142,6 +124,5 @@ if __name__ == "__main__":
         check_table(browser, 360)
         check_paced_bot(browser, 1440, 3)
         check_paced_bot(browser, 360, 2)
-        check_benchmarks(browser)
     finally:
       server.terminate()

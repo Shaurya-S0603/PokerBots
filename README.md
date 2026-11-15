@@ -9,22 +9,9 @@ python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Open the local URL printed by Streamlit. Use **Local Pass-and-Play** for 2–10 human players sharing a device, or **Human vs Bots** to play as seat 1 against the latest Equity training match winner.
+Open the local URL printed by Streamlit. Choose **Play Ashwing** for a table of 2–6 seats, or **Pass-and-play** for 2–10 people sharing a device. In **Customize Room**, set the starting stacks, blinds, and human player names, then select **Deal the first hand**.
 
-## Bot Arena
-
-Select **Bot Arena** as the game mode. Pick a match seed and a strategy for each seat. **Step** plays one decision or deals the next hand after a payout. **Play** repeats those steps at the selected pace, and **Pause** returns control to you. Reuse the seed, strategies, stacks, and blinds to reproduce a match in the same app version. The hand history download includes the Arena seed and strategies.
-
-The Arena includes Calling Station, Random, Tight, Loose-Aggressive, and Equity. All strategies use each bot's own cards and public table information.
-
-**Equity** in Bot Arena uses position-based opening ranges when facing only the big blind. It uses equity for responses to raises and postflop decisions. The Arena opening rule is separate from the frozen benchmark and Human vs Bots training policies. **Equity** enumerates every opponent hand on a heads-up river. In other spots it samples uniformly from unseen cards using 256 trials against up to three opponents and 128 at larger tables. It uses equity for call and raise decisions, caps raise targets at effective stacks, and falls back to Tight when a partial call or multiway all-in makes simple pot odds unreliable.
-
-## One Above All
-
-**Human vs Bots** uses One Above All. It selects a policy for two-player hands and another for
-multiway hands from the saved Arena results. **Bot visualization → One Above All** shows the
-standings and the fresh-deal comparison with each incumbent. **Simulation** shows completed bot
-decisions, and **Training match** keeps the earlier generation results.
+## Offline policy evaluation
 
 Run `python champion_arena.py` to repeat the tournament. The heads-up round robin swaps seats at
 15 and 100 BB. The multiway screen rotates each entrant through every seat at its assigned tables.
@@ -40,7 +27,7 @@ python benchmark.py --opponent "Calling Station" --pairs 1
 python benchmark.py --split evaluation --pairs 100 --output evaluation.json
 ```
 
-**Bot benchmarks** in the main menu shows a bundled evaluation and accepts reports from the runner. Each seed plays two hands with equal starting stacks and the bots swapped. A hash checks that the deal by seat is identical. Tuning uses even seeds and evaluation uses odd seeds. Use `--include-pairs` to keep each hand's outcome and deal hash in the export. Results show Equity's net big blinds per 100 hands, a 95% bootstrap interval sampled by seed pair, illegal actions, VPIP, PFR, and Equity's decision latency. If a strategy makes an illegal move, the runner reports it and exits with a nonzero status.
+Each seed plays two hands with equal starting stacks and the bots swapped. A hash checks that the deal by seat is identical. Tuning uses even seeds and evaluation uses odd seeds. Use `--include-pairs` to keep each hand's outcome and deal hash in the export. Results show Equity's net big blinds per 100 hands, a 95% bootstrap interval sampled by seed pair, illegal actions, VPIP, PFR, and Equity's decision latency. If a strategy makes an illegal move, the runner reports it and exits with a nonzero status.
 
 ## Project structure
 
@@ -56,13 +43,13 @@ python benchmark.py --split evaluation --pairs 100 --output evaluation.json
 
 ## Hand history
 
-Choose **Replay this hand** after a payout, or **Hand history** in the sidebar, to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
+Choose **Replay this hand** after a payout, or **History** at the table, to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
 
 **Download completed hands (JSON)** exports the current game's completed hands with seat numbers. It includes cards revealed at showdown and omits names, folded or otherwise unrevealed hole cards, and the deck. Download before starting another game or leaving the session to keep the history.
 
 ## Behavior and privacy
 
-The game state lives in Streamlit session state. Press **Main menu** and **Resume current game** to navigate within the same session. A browser reload or a disconnected session is not guaranteed to preserve the game. There is no database, external lobby or account system.
+The game state lives in Streamlit session state. Press **Leave game** and **Resume current game** to navigate within the same session. A browser reload or a disconnected session is not guaranteed to preserve the game. There is no database, external lobby or account system.
 
 Pass-and-play hides the previous player's cards until the next player taps **Reveal my cards**. This is meant for a trusted shared device, not secure network multiplayer. Bot opponents only receive their own private cards and publicly revealed community cards.
 
