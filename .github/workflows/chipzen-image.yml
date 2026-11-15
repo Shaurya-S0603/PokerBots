@@ -20,25 +20,35 @@ permissions:
 jobs:
   package:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - policy: One Above All
+            slug: one-above-all
+          - policy: Hive Mind
+            slug: hive-mind
+    env:
+      BOT_POLICY: ${{ matrix.policy }}
+      BOT_SLUG: ${{ matrix.slug }}
     steps:
       - uses: actions/checkout@v4
       - name: Build Linux image
-        run: docker build --platform linux/amd64 -f Dockerfile.chipzen --build-arg 'POKERBOTS_STRATEGY=One Above All' -t pokerbots-one-above-all:chipzen .
+        run: docker build --platform linux/amd64 -f Dockerfile.chipzen --build-arg "POKERBOTS_STRATEGY=$BOT_POLICY" -t "pokerbots-$BOT_SLUG:chipzen" .
       - name: Check sandbox user and mock matches inside the image
         run: |
-          test "$(docker run --rm --network none --entrypoint id pokerbots-one-above-all:chipzen -u)" = 10001
+          test "$(docker run --rm --network none --entrypoint id "pokerbots-$BOT_SLUG:chipzen" -u)" = 10001
           docker run --rm --network none --read-only --entrypoint python \
             -v "$PWD/tests/chipzen_conformance.py:/bot/tests/chipzen_conformance.py:ro" \
-            pokerbots-one-above-all:chipzen /bot/tests/chipzen_conformance.py "One Above All"
+            "pokerbots-$BOT_SLUG:chipzen" /bot/tests/chipzen_conformance.py "$BOT_POLICY"
       - name: Export the upload archive
         run: |
-          test "$(docker image inspect --format '{{.Size}}' pokerbots-one-above-all:chipzen)" -le 200000000
-          docker save pokerbots-one-above-all:chipzen | gzip > pokerbots-one-above-all-chipzen.tar.gz
-          gzip -t pokerbots-one-above-all-chipzen.tar.gz
-          test "$(wc -c < pokerbots-one-above-all-chipzen.tar.gz)" -le 250000000
+          test "$(docker image inspect --format '{{.Size}}' "pokerbots-$BOT_SLUG:chipzen")" -le 200000000
+          docker save "pokerbots-$BOT_SLUG:chipzen" | gzip > "pokerbots-$BOT_SLUG-chipzen.tar.gz"
+          gzip -t "pokerbots-$BOT_SLUG-chipzen.tar.gz"
+          test "$(wc -c < "pokerbots-$BOT_SLUG-chipzen.tar.gz")" -le 250000000
       - uses: actions/upload-artifact@v4
         with:
-          name: pokerbots-one-above-all-chipzen
-          path: pokerbots-one-above-all-chipzen.tar.gz
+          name: pokerbots-${{ matrix.slug }}-chipzen
+          path: pokerbots-${{ matrix.slug }}-chipzen.tar.gz
           if-no-files-found: error
           compression-level: 0
