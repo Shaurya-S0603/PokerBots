@@ -38,9 +38,8 @@ def check_table(browser, width):
   errors = []
   page.on("pageerror", lambda error: errors.append(str(error)))
   page.goto(URL)
-  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
-  set_player_count(page, 2)
-  page.get_by_role("button", name="Deal the first hand").click()
+  expect(page.get_by_role("button", name="Play Ashwing")).to_be_visible()
+  page.get_by_role("button", name="Pass-and-play").click()
   page.get_by_role("button", name="Reveal my cards").click()
   expect(page.get_by_role("group", name="Your private hole cards")).to_be_visible()
   expect(page.get_by_role("timer")).to_be_visible()
@@ -79,6 +78,7 @@ def check_table(browser, width):
 def check_paced_bot(browser, width, count):
   page = browser.new_page(viewport={"width": width, "height": 900})
   page.goto(URL)
+  page.get_by_text("Customize a table", exact=True).click()
   expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
   page.get_by_text("Human vs Ashwing", exact=True).click()
   expect(page.get_by_text("Play heads-up or add up to four more Ashwing seats.", exact=True)).to_be_visible()
@@ -86,7 +86,7 @@ def check_paced_bot(browser, width, count):
   page.get_by_role("button", name="Deal the first hand").click()
   label = "Ashwing" if count == 2 else "Ashwing 1"
   expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
-  expect(page.get_by_role("region", name="Action log")).to_be_visible()
+  expect(page.locator(".seat .ashwing-avatar").first).to_be_visible()
   expect(page.get_by_role("region", name="Ashwing chat")).to_be_visible()
   expect(page.get_by_role("timer")).to_be_visible()
   assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
@@ -94,6 +94,7 @@ def check_paced_bot(browser, width, count):
     page.get_by_role("button", name="Call 5", exact=True).click()
   else:
     page.get_by_role("button", name="Fold", exact=True).click()
+  page.get_by_text("Hand action log", exact=True).click()
   expect(page.locator(".room-events").get_by_text(label, exact=False).first).to_be_visible(timeout=15000)
   page.close()
 
@@ -101,6 +102,8 @@ def check_paced_bot(browser, width, count):
 def check_benchmarks(browser):
   page = browser.new_page(viewport={"width": 1440, "height": 900})
   page.goto(URL)
+  page.get_by_role("button", name="Expand sidebar").click()
+  page.get_by_text("PokerRoom tools", exact=True).click()
   page.get_by_role("button", name="Bot benchmarks", exact=True).click()
   expect(page.get_by_role("heading", name="Bot benchmarks", exact=True)).to_be_visible()
   expect(page.get_by_test_id("stDataFrame")).to_be_visible()
@@ -109,8 +112,13 @@ def check_benchmarks(browser):
   report = json.loads(download.value.path().read_text(encoding="utf-8"))
   assert len(report["results"]) == 4 and report["config"]["split"] == "evaluation"
   page.get_by_role("button", name="Back to menu").click()
-  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
-  page.get_by_role("button", name="Bot visualization", exact=True).click()
+  expect(page.get_by_role("button", name="Play Ashwing")).to_be_visible()
+  if page.get_by_role("button", name="Expand sidebar").is_visible():
+    page.get_by_role("button", name="Expand sidebar").click()
+  visualization = page.get_by_role("button", name="Bot visualization", exact=True)
+  if not visualization.is_visible():
+    page.get_by_text("PokerRoom tools", exact=True).click()
+  visualization.click()
   expect(page.get_by_role("heading", name="Bot visualization", exact=True)).to_be_visible()
   page.get_by_role("tab", name="Training match", exact=True).click()
   expect(page.get_by_role("heading", name="Held-out evaluation", exact=True)).to_be_visible()
