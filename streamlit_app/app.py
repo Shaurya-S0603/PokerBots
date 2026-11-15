@@ -184,27 +184,20 @@ def _expire_turn(turn):
 def _render_clock(turn):
   timing = st.session_state.turn_clock
   if timing is None or timing[0] != turn:
-    st.session_state.turn_clock = (turn, monotonic() + TURN_SECONDS)
-
-  @st.fragment(run_every=1)
-  def tick():
-    active = st.session_state.turn_clock
-    if st.session_state.screen != "table" or active is None or active[0] != turn:
-      return
-    _expire_turn(turn)
-    left = min(TURN_SECONDS, max(0, ceil(active[1] - monotonic())))
-    if left <= 10 and st.session_state.game_mode == ASHWING:
-      # Refresh the whole table so the speech bubble shows the new line.
-      key = ("thinking", turn[1], None)
-      if key not in st.session_state.chat_events:
-        _say("thinking", turn[1])
-        st.rerun()
-    urgent = " room-clock--urgent" if left <= 10 else ""
-    st.markdown(f'<div class="room-clock{urgent}" role="timer" aria-label="Time remaining: {left} seconds">'
-      f'<span>{left}s</span><div><i style="--remaining:{left / TURN_SECONDS:.4f}"></i></div></div>',
-      unsafe_allow_html=True)
-
-  tick()
+    timing = (turn, monotonic() + TURN_SECONDS)
+    st.session_state.turn_clock = timing
+  _expire_turn(turn)
+  left = min(TURN_SECONDS, max(0, ceil(timing[1] - monotonic())))
+  if left <= 10 and st.session_state.game_mode == ASHWING:
+    # Refresh the whole table so the speech bubble shows the new line.
+    key = ("thinking", turn[1], None)
+    if key not in st.session_state.chat_events:
+      _say("thinking", turn[1])
+      st.rerun()
+  urgent = " room-clock--urgent" if left <= 10 else ""
+  st.markdown(f'<div class="room-clock{urgent}" role="timer" aria-label="Time remaining: {left} seconds">'
+    f'<span>{left}s</span><div><i style="--remaining:{left / TURN_SECONDS:.4f}"></i></div></div>',
+    unsafe_allow_html=True)
 
 
 def _apply_action(action, player, amount=None, *, timed_out=False):
@@ -266,19 +259,12 @@ def _render_paced_bot(state, delay):
   turn = (st.session_state.game_id, state["hand_number"], len(st.session_state.history))
   timing = st.session_state.bot_due
   if timing is None or timing[:2] != (turn, delay):
-    st.session_state.bot_due = (turn, delay, monotonic() + delay)
-
-  @st.fragment(run_every=delay)
-  def tick():
-    current_timing = st.session_state.bot_due
-    if current_timing is None or current_timing[:2] != (turn, delay) or st.session_state.screen != "table":
-      return
-    if monotonic() >= current_timing[2]:
-      st.session_state.bot_due = None
-      _play_bot_turn(state)
-      st.rerun()
-
-  tick()
+    timing = (turn, delay, monotonic() + delay)
+    st.session_state.bot_due = timing
+  if monotonic() >= timing[2]:
+    st.session_state.bot_due = None
+    _play_bot_turn(state)
+    st.rerun()
 
 
 def _finish_hand_if_needed(state):
@@ -341,7 +327,6 @@ def _render_actions(state):
 
   player = _player(current)
   legal = st.session_state.game.legal_actions(player)
-  _render_clock(turn)
   passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
   actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
   can_raise = legal.get("raise", False)
@@ -391,8 +376,6 @@ def _render_showdown(state):
     st.success("Hand won · All opponents folded")
   if st.button("Replay this hand", use_container_width=True):
     _open_history(state["hand_number"])
-  if not state["game_over"]:
-    _render_next_hand_countdown(state["hand_number"])
   if state["showdown_hands"]:
     st.subheader("Revealed hands")
     for raw_id, hand in state["showdown_hands"].items():
@@ -419,24 +402,37 @@ def _render_next_hand_countdown(hand):
   round_key = (st.session_state.game_id, hand)
   clock = st.session_state.next_hand_clock
   if clock is None or clock[0] != round_key:
-    st.session_state.next_hand_clock = (round_key, monotonic() + NEXT_HAND_SECONDS)
+    clock = (round_key, monotonic() + NEXT_HAND_SECONDS)
+    st.session_state.next_hand_clock = clock
+  deadline = clock[1]
+  left = max(0, ceil(deadline - monotonic())) if deadline is not None else None
+  if left:
+    st.markdown(f'<div class="room-next-hand" role="timer" aria-label="Next hand in {left} second">'
+      f'Next hand in <strong>{left}s</strong></div>', unsafe_allow_html=True)
+  if left == 0:
+    if not _deal_next_hand():
+      st.session_state.next_hand_clock = (round_key, None)
+    st.rerun()
 
-  @st.fragment(run_every=0.25)
-  def tick():
-    active = st.session_state.next_hand_clock
-    if st.session_state.screen != "table" or active is None or active[0] != round_key:
-      return
-    deadline = active[1]
-    left = max(0, ceil(deadline - monotonic())) if deadline is not None else None
-    if left:
-      st.markdown(f'<div class="room-next-hand" role="timer" aria-label="Next hand in {left} second">'
-        f'Next hand in <strong>{left}s</strong></div>', unsafe_allow_html=True)
-    if left == 0:
-      if not _deal_next_hand():
-        st.session_state.next_hand_clock = (round_key, None)
-      st.rerun()
 
-  tick()
+@st.fragment(run_every=0.25)
+def _render_table_status():
+  # Keep timed updates in one fixed slot, separate from the betting widgets.
+  game = st.session_state.game
+  if st.session_state.screen != "table" or game is None or st.session_state.bot_error:
+    return
+  state = game.get_state()
+  if state["hand_over"]:
+    if not state["game_over"]:
+      _render_next_hand_countdown(state["hand_number"])
+    return
+  if _bot_to_act(state):
+    _render_paced_bot(state, BOT_PACING[st.session_state.bot_pacing])
+    return
+  st.session_state.bot_due = None
+  current = state["current_player"]
+  if current is not None and (st.session_state.game_mode == ASHWING or st.session_state.revealed_player == current):
+    _render_clock(_turn_id(state))
 
 
 def _deal_next_hand():
@@ -708,19 +704,18 @@ def main():
       st.session_state.bot_error = None
       st.rerun()
     return
+  notice = st.empty()
   if st.session_state.flash:
     level, message = st.session_state.flash
     if level == "error":
-      st.error(message)
+      notice.error(message)
     else:
-      st.caption(message)
+      notice.caption(message)
     st.session_state.flash = None
   _render_table(state)
   with st.container(key="table_controls"):
-    if _bot_to_act(state):
-      _render_paced_bot(state, delay)
-    else:
-      st.session_state.bot_due = None
+    _render_table_status()
+    if not _bot_to_act(state):
       _render_actions(state)
   with st.container(key="table_log"):
     _render_table_chat()

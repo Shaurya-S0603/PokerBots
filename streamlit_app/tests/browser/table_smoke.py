@@ -122,6 +122,26 @@ def check_paced_bot(browser, width, count):
   page.close()
 
 
+def check_long_table(browser):
+  page = browser.new_page(viewport={"width": 360, "height": 740}, has_touch=True)
+  page.goto(URL)
+  page.get_by_role("button", name="Pass-and-play", exact=True).click()
+  page.get_by_role("button", name="Deal the first hand").click()
+  fold = page.get_by_role("button", name="Fold", exact=True)
+  for hand in range(1, 18):
+    expect(page.get_by_role("heading", name=f"Preflop Hand {hand}", exact=True)).to_be_visible()
+    expect(fold).to_have_count(0)
+    page.get_by_role("button", name="Reveal my cards").click()
+    expect(fold).to_be_visible()
+    expect(fold).to_be_enabled()
+    if hand == 16:
+      expect(page.get_by_role("timer", name="Time remaining: 29 seconds")).to_be_visible()
+      expect(fold).to_be_enabled()
+    fold.click()
+  expect(page.get_by_role("heading", name="Preflop Hand 18", exact=True)).to_be_visible()
+  page.close()
+
+
 if __name__ == "__main__":
   command = [sys.executable, "-m", "streamlit", "run", "app.py",
     "--server.port=8511", "--server.headless=true", "--browser.gatherUsageStats=false"]
@@ -132,6 +152,7 @@ if __name__ == "__main__":
         browser = playwright.chromium.launch(executable_path=os.environ.get("POKERBOTS_CHROMIUM"))
         check_table(browser, 1440)
         check_table(browser, 360)
+        check_long_table(browser)
         check_paced_bot(browser, 1440, 2)
         check_paced_bot(browser, 1440, 3)
         check_paced_bot(browser, 360, 2)
