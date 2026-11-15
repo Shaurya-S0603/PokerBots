@@ -141,3 +141,90 @@ h1, h2, h3 { letter-spacing: -.035em; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Club lobby and compact live table */
+.stApp { background: radial-gradient(ellipse at 75% -30%, #362128 0%, #11141e 48%, #090f17 100%); }
+.room-masthead { border-bottom-color: #554034; }
+.room-mark { border-color: #78623b; background: #30291b; color: #f2d48b; }
+.stButton > button[data-testid="stBaseButton-primary"],
+.stFormSubmitButton > button[data-testid="stBaseButton-primaryFormSubmit"] {
+  background: #e9cc83; color: #241d12; border-color: #f1d994; font-weight: 750;
+}
+.stButton > button[data-testid="stBaseButton-primary"]:hover:not(:disabled),
+.stFormSubmitButton > button[data-testid="stBaseButton-primaryFormSubmit"]:hover:not(:disabled) {
+  background: #f8e1a3; color: #241d12; border-color: #f1d994;
+}
+.st-key-club_hero { background: radial-gradient(ellipse at 100% 0, #592b38 0, #242126 52%, #162825 110%); border: 1px solid #5c4840; border-radius: 13px; padding: clamp(14px, 3vw, 30px); }
+.room-club-hero { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.room-club-hero h1 { margin: 0; padding: 0; font-size: clamp(2.1rem, 4.6vw, 4rem); color: #fff5df; }
+.room-club-hero p { max-width: 34rem; color: #f0e3d6; margin: .4rem 0 0; }
+.room-club-aces { display: flex; padding-right: 12px; }
+.room-club-aces span { display: grid; place-items: center; white-space: nowrap; width: 57px; height: 77px; padding: 3px; border: 1px solid #9b8256; border-radius: 7px; font-weight: 800; color: #f3d998; background: #282421; transform: rotate(-12deg); }
+.room-club-aces span + span { margin-left: -14px; transform: rotate(11deg); color: #efb4af; background: #421e2a; }
+.room-table-heading h2 { margin: 0; padding: 0; font-size: 1.25rem; }
+.room-table-heading small { color: #c9b897; }
+.stApp:has(.room-table-heading) .block-container { padding-top: 3rem; }
+.stApp:has(.room-table-heading) .room-masthead { padding-bottom: .45rem; }
+.stApp:has(.room-table-heading) [data-testid="stMainBlockContainer"] [data-testid="stVerticalBlock"] { gap: .55rem; }
+.room__topline, .room__bottomline { padding: .33rem .65rem; }
+.table-stage { height: clamp(280px, 43vh, 420px); }
+.room[data-heads-up] .felt-surface { inset: 5% 11%; }
+.room[data-heads-up] .seat { top: 81%; }
+.room[data-heads-up] .seat + .seat { top: 19%; }
+.room[data-heads-up] .felt-caption { margin-top: .16rem; }
+.room-chat h3 { font-size: 1rem; padding: 0 0 .35rem; margin: 0; }
+.stApp .room-chat__messages { list-style: none; padding: 0; margin: 0 0 .55rem; max-height: 165px; overflow: auto; }
+.room-chat__messages li { max-width: 95%; background: #36232d; color: #f5e6eb; border: 1px solid #61404d; border-radius: 3px 10px 10px 10px; margin-bottom: .35rem; padding: .48rem .58rem; font-size: .82rem; }
+.room-chat + .room-log { margin-top: .5rem; }
+.room-clock { display: flex; align-items: center; gap: 8px; color: #f5d88e; font-size: .8rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+.room-clock--urgent { color: #ffb2b2; }
+.room-clock > div { flex: 1; height: 4px; border-radius: 3px; background: #313746; overflow: hidden; }
+.room-clock i { display: block; width: calc(var(--remaining) * 100%); height: 100%; border-radius: inherit; background: currentColor; }
+.seat__cards--revealed .play-card { animation: room-card-reveal .24s ease-out; }
+@keyframes room-card-reveal { from { transform: perspective(110px) rotateY(72deg); } to { transform: perspective(110px) rotateY(0); } }
+.st-key-move_buttons button, .st-key-bet_sizes button { min-height: 37px; }
+.st-key-move_buttons [data-testid="stHorizontalBlock"],
+.st-key-bet_sizes [data-testid="stHorizontalBlock"],
+.st-key-club_hero > [data-testid="stHorizontalBlock"] { flex-wrap: nowrap; }
+.st-key-move_buttons [data-testid="stColumn"],
+.st-key-bet_sizes [data-testid="stColumn"] { min-width: 0 !important; }
+@container (max-width: 595px) {
+  .table-stage { padding: 6px; gap: 5px; }
+  .felt-surface { min-height: 127px; }
+  .felt-caption { padding: .14rem .5rem; }
+  .room:not([data-heads-up]) .seats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .room[data-many-seats] .seats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .room:not([data-heads-up]) .seat { padding: 3px; border-radius: 5px; }
+  .room:not([data-heads-up]) .seat__cards { margin: .1rem 0; }
+  .room:not([data-heads-up]) .seat__cards .play-card { width: 17px; height: 22px; }
+  .room[data-many-seats] .seat__stack { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .room[data-heads-up] .table-stage { position: relative; display: block; height: 230px; overflow: hidden; }
+  .room[data-heads-up] .felt-surface { position: absolute; inset: 8% 4%; }
+  .room[data-heads-up] .felt-inner { padding: 0; }
+  .room[data-heads-up] .seat { position: absolute; left: 50%; transform: translate(-50%, -50%); width: 118px; padding: 3px; }
+  .room[data-heads-up] .seats { position: absolute; display: block; }
+  .room[data-heads-up] .seat__cards { margin: 2px 0; }
+  .room[data-heads-up] .seat__cards .play-card { width: 17px; height: 25px; }
+  .room[data-heads-up] .seat__cards .play-card__rank, .room[data-heads-up] .seat__cards .play-card__suit { font-size: .58rem; }
+  .room[data-heads-up] .board-row { margin: 0 0 .12rem; }
+  .room[data-heads-up] .board-row .play-card { height: 32px; width: 23px; }
+  .room[data-heads-up] .pot-value { font-size: 1.15rem; }
+  .room[data-heads-up] .felt-caption { display: none; }
+}
+@media (max-width: 800px) {
+  .stApp:has(.room-table-heading) .block-container { padding: 2.9rem .5rem 2rem; }
+  .stApp:has(.room-table-heading) .st-key-table_controls { padding: .38rem; }
+  .room-table-heading h2 { font-size: 1.08rem; }
+  .stApp:has(.room-table-heading) [data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] .room-table-heading) { flex-wrap: nowrap; }
+  .stApp:has(.room-table-heading) [data-testid="stHorizontalBlock"]:has(> [data-testid="stColumn"] .room-table-heading) [data-testid="stColumn"] { min-width: 0 !important; }
+  .st-key-move_buttons [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { flex: 1 1 0; }
+  .st-key-bet_sizes [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] { flex: 1 1 0; }
+}
+@media (max-width: 420px) {
+  .room-club-aces span { width: 34px; height: 46px; font-size: .75rem; }
+  .room-club-aces { padding-right: 1px; }
+  .room-club-hero p { font-size: .87rem; }
+}
+
+.room-stat { display: flex; align-items: center; gap: .55rem; font-size: .82rem; }
+.room-stat > span { flex: 0 0 12px; height: 7px; border: 1px solid #e9cc83; border-radius: 50%; box-shadow: 0 3px 0 -1px #111522, 0 4px 0 0 #a58b58, 0 7px 0 0 #756042; margin-bottom: 6px; }
