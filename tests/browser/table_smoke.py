@@ -65,9 +65,9 @@ def check_table(browser, width):
   expect(page.get_by_role("group", name="Your private hole cards")).to_have_count(0)
   page.get_by_role("button", name="Reveal my cards").click()
   page.get_by_role("button", name="Fold", exact=True).click()
-  expect(page.get_by_text("Uncalled bet returned to Player 1", exact=False)).to_be_visible()
-  expect(page.get_by_role("button", name="Next hand")).to_be_visible()
-  page.get_by_role("button", name="Replay this hand").click()
+  expect(page.get_by_role("button", name="Next hand", exact=True)).to_have_count(0)
+  expect(page.get_by_role("heading", name="Preflop Hand 2")).to_be_visible(timeout=5000)
+  page.get_by_role("button", name="History", exact=True).click()
   expect(page.get_by_text("Blinds posted", exact=True)).to_be_visible()
   page.get_by_role("button", name="Next step").click()
   expect(page.get_by_text("Preflop · Player 1: raise · 25 chips", exact=True)).to_be_visible()
@@ -81,11 +81,8 @@ def check_table(browser, width):
   assert [seat["stack"] for seat in hand["steps"][-1]["table"]["players"]] == [1010, 990]
   assert all(not seat["hole_cards"] for step in hand["steps"] for seat in step["table"]["players"])
   page.get_by_role("button", name="Back to table").click()
-  expect(page.get_by_role("button", name="Next hand")).to_be_visible()
-  if width >= 800:
-    expect(page.get_by_role("timer", name="Next hand in 5 seconds")).to_be_visible()
-    expect(page.get_by_role("heading", name="Preflop Hand 2")).to_be_visible(timeout=8000)
-    expect(page.get_by_role("button", name="Reveal my cards")).to_be_visible()
+  expect(page.get_by_role("button", name="Next hand", exact=True)).to_have_count(0)
+  expect(page.get_by_role("button", name="Reveal my cards")).to_be_visible()
   assert not errors, errors
   page.close()
 
