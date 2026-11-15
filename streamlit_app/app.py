@@ -195,7 +195,9 @@ def _render_clock(turn):
       _say("thinking", turn[1])
       st.rerun()
   urgent = " room-clock--urgent" if left <= 10 else ""
-  st.markdown(f'<div class="room-clock{urgent}" role="timer" aria-label="Time remaining: {left} seconds">'
+  turn_key = "_".join(map(str, turn))
+  st.markdown(f'<div class="room-clock{urgent}" data-turn-clock="{turn_key}" role="timer"'
+    f' aria-label="Time remaining: {left} seconds">'
     f'<span>{left}s</span><div><i style="--remaining:{left / TURN_SECONDS:.4f}"></i></div></div>',
     unsafe_allow_html=True)
 
@@ -327,6 +329,9 @@ def _render_actions(state):
 
   player = _player(current)
   legal = st.session_state.game.legal_actions(player)
+  if not (legal["check"] or legal["call"]):
+    st.warning("No betting action is available for this seat.")
+    return
   passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
   actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
   can_raise = legal.get("raise", False)
@@ -353,6 +358,7 @@ def _render_actions(state):
       for column, (label, amount) in zip(preset_columns, available):
         if column.button(f"{label} {amount:,}", key=f"preset_{label}_{key}", use_container_width=True):
           _apply_action("raise", player, amount - player.current_bet)
+  return turn
 
 
 def _render_showdown(state):
@@ -416,7 +422,7 @@ def _render_next_hand_countdown(hand):
 
 
 @st.fragment(run_every=0.25)
-def _render_table_status():
+def _render_table_status(ready_turn):
   # Keep timed updates in one fixed slot, separate from the betting widgets.
   game = st.session_state.game
   if st.session_state.screen != "table" or game is None or st.session_state.bot_error:
@@ -430,9 +436,8 @@ def _render_table_status():
     _render_paced_bot(state, BOT_PACING[st.session_state.bot_pacing])
     return
   st.session_state.bot_due = None
-  current = state["current_player"]
-  if current is not None and (st.session_state.game_mode == ASHWING or st.session_state.revealed_player == current):
-    _render_clock(_turn_id(state))
+  if ready_turn is not None and ready_turn == _turn_id(state):
+    _render_clock(ready_turn)
 
 
 def _deal_next_hand():
@@ -714,9 +719,11 @@ def main():
     st.session_state.flash = None
   _render_table(state)
   with st.container(key="table_controls"):
-    _render_table_status()
-    if not _bot_to_act(state):
-      _render_actions(state)
+    status = st.container()
+    ready_turn = _render_actions(state) if not _bot_to_act(state) else None
+    # Send the controls first while keeping the status visually above them.
+    with status:
+      _render_table_status(ready_turn)
   with st.container(key="table_log"):
     _render_table_chat()
     with st.expander("Hand action log"):

@@ -32,6 +32,34 @@ def set_player_count(page, count):
     slider.press("ArrowRight")
 
 
+def watch_turn_starts(page):
+  page.add_init_script("""    window.turnStarts = {};
+    let pending = false;
+    new MutationObserver(() => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        const timer = document.querySelector("[data-turn-clock]");
+        if (!timer || !timer.getClientRects().length) return;
+        const turn = timer.dataset.turnClock;
+        if (Object.hasOwn(window.turnStarts, turn)) return;
+        const buttons = [...document.querySelectorAll(".st-key-move_buttons button")]
+          .filter(button => !button.disabled && button.getClientRects().length)
+          .map(button => button.textContent.trim());
+        window.turnStarts[turn] = buttons.includes("Fold") &&
+          buttons.some(label => label === "Check" || label.startsWith("Call "));
+      });
+    }).observe(document, { subtree: true, childList: true, attributes: true });
+    """)
+
+
+def assert_turn_starts(page, minimum=1):
+  turns = page.evaluate("window.turnStarts")
+  assert len(turns) >= minimum, turns
+  assert all(turns.values()), turns
+
+
 def check_table(browser, width):
   height = 740 if width < 500 else 900
   page = browser.new_page(viewport={"width": width, "height": height}, has_touch=width < 500)
@@ -89,6 +117,7 @@ def check_table(browser, width):
 
 def check_paced_bot(browser, width, count):
   page = browser.new_page(viewport={"width": width, "height": 900})
+  watch_turn_starts(page)
   page.goto(URL)
   page.get_by_role("button", name="Play Ashwing", exact=True).click()
   expect(page.get_by_role("heading", name="Customize Room")).to_be_visible()
@@ -119,11 +148,13 @@ def check_paced_bot(browser, width, count):
     page.get_by_role("button", name="Fold", exact=True).click()
   page.get_by_text("Hand action log", exact=True).click()
   expect(page.locator(".room-events").get_by_text(label, exact=False).first).to_be_visible(timeout=15000)
+  assert_turn_starts(page)
   page.close()
 
 
 def check_long_table(browser):
   page = browser.new_page(viewport={"width": 360, "height": 740}, has_touch=True)
+  watch_turn_starts(page)
   page.goto(URL)
   page.get_by_role("button", name="Pass-and-play", exact=True).click()
   page.get_by_role("button", name="Deal the first hand").click()
@@ -139,6 +170,7 @@ def check_long_table(browser):
       expect(fold).to_be_enabled()
     fold.click()
   expect(page.get_by_role("heading", name="Preflop Hand 18", exact=True)).to_be_visible()
+  assert_turn_starts(page, minimum=17)
   page.close()
 
 

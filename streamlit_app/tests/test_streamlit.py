@@ -252,3 +252,20 @@ def test_next_hand_clock_waits_on_history_and_deals_only_once():
   assert app.session_state.turn_clock is None
   assert app.session_state.revealed_player is None
   assert sorted(app.session_state.hand_records) == [1, 2]
+
+def test_clock_waits_for_legal_betting_controls(monkeypatch):
+  from poker_engine import GameManager
+
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Play Ashwing").click().run()
+  no_move = {"check": False, "call": False, "fold": False, "raise": False, "all_in": False}
+  with monkeypatch.context() as patch:
+    patch.setattr(GameManager, "legal_actions", lambda game, player: no_move)
+    deal(app)
+    assert app.session_state.turn_clock is None
+    assert not any('Time remaining:' in item.value for item in app.markdown)
+  app.run()
+  assert not app.exception
+  assert not button(app, "Fold").disabled
+  assert not button(app, "Call 5").disabled
+  assert app.session_state.turn_clock[0][1] == 1
