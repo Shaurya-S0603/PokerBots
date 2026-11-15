@@ -99,8 +99,15 @@ def check_paced_bot(browser, width, count):
   expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
   avatar = page.locator(".seat .ashwing-avatar").first
   expect(avatar).to_be_visible()
-  assert avatar.evaluate("(img) => img.complete && img.naturalWidth === 89")
-  expect(page.get_by_role("region", name="Ashwing chat")).to_be_visible()
+  assert avatar.evaluate("(img) => img.complete && img.naturalWidth === 192")
+  speech = page.get_by_role("status", name="Ashwing speaks")
+  expect(speech).to_contain_text("I have a title to defend.")
+  if width < 500:
+    pot_button = page.get_by_role("button", name="Pot 30", exact=True).bounding_box()
+    assert pot_button["y"] + pot_button["height"] <= 740
+  elif count == 2:
+    expect(page.locator(".seat__identity .room-speech__bubble")).to_be_visible()
+    assert speech.bounding_box()["x"] > avatar.bounding_box()["x"]
   expect(page.get_by_role("timer")).to_be_visible()
   assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
   if count == 2:
@@ -122,6 +129,7 @@ if __name__ == "__main__":
         browser = playwright.chromium.launch(executable_path=os.environ.get("POKERBOTS_CHROMIUM"))
         check_table(browser, 1440)
         check_table(browser, 360)
+        check_paced_bot(browser, 1440, 2)
         check_paced_bot(browser, 1440, 3)
         check_paced_bot(browser, 360, 2)
     finally:
