@@ -62,6 +62,9 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
     card_markup = "".join(card_html(card, hidden=card is None) for card in cards)
   else:
     card_markup = '<span class="seat__footer">No cards</span>'
+  revealed = bool(player["hole_cards"]) and not state["hand_over"]
+  private = ' role="group" aria-label="Your private hole cards"' if revealed else ""
+  cards_class = "seat__cards seat__cards--revealed" if revealed else "seat__cards"
   safe_name = html.escape(str(name), quote=True)
   safe_status = html.escape(str(status), quote=True)
   details = [str(name), f"{player['stack']} chips", f"{player['current_bet']} bet", *(label for _, label in marker)]
@@ -71,7 +74,7 @@ def seat_html(player, state, name, index, total, last_action="", is_bot=False):
   return (f'<article class="{" ".join(classes)}" style="--seat-x:{left:.2f}%;--seat-y:{top:.2f}%" aria-label="{accessible}">'
     f'<span class="seat__name" title="{safe_name}">{safe_name}</span>'
     f'<div class="seat__stack">{player["stack"]:,} chips · {player["current_bet"]:,} bet</div>'
-    f'<div class="seat__cards">{card_markup}</div>'
+    f'<div class="{cards_class}"{private}>{card_markup}</div>'
     f'<div class="seat__footer">{marker_html}<span>{safe_status}</span></div></article>')
 
 
@@ -86,7 +89,7 @@ def table_html(state, names=None, last_actions=None, bot_ids=None):
   current = state["current_player"]
   status = "Pots settled" if state["hand_over"] else f"{names.get(current, f'Player {current}') if current else 'Players'} to act"
   replacements = {
-    "__MANY_SEATS__": " data-many-seats" if len(people) > 6 else "",
+    "__SEAT_LAYOUT__": " data-heads-up" if len(people) == 2 else " data-many-seats" if len(people) > 6 else "",
     "__HAND__": str(state["hand_number"]),
     "__PHASE_LABEL__": PHASE_NAMES.get(state["phase"], state["phase"]),
     "__POT__": f"{state['pot']:,}",
