@@ -1,13 +1,15 @@
-"""Heads-up ensemble using public betting history and shared equity samples."""
+"""Hold’em ensemble with heads-up range inference and multiway equity."""
 
 from .betting_line import evaluate_range, holding, opening_bet_values
-from .equity_policy import EQUITY_TRIALS_SMALL_TABLE, _sized_raise
+from .equity_policy import EQUITY_TRIALS_SMALL_TABLE, _sized_raise, equity_bot
 from .strategies import VALUE_PROFILE, value
 
 
 def hive_mind(view, rng, *, diagnostics=None):
   """Blend equity models and gate aggression on the range that continues."""
-  if view.opponents != 1 or not view.board:
+  if view.opponents > 1:
+    return equity_bot(view, rng, profile=VALUE_PROFILE, arena_opening=True, diagnostics=diagnostics)
+  if not view.board:
     return value(view, rng, diagnostics=diagnostics)
 
   legal = view.legal
