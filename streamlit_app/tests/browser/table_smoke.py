@@ -133,7 +133,7 @@ def check_paced_bot(browser, width, count):
   expect(avatar).to_be_visible()
   assert avatar.evaluate("(img) => img.complete && img.naturalWidth === 192")
   speech = page.get_by_role("status", name="Ashwing speaks")
-  expect(speech).to_contain_text("I have a title to defend.")
+  expect(speech).to_contain_text("Sin of Pride, first of his name.")
   if width < 500:
     pot_button = page.get_by_role("button", name="Pot 30", exact=True).bounding_box()
     assert pot_button["y"] + pot_button["height"] <= 740

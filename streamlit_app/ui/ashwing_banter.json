@@ -1,135 +1,135 @@
 {
   "start": [
-    "I am Ashwing. The shadows can wait. I have a title to defend.",
-    "Deal. I wore burgundy tonight so even my reflection would feel underdressed.",
-    "Welcome to my table. You may call me Ashwing until the applause starts.",
-    "The house offered me a spotlight. I told them the dark already knows my angles.",
-    "Pull up a chair. Even a legend needs someone across the table."
+    "Ashwing. Sin of Pride, first of his name. You can just call me inevitable.",
+    "Heaven threw me out. Hell gave me a corner table. Naturally, I complained about the view.",
+    "Do try to play a hand before you fall for me. I hate predictable evenings.",
+    "I asked the house for a worthy opponent. I see they took 'opponent' literally.",
+    "Welcome to my table, darling. The seat is complimentary. My attention isn't."
   ],
   "new_hand": [
-    "Fresh cards. Same magnificent problem sitting across from you.",
-    "Another hand. Good. I was beginning to miss the sound of my name.",
-    "The deck has requested an encore. Who am I to deny it?",
-    "New cards, new possibilities. My excellent posture remains undefeated.",
-    "Reset the felt. Cue the shadows. I rather like a second act."
+    "New hand. How generous of the deck to give you another excuse.",
+    "Fresh cards. Same devil. You did know what you were coming back to, didn't you?",
+    "Deal again. I can't be expected to admire myself in silence all night.",
+    "The blinds are in. So is your application for my attention.",
+    "Back for another hand? Flattering. Let's pretend it's about the poker."
   ],
   "flop": [
-    "Three cards arrive. A respectable entrance, by someone else's standards.",
-    "The flop is out. Let's see which of us the deck was winking at.",
-    "Three faces on the felt. Somehow mine is still the most interesting.",
-    "And the plot thickens. The lighting department is finally earning its keep.",
-    "The flop has spoken. I reserve the right to make a more memorable statement."
+    "Three cards on the felt. Go on, find a narrative in which you're favored.",
+    "There's your flop, darling. I'll give you a moment to mistake possibility for prophecy.",
+    "The flop is out. I'd ask what it did for you, but the mystery is doing such good work.",
+    "Three little plot twists. The deck really does try to keep up with me.",
+    "The flop suits the room. A little drama, and everyone still looking at me."
   ],
   "turn": [
-    "The turn arrives. Right on cue. I appreciate a deck that rehearses.",
-    "One more card. Suddenly everyone wants to know what my eyebrows are doing.",
-    "Ah, the turn. Every good duel deserves a moment of doubt.",
-    "The fourth card enters. Give it a moment to adjust to my presence.",
-    "A twist in the script. Fortunately my contract includes creative control."
+    "The turn. One more card to flatter your theory.",
+    "Fourth card's down. Isn't it sweet how hope keeps finding a seat?",
+    "There's the turn. Try that look again. It almost had me believing you.",
+    "The turn arrives. You can stop holding your breath. I'm staying either way.",
+    "One card left after this. I do love watching optimism negotiate."
   ],
   "river": [
-    "The river. One last card to impress me. No pressure, little thing.",
-    "Five on the felt. And here I thought the deck was saving something for the finale.",
-    "The final card. If you're watching my face, at least enjoy the view.",
-    "The river has arrived. I would call it dramatic, but I am sitting right here.",
-    "That's the board. The rest is timing, nerve, and a frankly unreasonable jawline."
+    "The river. That's the last card, darling. There isn't a secret sixth one for people who believe in themselves.",
+    "The board is complete. If you still need a miracle, you'll have to ask someone who takes requests.",
+    "Five on the felt. Go on, pick the one you're going to blame.",
+    "No more cards coming. Now we find out whether that confidence was rented.",
+    "The river's here. Looking at me again won't change the board, but I appreciate the habit."
   ],
   "human_raise": [
-    "A raise? Wonderful. Finally, someone who understands a dramatic entrance.",
-    "Now that's a line worth answering. Let me adjust my cuffs.",
-    "You put weight behind that bet. My compliments to your sense of theater.",
-    "A challenge on my own felt. I should charge extra for this much atmosphere.",
-    "The plot advances. Conveniently, I look excellent under pressure."
+    "A raise? If you wanted my attention, darling, you could've opened with a compliment.",
+    "I adore a challenger who pays extra to be taken seriously.",
+    "So that's your price for making me look up. A touch needy, but effective.",
+    "You raised. Wonderful. Now say it with the part of your face that believes it.",
+    "An invitation with chips attached. I used to get those on better stationery."
   ],
   "bot_raise": [
-    "I'll raise. The pot deserved a grander silhouette.",
-    "A few more chips. Call it a production budget.",
-    "I raise. I've been told subtlety suits me, but so does everything else.",
-    "There. A bet with enough presence to share the frame with me.",
-    "Let's make the pot a little taller. I like my odds with a view."
+    "I raise. I was beginning to feel insulted by how affordable I was.",
+    "More, darling. I don't do intimate stakes.",
+    "Consider that the cover charge for disagreeing with me.",
+    "I raised. You can take it personally. I certainly meant to get your attention.",
+    "There. A price befitting the company you insist on keeping."
   ],
   "human_all_in": [
-    "All in? The cape comes off for this kind of theater.",
-    "Every chip. Ah, a rival who appreciates a final act.",
-    "Now we're speaking my language. No, not ancient demon. Showmanship.",
-    "Your entire stack? At last, someone else brings the drama.",
-    "You've put everything on the felt. Allow me one appreciative eyebrow."
+    "All of it? Darling, I asked for a bet. That sounded like a confession.",
+    "Your whole stack. I like the gesture. The judgment can wait for showdown.",
+    "All in already? And here I thought we were playing hard to get.",
+    "You've put every chip on the felt. Fine. You have my undivided attention for once.",
+    "Going all in does make you look certain. Clever little costume."
   ],
   "bot_all_in": [
-    "All in. If the throne tilts, remember how gracefully I sat in it.",
-    "Every chip. I refuse to make a small exit in a jacket this good.",
-    "All in. Hold the applause until the cards have had their say.",
-    "The whole stack. I thought the occasion called for a signature.",
-    "I put it all in. Somebody tell the shadows to stand closer."
+    "All in. I refuse to be remembered for moderation.",
+    "Every chip. I spent centuries cultivating a reputation for bad influence.",
+    "All in, darling. If I ruin the evening, they'll still remember who hosted.",
+    "My whole stack. If you wanted a demon with restraint, you should've booked a saint.",
+    "All in. At least now you know what a grand gesture is supposed to look like."
   ],
   "showdown": [
-    "Showdown. My favorite part is when the cards get to speak for themselves.",
-    "Time to show the hands. I would dim the lights, but then you'd miss my expression.",
-    "Cards up. The moment of truth has been waiting in my dressing room.",
-    "Let's see the hands. Save that look of astonishment for the right moment.",
-    "The reveal. Five cards can decide a pot. Only one face gets the close-up."
+    "Showdown. I've heard the sales pitch. Show me the merchandise.",
+    "Cards up, darling. Let's see what all that eye contact was meant to conceal.",
+    "The reveal. Here's where the deck distinguishes conviction from wardrobe.",
+    "Show me. I promise to pay the cards the attention you wanted.",
+    "Hands on the table. I'll let the cards interrupt me this once."
   ],
   "win": [
-    "Naturally. Even the chips want my autograph.",
-    "Another pot for the throne. I should have brought a larger throne.",
-    "A masterclass. I would applaud, but I do love this pose.",
-    "There we are. The pot has excellent taste in company.",
-    "Put that one on the highlight reel. Be sure to get my good side. Either will do."
+    "I win. Do look surprised, darling. I put a great deal of effort into making that seem possible for you.",
+    "Leave the chips there, darling. I prefer to collect tributes in person.",
+    "I'd say well played, but one of us has to be honest about what just happened.",
+    "You can keep the story about how close it was. I'll keep the pot.",
+    "That pot looks so much better on my side. I suppose presentation matters after all."
   ],
   "loss": [
-    "You won the pot. I won the lighting. An acceptable split.",
-    "A worthy hand. Enjoy it while I compose my comeback speech.",
-    "I suppose even the moon is allowed to eclipse me once.",
-    "Well played. Try not to make that face again. Mine gets enough competition.",
-    "That pot was yours. I'll concede it with enviable grace and a very private sigh."
+    "You won the hand. I see no reason to let one accurate fact spoil my evening.",
+    "Of course. In a long enough timeline, even a deck develops a taste for irony.",
+    "Yes, that's your pot. Keep looking at it. I imagine the novelty is exquisite.",
+    "I'll grant you the chips. Don't ask me to endorse your interpretation.",
+    "A loss. How thoughtful of fate to give my inevitable comeback a first act."
   ],
   "split": [
-    "A split pot. Even fate is bargaining for a second scene with me.",
-    "We share the chips. The spotlight remains a separate negotiation.",
-    "A tie. Clearly the deck wants a sequel.",
-    "Equal at the felt this time. See what a generous mood I'm in?",
-    "Two stacks rise. One eyebrow rises higher."
+    "The pot is split. So is my opinion of the deck's judgment.",
+    "Equal payouts. How aggressively diplomatic.",
+    "We share the chips. I trust you'll remember who made this interesting.",
+    "A tie. How considerate of the cards to stage a draw instead of testing my manners.",
+    "Fine, half is yours. The best seat in the room is still mine."
   ],
   "blunder": [
-    "An expensive exit. I prefer mine with a cape and a standing ovation.",
-    "Such a dramatic fold. I almost forgot whose scene this was.",
-    "That fold had a full orchestral budget. I respect the commitment.",
-    "A late exit. Don't worry, the shadows know a discreet route backstage.",
-    "That's a fold I would have delivered from a balcony."
+    "All that money in and you fold now? Darling, even my shortest affairs had better endings.",
+    "What a lavish subscription to the fold button.",
+    "That exit cost a fortune. At those prices, I'd have insisted on music.",
+    "You found the fold button. Pity you had to buy the scenic route.",
+    "I'd call it a graceful retreat. The chips have filed a dissent."
   ],
   "thinking": [
-    "Take your time. I can hold this magnificent profile for hours.",
-    "Still weighing the odds? Behold, I have begun to pose.",
-    "A long pause. Shall I look brooding, or devastatingly patient?",
-    "The suspense is doing wonderful things for my image.",
-    "The clock ticks. I have already rehearsed three reactions."
+    "Still deciding? I can turn around if the view is making it difficult.",
+    "Take your time, darling. Apparently I'm both the opponent and the entertainment.",
+    "If you're trying to look mysterious, I should warn you. I have centuries of practice.",
+    "The clock is doing its best to look patient. So am I. One of us is very convincing.",
+    "I'm flattered you need this long to decide how you feel about my bet."
   ],
   "timeout": [
-    "The clock has spoken. It was starting to upstage me.",
-    "Even time makes an entrance around here. How competitive.",
-    "Ah, the deadline. The one guest who never waits for an invitation.",
-    "Time's up. I'll give the clock a supporting credit.",
-    "A choice from the clock itself. I prefer my interruptions with more flair."
+    "Time's up. Even the clock got tired of pretending this was suspense.",
+    "The clock decided for you. At least someone came prepared.",
+    "Time. The house is terribly possessive of its seconds. I understand.",
+    "The clock had the last word. I'm choosing to call it an understudy.",
+    "And that's the bell. I was one second from charging for my company."
   ],
   "eliminated": [
-    "My last chip? Impossible. I still have three speeches prepared.",
-    "One of my shadows bows out. Annoyingly, it did so with grace.",
-    "A seat lost to the dark. The rest of me is still in excellent form.",
-    "I'll allow that exit. It had the proper amount of smoke.",
-    "One shadow down. The dramatic lighting is going to take this personally."
+    "You took down one of my shadows. Shall I sign it for you?",
+    "A shadow seat is empty. Do enjoy how important that made you feel.",
+    "A shadow falls and suddenly it's an occasion. My reputation is doing splendidly.",
+    "Yes, one of my shadows is out. The rest of us remain terribly hard to impress.",
+    "One shadow down. I suppose every empire needs a flattering little setback."
   ],
   "match_win": [
-    "The throne is mine. Hold the applause until I turn toward the light.",
-    "The final pot is settled. Embarrassingly, I wrote this victory speech before the first blind.",
-    "A worthy duel. I'm glad you stayed to see the part where I take a bow.",
-    "Curtain. I would thank the deck, but it knows what it did.",
-    "The title stays with me. If I seem surprised, that's just an excellent performance."
+    "There. You're out of chips, and I'm still exactly as insufferable as advertised.",
+    "The house called it a match. I called it an evening dedicated to me.",
+    "The title is staying put. You may tell the story at parties, provided you get my name right.",
+    "You lost the match. Look on the bright side, darling. At least your taste in rivals is impeccable.",
+    "You can go. I'll be here when your pride talks you into calling it unfinished business."
   ],
   "match_loss": [
-    "So the shadow falls. You have my respect. I'll be back in a better cape.",
-    "The throne is yours. I ask only that you appreciate the lighting I left behind.",
-    "You won the match. Even I know when to give someone else the final line.",
-    "Well played, champion. I expect the rematch to feature an absolutely unbearable comeback.",
-    "I bow. Briefly. The shadows can confirm it happened."
+    "You won. I'd shake your hand, but I'm using both of mine to hold my dignity together.",
+    "Take the title. I've decided a comeback suits me better than a reign.",
+    "I lost. Go on, repeat it while I can still pass for gracious.",
+    "The house says you won. Apparently I hired honest staff. I'll correct that oversight.",
+    "Fine. Tonight is yours. Enjoy how appallingly good the story sounds with my name in it."
   ]
 }
