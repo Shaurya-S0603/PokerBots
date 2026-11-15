@@ -1,6 +1,6 @@
 # PokerBots
 
-A local No-Limit Texas Hold'em browser game built in Streamlit with the original Python poker engine. The UI uses separate HTML, CSS, and JavaScript assets for the table and visual effects. Game rules and pot distribution remain on the Python side.
+A local No-Limit Texas Hold'em browser game built in Streamlit with the original Python poker engine. The UI uses separate HTML and CSS assets for the table. Game rules and pot distribution remain on the Python side.
 
 ## Run
 
@@ -12,6 +12,8 @@ streamlit run app.py
 Open the local URL printed by Streamlit. Choose **Play Ashwing** for a table of 2–6 seats, or **Pass-and-play** for 2–10 people sharing a device. In **Customize Room**, set the starting stacks, blinds, and human player names, then select **Deal the first hand**.
 
 ## Offline policy evaluation
+
+Run the offline commands and Chipzen development commands from the `ashwing_sdk/` directory.
 
 Run `python champion_arena.py` to repeat the tournament. The heads-up round robin swaps seats at
 15 and 100 BB. The multiway screen rotates each entrant through every seat at its assigned tables.
@@ -31,19 +33,13 @@ Each seed plays two hands with equal starting stacks and the bots swapped. A has
 
 ## Project structure
 
-- `app.py` - Streamlit application, session and action controls
-- `pokerroom.py` - original Texas Hold'em game rules, hand evaluation and pot logic
-- `poker_engine.py` - stable import of engine API
-- `poker_bot.py` - basic skill-level heuristics
-- `ui/table.html` - HTML table template
-- `ui/styles.css` - visual design and responsive rules
-- `ui/effects.js` and `ui/effect.html` - nonessential action/winner celebration effect
-- `ui/render.py` - data-to-HTML renderer with escaped player labels
-- `tests/` - regression checks
+- `streamlit_app/` contains the Streamlit interface, table assets, and browser tests.
+- `ashwing_sdk/` contains the Chipzen SDK, strategy, shared game engine, training inputs, Docker image, and strategy tests.
+- Root `app.py` launches Streamlit from the existing deployment entry point.
 
 ## Hand history
 
-Choose **Replay this hand** after a payout, or **History** at the table, to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
+Open **History** at the table to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
 
 **Download completed hands (JSON)** exports the current game's completed hands with seat numbers. It includes cards revealed at showdown and omits names, folded or otherwise unrevealed hole cards, and the deck. Download before starting another game or leaving the session to keep the history.
 
