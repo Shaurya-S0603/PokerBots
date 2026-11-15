@@ -9,23 +9,63 @@ def button(app, label):
   return next(item for item in app.button if item.label == label)
 
 
-def test_setup_controls_follow_player_count_and_mode_before_dealing():
+def deal(app):
+  button(app, "Deal the first hand").click().run()
+  assert app.session_state.screen == "dealing"
+  assert any("Dealing you in" in item.value for item in app.markdown)
+  app.session_state.deal_ready_at = 0
+  app.run()
+  assert not app.exception
+  assert app.session_state.screen == "table"
+
+
+def test_mode_selection_opens_setup_and_deals_only_after_loading():
   app = AppTest.from_file(str(APP_PATH)).run()
-  assert app.radio[0].options == ["Local Pass-and-Play", "Human vs Ashwing"]
-  app.radio[0].set_value("Human vs Ashwing").run()
+  assert {item.label for item in app.button} == {"Play Ashwing", "Pass-and-play"}
+  assert not app.slider
+  button(app, "Play Ashwing").click().run()
+  assert app.session_state.screen == "setup"
+  assert app.session_state.game is None
   assert app.slider[0].value == 2
   assert app.slider[0].max == 6
   assert [item.label for item in app.text_input] == ["Your name"]
+  app.text_input[0].set_value("Shaun")
+  app.number_input[0].set_value(1600)
+  app.number_input[1].set_value(10)
+  app.number_input[2].set_value(20)
+  deal(app)
+  assert app.session_state.player_names == {1: "Shaun", 2: "Ashwing"}
+  assert app.session_state.hand_start_stacks == {1: 1600, 2: 1600}
+  assert app.session_state.game.get_state()["big_blind"] == 20
+  assert app.session_state.game.get_state()["small_blind"] == 10
+  assert "Bot logs" not in {item.label for item in app.button}
+  assert any('class="seat__identity"><img class="ashwing-avatar"' in item.value for item in app.markdown)
+
+
+def test_local_setup_switching_mode_and_validating_settings():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Play Ashwing").click().run()
+  button(app, "Back to modes").click().run()
+  button(app, "Pass-and-play").click().run()
+  assert app.slider[0].max == 10
+  app.slider[0].set_value(3).run()
+  assert len(app.text_input) == 3
+  app.number_input[1].set_value(10)
   button(app, "Deal the first hand").click().run()
-  assert not app.exception
-  assert app.session_state.player_names == {1: "You", 2: "Ashwing"}
-  assert len(app.session_state.game.players) == 2
+  assert app.error and app.session_state.game is None
+  app.number_input[1].set_value(5)
+  app.text_input[2].set_value("Player 1")
+  button(app, "Deal the first hand").click().run()
+  assert app.error and app.session_state.game is None
+  app.text_input[2].set_value("River")
+  deal(app)
+  assert app.session_state.player_names == {1: "Player 1", 2: "Player 2", 3: "River"}
 
 
 def test_pass_and_play_resume_hides_cards_and_reruns_do_not_pay_twice():
   app = AppTest.from_file(str(APP_PATH)).run()
-  app.slider[0].set_value(2).run()
-  button(app, "Deal the first hand").click().run()
+  button(app, "Pass-and-play").click().run()
+  deal(app)
   button(app, "Reveal my cards").click().run()
   first_fold_key = button(app, "Fold").key
   button(app, "Leave game").click().run()
@@ -54,8 +94,8 @@ def test_pass_and_play_resume_hides_cards_and_reruns_do_not_pay_twice():
 
 def test_pot_preset_commits_only_additional_chips():
   app = AppTest.from_file(str(APP_PATH)).run()
-  app.slider[0].set_value(2).run()
-  button(app, "Deal the first hand").click().run()
+  button(app, "Pass-and-play").click().run()
+  deal(app)
   button(app, "Reveal my cards").click().run()
   button(app, "Pot 30").click().run()
   assert not app.exception
@@ -67,9 +107,9 @@ def test_pot_preset_commits_only_additional_chips():
 
 def test_paced_bot_waits_then_commits_one_action_per_turn():
   app = AppTest.from_file(str(APP_PATH)).run()
-  app.radio[0].set_value("Human vs Ashwing").run()
+  button(app, "Play Ashwing").click().run()
   app.slider[0].set_value(3).run()
-  button(app, "Deal the first hand").click().run()
+  deal(app)
   button(app, "Fold").click().run()
   assert not app.exception
   assert len(app.session_state.history) == 1
@@ -81,26 +121,29 @@ def test_paced_bot_waits_then_commits_one_action_per_turn():
   assert app.session_state.history[-1]["player_id"] == 2
 
 
-def test_benchmarks_open_with_bundled_results():
+def test_history_remains_available_from_lobby_and_table():
   app = AppTest.from_file(str(APP_PATH)).run()
-  button(app, "Bot benchmarks").click().run()
-  assert not app.exception
-  assert not app.error
-  rows = app.dataframe[0].value
-  assert set(rows["Opponent"]) == {"Calling Station", "Random", "Tight", "Loose-Aggressive"}
-  assert (rows["Hands"] == 200).all()
-  assert (rows["Illegal actions"] == 0).all()
+  button(app, "Pass-and-play").click().run()
+  deal(app)
+  button(app, "Reveal my cards").click().run()
+  button(app, "Fold").click().run()
+  button(app, "History").click().run()
+  assert app.selectbox[0].value == 1
+  button(app, "Back to table").click().run()
+  button(app, "Leave game").click().run()
+  button(app, "Hand history").click().run()
+  assert app.selectbox[0].value == 1
   button(app, "Back to menu").click().run()
-  assert button(app, "Deal the first hand")
+  assert button(app, "Resume current game")
 
 
 def test_ashwing_turn_does_not_depend_on_the_arena_registry(monkeypatch):
   import arena
 
   app = AppTest.from_file(str(APP_PATH)).run()
-  app.radio[0].set_value("Human vs Ashwing").run()
+  button(app, "Play Ashwing").click().run()
   app.slider[0].set_value(3).run()
-  button(app, "Deal the first hand").click().run()
+  deal(app)
   assert app.session_state.player_names == {1: "You", 2: "Ashwing 1", 3: "Ashwing 2"}
   monkeypatch.delitem(arena.TOOLKIT_STRATEGIES, "Hive Mind")
   monkeypatch.delitem(arena.STRATEGIES, "Hive Mind")
@@ -109,18 +152,12 @@ def test_ashwing_turn_does_not_depend_on_the_arena_registry(monkeypatch):
   assert not app.exception
   assert app.session_state.bot_error is None
   assert any(event["player_id"] == 2 for event in app.session_state.history)
-  assert any(turn.get("model") == "Ashwing"
-    for turns in app.session_state.bot_simulations.values() for turn in turns)
-  button(app, "Bot logs").click().run()
-  assert not app.exception
-  assert app.session_state.screen == "visualization"
-  button(app, "Back to table").click().run()
-  assert app.session_state.screen == "table"
 
 
 def test_move_clock_stays_off_until_private_reveal_and_folds_once_on_expiry():
   app = AppTest.from_file(str(APP_PATH)).run()
   button(app, "Pass-and-play").click().run()
+  deal(app)
   assert app.session_state.turn_clock is None
   button(app, "Reveal my cards").click().run()
   turn, _ = app.session_state.turn_clock
@@ -137,6 +174,7 @@ def test_move_clock_stays_off_until_private_reveal_and_folds_once_on_expiry():
 def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   app = AppTest.from_file(str(APP_PATH)).run()
   button(app, "Pass-and-play").click().run()
+  deal(app)
   button(app, "Reveal my cards").click().run()
   button(app, "Call 5").click().run()
   button(app, "Reveal my cards").click().run()
@@ -147,18 +185,9 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   assert app.session_state.game.phase == "flop"
   button(app, "Leave game").click().run()
   button(app, "Play Ashwing").click().run()
+  deal(app)
   first_line = list(app.session_state.chat)
   app.run()
   assert len(first_line) == 1 and app.session_state.chat == first_line
   button(app, "Fold").click().run()
   assert len(app.session_state.chat) == 2
-
-
-def test_lobby_only_offers_play_modes_and_ashwing_avatar_is_shown_in_game():
-  app = AppTest.from_file(str(APP_PATH)).run()
-  assert "Poker puzzles" not in {item.label for item in app.button}
-  assert all(item.label != "Play online ↗" for item in app.get("link_button"))
-  assert any("room-club-portrait" in item.value and "ashwing-avatar" in item.value for item in app.markdown)
-  button(app, "Play Ashwing").click().run()
-  assert not app.exception
-  assert any('class="seat__identity"><img class="ashwing-avatar"' in item.value for item in app.markdown)
