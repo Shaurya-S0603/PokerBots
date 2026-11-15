@@ -51,6 +51,8 @@ def check_table(browser, width):
   expect(page.get_by_role("timer")).to_be_visible()
   pot_button = page.get_by_role("button", name="Pot 30", exact=True).bounding_box()
   assert pot_button["y"] + pot_button["height"] <= height, pot_button
+  clock_bar = page.locator(".room-clock > div").bounding_box()
+  assert pot_button["y"] - (clock_bar["y"] + clock_bar["height"]) >= 8
   if width >= 800:
     fold_button = page.get_by_role("button", name="Fold", exact=True).bounding_box()
     assert abs(fold_button["y"] - pot_button["y"]) < 5
@@ -80,6 +82,10 @@ def check_table(browser, width):
   assert all(not seat["hole_cards"] for step in hand["steps"] for seat in step["table"]["players"])
   page.get_by_role("button", name="Back to table").click()
   expect(page.get_by_role("button", name="Next hand")).to_be_visible()
+  if width >= 800:
+    expect(page.get_by_role("timer", name="Next hand in 5 seconds")).to_be_visible()
+    expect(page.get_by_role("heading", name="Preflop Hand 2")).to_be_visible(timeout=8000)
+    expect(page.get_by_role("button", name="Reveal my cards")).to_be_visible()
   assert not errors, errors
   page.close()
 

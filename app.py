@@ -23,6 +23,7 @@ LOCAL = "Local Pass-and-Play"
 ASHWING = "Human vs Ashwing"
 BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 TURN_SECONDS = 30
+NEXT_HAND_SECONDS = 5
 DEAL_SCREEN_SECONDS = 0.8
 BANTER = json.loads((ROOT / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
 
@@ -48,6 +49,7 @@ def _init_state():
     "finished_hand": None,
     "flash": None,
     "turn_clock": None,
+    "next_hand_clock": None,
     "visible_board": None,
     "chat": [],
     "chat_counts": {},
@@ -101,6 +103,7 @@ def _start_game(count, chips, small, big, mode, names):
   st.session_state.bot_error = None
   st.session_state.bot_due = None
   st.session_state.turn_clock = None
+  st.session_state.next_hand_clock = None
   st.session_state.chat = []
   st.session_state.chat_events = set()
   _say("start", 0)
@@ -371,7 +374,7 @@ def _render_showdown(state):
   if st.session_state.game_mode == ASHWING:
     human = next(item for item in state["players"] if item["player_id"] == 1)
     if human["stack"] == 0 and not state["game_over"]:
-      st.error("You were eliminated. The remaining bots can continue the tournament if you choose Next hand.")
+      st.error("You were eliminated. The remaining bots will continue the tournament.")
       if st.button("Start a fresh game", use_container_width=True):
         st.session_state.screen = "menu"
         st.session_state.game = None
@@ -386,6 +389,10 @@ def _render_showdown(state):
     st.success("Showdown complete · Chips awarded")
   else:
     st.success("Hand won · All opponents folded")
+  if st.button("Replay this hand", use_container_width=True):
+    _open_history(state["hand_number"])
+  if not state["game_over"]:
+    _render_next_hand_countdown(state["hand_number"])
   if state["showdown_hands"]:
     st.subheader("Revealed hands")
     for raw_id, hand in state["showdown_hands"].items():
@@ -398,8 +405,6 @@ def _render_showdown(state):
       source = "Plays the board" if not used else f"{used} hole card{'s' if used == 2 else ''} in the best five"
       st.markdown(f'<div class="room-status"><strong>{html.escape(_name(player_id))}</strong> · {html.escape(hand[0])}<div class="room-cardline room-cardline--showdown" role="group" aria-label="Best five cards">{cards}</div><small>{source}</small></div>', unsafe_allow_html=True)
   _render_payouts(state)
-  if st.button("Replay this hand", use_container_width=True):
-    _open_history(state["hand_number"])
   if state["game_over"]:
     st.subheader("Final standings")
     for player in sorted(state["players"], key=lambda p: p["stack"], reverse=True):
@@ -408,9 +413,30 @@ def _render_showdown(state):
       st.session_state.screen = "menu"
       st.session_state.game = None
       st.rerun()
-  elif st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
-    _deal_next_hand()
-    st.rerun()
+
+
+def _render_next_hand_countdown(hand):
+  round_key = (st.session_state.game_id, hand)
+  clock = st.session_state.next_hand_clock
+  if clock is None or clock[0] != round_key:
+    st.session_state.next_hand_clock = (round_key, monotonic() + NEXT_HAND_SECONDS)
+
+  @st.fragment(run_every=0.25)
+  def tick():
+    active = st.session_state.next_hand_clock
+    if st.session_state.screen != "table" or active is None or active[0] != round_key:
+      return
+    deadline = active[1]
+    left = max(0, ceil(deadline - monotonic())) if deadline is not None else None
+    if left:
+      st.markdown(f'<div class="room-next-hand" role="timer" aria-label="Next hand in {left} seconds">'
+        f'Next hand in <strong>{left}s</strong></div>', unsafe_allow_html=True)
+    if left == 0 or st.button("Next hand", key=f"next_{round_key[0]}_{hand}", use_container_width=True):
+      if not _deal_next_hand():
+        st.session_state.next_hand_clock = (round_key, None)
+      st.rerun()
+
+  tick()
 
 
 def _deal_next_hand():
@@ -425,6 +451,7 @@ def _deal_next_hand():
   if state["players"][0]["in_hand"]:
     _say("new_hand", state["hand_number"])
   st.session_state.turn_clock = None
+  st.session_state.next_hand_clock = None
   st.session_state.revealed_player = None
   st.session_state.last_actions = {}
   st.session_state.flash = None
@@ -450,6 +477,7 @@ def _open_history(hand=None, *, return_to="table"):
     st.session_state[f"replay_step_{game_id}_{hand}"] = 0
   st.session_state.history_return = return_to
   st.session_state.screen = "history"
+  st.session_state.next_hand_clock = None
   st.session_state.bot_due = None
   if st.session_state.game_mode == LOCAL:
     st.session_state.revealed_player = None
@@ -635,6 +663,7 @@ def _table_heading(state):
       if st.session_state.game_mode == LOCAL:
         st.session_state.revealed_player = None
       st.session_state.bot_due = None
+      st.session_state.next_hand_clock = None
       st.session_state.screen = "menu"
       st.rerun()
     phase = state["phase"].replace("_", " ").title()
