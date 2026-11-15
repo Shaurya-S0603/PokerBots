@@ -33,7 +33,8 @@ def set_player_count(page, count):
 
 
 def check_table(browser, width):
-  page = browser.new_page(viewport={"width": width, "height": 900}, has_touch=width < 500)
+  height = 740 if width < 500 else 900
+  page = browser.new_page(viewport={"width": width, "height": height}, has_touch=width < 500)
   errors = []
   page.on("pageerror", lambda error: errors.append(str(error)))
   page.goto(URL)
@@ -42,6 +43,9 @@ def check_table(browser, width):
   page.get_by_role("button", name="Deal the first hand").click()
   page.get_by_role("button", name="Reveal my cards").click()
   expect(page.get_by_role("group", name="Your private hole cards")).to_be_visible()
+  expect(page.get_by_role("timer")).to_be_visible()
+  pot_button = page.get_by_role("button", name="Pot 30", exact=True).bounding_box()
+  assert pot_button["y"] + pot_button["height"] <= height, pot_button
 
   stage = page.locator(".table-stage").bounding_box()
   board = page.get_by_role("group", name="Community cards").bounding_box()
@@ -83,6 +87,8 @@ def check_paced_bot(browser, width, count):
   label = "Ashwing" if count == 2 else "Ashwing 1"
   expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
   expect(page.get_by_role("region", name="Action log")).to_be_visible()
+  expect(page.get_by_role("region", name="Ashwing chat")).to_be_visible()
+  expect(page.get_by_role("timer")).to_be_visible()
   assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
   if count == 2:
     page.get_by_role("button", name="Call 5", exact=True).click()

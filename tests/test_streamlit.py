@@ -116,3 +116,47 @@ def test_ashwing_turn_does_not_depend_on_the_arena_registry(monkeypatch):
   assert app.session_state.screen == "visualization"
   button(app, "Back to table").click().run()
   assert app.session_state.screen == "table"
+
+
+def test_move_clock_stays_off_until_private_reveal_and_folds_once_on_expiry():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Pass-and-play").click().run()
+  assert app.session_state.turn_clock is None
+  button(app, "Reveal my cards").click().run()
+  turn, _ = app.session_state.turn_clock
+  assert any('role="timer"' in item.value for item in app.markdown)
+  app.session_state.turn_clock = (turn, 0)
+  button(app, "Call 5").click().run()
+  assert not app.exception
+  assert [event["action"] for event in app.session_state.history] == ["fold"]
+  app.run()
+  assert len(app.session_state.history) == 1
+  assert not app.session_state.chat
+
+
+def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Pass-and-play").click().run()
+  button(app, "Reveal my cards").click().run()
+  button(app, "Call 5").click().run()
+  button(app, "Reveal my cards").click().run()
+  turn, _ = app.session_state.turn_clock
+  app.session_state.turn_clock = (turn, 0)
+  app.run()
+  assert [event["action"] for event in app.session_state.history] == ["call", "check"]
+  assert app.session_state.game.phase == "flop"
+  button(app, "Main menu").click().run()
+  button(app, "Play Ashwing").click().run()
+  first_line = list(app.session_state.chat)
+  app.run()
+  assert len(first_line) == 1 and app.session_state.chat == first_line
+  button(app, "Fold").click().run()
+  assert len(app.session_state.chat) == 2
+
+
+def test_poker_puzzle_has_feedback():
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Poker puzzles").click().run()
+  app.radio[0].set_value("25%")
+  button(app, "Check answer").click().run()
+  assert app.success
