@@ -1,0 +1,36 @@
+{
+  "start": [
+    "Ashwing at your table. I brought a deck, a chip stack, and an unreasonable amount of confidence.",
+    "Welcome to the felt. The chips are real to me."
+  ],
+  "win": [
+    "I'll just borrow those chips. For an indefinite period.",
+    "The pot has been safely relocated to my stack.",
+    "A clean getaway. The chips never saw it coming."
+  ],
+  "loss": [
+    "A good hand. I'll be over here reviewing the footage.",
+    "Fair play. I was hoping you wouldn't notice that line.",
+    "Nicely done. The felt remembers."
+  ],
+  "blunder": [
+    "That was an expensive way to find the fold button.",
+    "Big pot, small exit. I've taken that door myself."
+  ],
+  "thinking": [
+    "Take your time. I'm trying to look like I have a plan.",
+    "The suspense is doing wonders for my poker face."
+  ],
+  "timeout": [
+    "Clock's up. The dealer's taking this one."
+  ],
+  "eliminated": [
+    "My last chip! Tell the others it went out in a blaze of slightly questionable glory."
+  ],
+  "match_win": [
+    "That's the match. I'll be insufferable about this for exactly one hand."
+  ],
+  "match_loss": [
+    "You got me. Somebody lower the lights before they see me tip my cap."
+  ]
+}
