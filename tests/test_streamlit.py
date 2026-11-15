@@ -11,13 +11,14 @@ def button(app, label):
 
 def test_setup_controls_follow_player_count_and_mode_before_dealing():
   app = AppTest.from_file(str(APP_PATH)).run()
-  app.slider[0].set_value(2).run()
-  app.selectbox[0].select("Human vs Bots").run()
-  assert [item.label for item in app.text_input] == ["Seat 1 name", "Seat 2 name"]
-  assert all(item.label != "Bot difficulty" for item in app.selectbox)
+  assert app.radio[0].options == ["Local Pass-and-Play", "Human vs Ashwing"]
+  app.radio[0].set_value("Human vs Ashwing").run()
+  assert app.slider[0].value == 2
+  assert app.slider[0].max == 6
+  assert [item.label for item in app.text_input] == ["Your name"]
   button(app, "Deal the first hand").click().run()
   assert not app.exception
-  assert app.session_state.human_bots.styles == ("One Above All", "One Above All")
+  assert app.session_state.player_names == {1: "You", 2: "Ashwing"}
   assert len(app.session_state.game.players) == 2
 
 
@@ -66,8 +67,8 @@ def test_pot_preset_commits_only_additional_chips():
 
 def test_paced_bot_waits_then_commits_one_action_per_turn():
   app = AppTest.from_file(str(APP_PATH)).run()
+  app.radio[0].set_value("Human vs Ashwing").run()
   app.slider[0].set_value(3).run()
-  app.selectbox[0].select("Human vs Bots").run()
   button(app, "Deal the first hand").click().run()
   button(app, "Fold").click().run()
   assert not app.exception
@@ -78,55 +79,6 @@ def test_paced_bot_waits_then_commits_one_action_per_turn():
   assert not app.exception
   assert len(app.session_state.history) == 2
   assert app.session_state.history[-1]["player_id"] == 2
-
-
-def test_arena_pause_and_step_produce_the_same_hand_as_autoplay():
-  def play(autoplay):
-    app = AppTest.from_file(str(APP_PATH)).run()
-    app.slider[0].set_value(2).run()
-    app.selectbox[0].select("Bot Arena").run()
-    app.selectbox[2].select("Random")
-    button(app, "Deal the first hand").click().run()
-    if autoplay:
-      button(app, "Play").click().run()
-      assert app.session_state.history == []
-      turn, _ = app.session_state.arena_due
-      app.session_state.arena_due = (turn, 0)
-      app.run()
-      assert len(app.session_state.history) == 1
-      button(app, "Pause").click().run()
-      app.run()
-      assert len(app.session_state.history) == 1
-    while not app.session_state.game.hand_over:
-      before = len(app.session_state.history)
-      button(app, "Step").click().run()
-      assert not app.exception
-      assert len(app.session_state.history) == before + 1
-    record = app.session_state.hand_records[1]
-    dealer = app.session_state.game.dealer_index
-    action_count = len(app.session_state.history)
-    if not app.session_state.game.game_over:
-      button(app, "Step").click().run()
-      assert app.session_state.game.hand_number == 2
-      assert app.session_state.game.dealer_index != dealer
-      assert len(app.session_state.history) == action_count
-    return record
-
-  assert play(False) == play(True)
-
-
-def test_arena_can_select_and_run_equity_strategy():
-  app = AppTest.from_file(str(APP_PATH)).run()
-  app.slider[0].set_value(2).run()
-  app.selectbox[0].select("Bot Arena").run()
-  app.selectbox[2].select("Equity")
-  button(app, "Deal the first hand").click().run()
-  assert app.session_state.arena.styles == ("Calling Station", "Equity")
-  for _ in range(2):
-    button(app, "Step").click().run()
-    assert not app.exception
-  assert [event["player_id"] for event in app.session_state.history] == [1, 2]
-  assert app.session_state.bot_error is None
 
 
 def test_benchmarks_open_with_bundled_results():
@@ -142,42 +94,25 @@ def test_benchmarks_open_with_bundled_results():
   assert button(app, "Deal the first hand")
 
 
-def test_visualization_hides_in_progress_estimates_then_shows_completed_decision():
-  app = AppTest.from_file(str(APP_PATH)).run()
-  app.slider[0].set_value(2).run()
-  app.selectbox[0].select("Bot Arena").run()
-  for selector in app.selectbox[1:]:
-    selector.select("Equity")
-  button(app, "Deal the first hand").click().run()
-  button(app, "Step").click().run()
-  assert app.session_state.bot_simulations[1]
-  button(app, "Bot visualization").click().run()
-  assert not app.exception
-  assert not app.metric
-  button(app, "Back to table").click().run()
-  for _ in range(50):
-    if app.session_state.game.hand_over:
-      break
-    button(app, "Step").click().run()
-  assert app.session_state.game.hand_over
-  button(app, "Bot visualization").click().run()
-  assert not app.exception
-  assert {metric.label for metric in app.metric} == {"Win rate", "Equity (pot share)", "Outcomes checked"}
-
-
-def test_human_bot_turn_resolves_champion_with_stale_strategy_registries(monkeypatch):
+def test_ashwing_turn_does_not_depend_on_the_arena_registry(monkeypatch):
   import arena
 
   app = AppTest.from_file(str(APP_PATH)).run()
+  app.radio[0].set_value("Human vs Ashwing").run()
   app.slider[0].set_value(3).run()
-  app.selectbox[0].select("Human vs Bots").run()
   button(app, "Deal the first hand").click().run()
-  monkeypatch.delitem(arena.TOOLKIT_STRATEGIES, "One Above All")
-  monkeypatch.delitem(arena.STRATEGIES, "One Above All")
+  assert app.session_state.player_names == {1: "You", 2: "Ashwing 1", 3: "Ashwing 2"}
+  monkeypatch.delitem(arena.TOOLKIT_STRATEGIES, "Hive Mind")
+  monkeypatch.delitem(arena.STRATEGIES, "Hive Mind")
   app.session_state.bot_pacing = "Instant"
   button(app, "Fold").click().run()
   assert not app.exception
   assert app.session_state.bot_error is None
   assert any(event["player_id"] == 2 for event in app.session_state.history)
-  assert any(turn.get("champion_entrant") == "Line Range"
+  assert any(turn.get("model") == "Ashwing"
     for turns in app.session_state.bot_simulations.values() for turn in turns)
+  button(app, "Bot visualization").click().run()
+  assert not app.exception
+  assert app.session_state.screen == "visualization"
+  button(app, "Back to table").click().run()
+  assert app.session_state.screen == "table"
