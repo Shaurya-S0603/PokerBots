@@ -23,7 +23,7 @@ LOCAL = "Local Pass-and-Play"
 ASHWING = "Human vs Ashwing"
 BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 TURN_SECONDS = 30
-NEXT_HAND_SECONDS = 5
+NEXT_HAND_SECONDS = 1
 DEAL_SCREEN_SECONDS = 0.8
 BANTER = json.loads((ROOT / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
 
@@ -429,9 +429,9 @@ def _render_next_hand_countdown(hand):
     deadline = active[1]
     left = max(0, ceil(deadline - monotonic())) if deadline is not None else None
     if left:
-      st.markdown(f'<div class="room-next-hand" role="timer" aria-label="Next hand in {left} seconds">'
+      st.markdown(f'<div class="room-next-hand" role="timer" aria-label="Next hand in {left} second">'
         f'Next hand in <strong>{left}s</strong></div>', unsafe_allow_html=True)
-    if left == 0 or st.button("Next hand", key=f"next_{round_key[0]}_{hand}", use_container_width=True):
+    if left == 0:
       if not _deal_next_hand():
         st.session_state.next_hand_clock = (round_key, None)
       st.rerun()

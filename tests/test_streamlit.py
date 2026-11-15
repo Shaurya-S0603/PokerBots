@@ -86,7 +86,9 @@ def test_pass_and_play_resume_hides_cards_and_reruns_do_not_pay_twice():
   second_session = AppTest.from_file(str(APP_PATH)).run()
   assert second_session.session_state.game is None
   assert second_session.session_state.history == []
-  button(app, "Next hand").click().run()
+  round_key, _ = app.session_state.next_hand_clock
+  app.session_state.next_hand_clock = (round_key, 0)
+  app.run()
   button(app, "Reveal my cards").click().run()
   assert not app.exception
   assert app.session_state.game.hand_number == 2
@@ -222,7 +224,9 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
   assert not app.exception
   app.run()
   assert app.session_state.chat == scene
-  button(app, "Next hand").click().run()
+  round_key, _ = app.session_state.next_hand_clock
+  app.session_state.next_hand_clock = (round_key, 0)
+  app.run()
   assert app.session_state.chat == [*scene, lines["new_hand"][0]]
 
 
@@ -232,8 +236,9 @@ def test_next_hand_clock_waits_on_history_and_deals_only_once():
   deal(app)
   button(app, "Reveal my cards").click().run()
   button(app, "Fold").click().run()
-  assert any('aria-label="Next hand in 5 seconds"' in item.value for item in app.markdown)
+  assert any('aria-label="Next hand in 1 second"' in item.value for item in app.markdown)
   assert app.session_state.game.hand_number == 1
+  assert all(item.label != "Next hand" for item in app.button)
   button(app, "Replay this hand").click().run()
   assert app.session_state.next_hand_clock is None
   assert app.session_state.game.hand_number == 1
