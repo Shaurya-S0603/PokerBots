@@ -16,8 +16,8 @@ jobs:
           cache: pip
       - run: python -m pip install -r requirements.txt
       - run: python -m pytest -q
-      - run: python -m pip install -r requirements-chipzen.txt
-      - run: python tests/chipzen_conformance.py
+      - run: python -m pip install -r ashwing_sdk/requirements-chipzen.txt
+      - run: python ashwing_sdk/tests/chipzen_conformance.py
       - run: python -m pip install playwright
       - run: python -m playwright install --with-deps chromium
-      - run: python tests/browser/table_smoke.py
+      - run: python streamlit_app/tests/browser/table_smoke.py

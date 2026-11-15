@@ -10,7 +10,7 @@ from urllib.request import urlopen
 from playwright.sync_api import expect, sync_playwright
 
 URL = "http://127.0.0.1:8511"
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def wait_for_server():

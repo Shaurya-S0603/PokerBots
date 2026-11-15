@@ -3,17 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'Dockerfile.chipzen*'
-      - 'chipzen_*.py'
-      - 'pokerbots_sdk/**'
-      - 'training/*.json'
-      - 'requirements-chipzen.txt'
-      - 'equity.py'
-      - 'fast_rank.py'
-      - 'baseline_v4.py'
-      - 'poker_engine.py'
-      - 'pokerroom.py'
-      - 'tests/chipzen_conformance.py'
+      - 'ashwing_sdk/**'
       - '.github/workflows/chipzen-image.yml'
 permissions:
   contents: read
@@ -33,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Linux image
-        run: docker build --platform linux/amd64 -f Dockerfile.chipzen --build-arg "POKERBOTS_STRATEGY=$BOT_POLICY" -t "pokerbots-$BOT_SLUG:chipzen" .
+        run: docker build --platform linux/amd64 -f ashwing_sdk/Dockerfile.chipzen --build-arg "POKERBOTS_STRATEGY=$BOT_POLICY" -t "pokerbots-$BOT_SLUG:chipzen" ashwing_sdk
       - name: Check sandbox user and mock matches inside the image
         run: |
           test "$(docker run --rm --network none --entrypoint id "pokerbots-$BOT_SLUG:chipzen" -u)" = 10001
           docker run --rm --network none --read-only --entrypoint python \
-            -v "$PWD/tests/chipzen_conformance.py:/bot/tests/chipzen_conformance.py:ro" \
+            -v "$PWD/ashwing_sdk/tests/chipzen_conformance.py:/bot/tests/chipzen_conformance.py:ro" \
             "pokerbots-$BOT_SLUG:chipzen" /bot/tests/chipzen_conformance.py "$BOT_POLICY"
       - name: Export the upload archive
         run: |
