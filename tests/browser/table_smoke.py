@@ -7,7 +7,7 @@ import time
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from playwright.sync_api import TimeoutError as PlaywrightTimeout, expect, sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 URL = "http://127.0.0.1:8511"
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,52 +72,23 @@ def check_table(browser, width):
   page.close()
 
 
-def choose_mode(page, mode, count):
-  # Changing the seat count reruns the page and can close an open dropdown.
-  expect(page.get_by_test_id("stTextInput")).to_have_count(count)
-  picker = page.get_by_test_id("stSelectbox").first.locator("input")
-  option = page.get_by_text(mode, exact=True)
-  for attempt in range(3):
-    if not option.is_visible():
-      picker.click()
-    try:
-      option.click(timeout=2000)
-      return
-    except PlaywrightTimeout:
-      if attempt == 2:
-        raise
-
-
-def check_paced_bot(browser):
-  page = browser.new_page(viewport={"width": 1440, "height": 900})
+def check_paced_bot(browser, width, count):
+  page = browser.new_page(viewport={"width": width, "height": 900})
   page.goto(URL)
   expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
-  set_player_count(page, 3)
-  choose_mode(page, "Human vs Bots", 3)
+  page.get_by_text("Human vs Ashwing", exact=True).click()
+  expect(page.get_by_text("Play heads-up or add up to four more Ashwing seats.", exact=True)).to_be_visible()
+  set_player_count(page, count)
   page.get_by_role("button", name="Deal the first hand").click()
-  page.get_by_role("button", name="Fold", exact=True).click()
-  expect(page.get_by_text("Player 2 is thinking…", exact=True)).to_be_visible()
-  expect(page.get_by_role("button", name="Next hand")).to_be_visible(timeout=15000)
-  page.close()
-
-
-def check_arena(browser):
-  page = browser.new_page(viewport={"width": 1440, "height": 900})
-  page.goto(URL)
-  expect(page.get_by_role("button", name="Deal the first hand")).to_be_visible()
-  set_player_count(page, 2)
-  choose_mode(page, "Bot Arena", 2)
-  page.get_by_role("button", name="Deal the first hand").click()
-  expect(page.get_by_text("Bot Arena · Seed 42", exact=True)).to_be_visible()
-  page.get_by_role("button", name="Play", exact=True).click()
-  action = page.get_by_text("Last action: Seat 1 call · 5 chips", exact=True)
-  expect(action).to_be_visible()
-  page.get_by_role("button", name="Pause", exact=True).click()
-  step = page.get_by_role("button", name="Step", exact=True).and_(page.locator("button:enabled"))
-  expect(step).to_be_visible()
-  expect(action).to_be_visible()
-  step.click()
-  expect(page.get_by_text("Last action: Seat 2 check", exact=True)).to_be_visible()
+  label = "Ashwing" if count == 2 else "Ashwing 1"
+  expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
+  expect(page.get_by_role("region", name="Action log")).to_be_visible()
+  assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+  if count == 2:
+    page.get_by_role("button", name="Call 5", exact=True).click()
+  else:
+    page.get_by_role("button", name="Fold", exact=True).click()
+  expect(page.locator(".room-events").get_by_text(label, exact=False).first).to_be_visible(timeout=15000)
   page.close()
 
 
@@ -150,8 +121,8 @@ if __name__ == "__main__":
         browser = playwright.chromium.launch(executable_path=os.environ.get("POKERBOTS_CHROMIUM"))
         check_table(browser, 1440)
         check_table(browser, 360)
-        check_paced_bot(browser)
-        check_arena(browser)
+        check_paced_bot(browser, 1440, 3)
+        check_paced_bot(browser, 360, 2)
         check_benchmarks(browser)
     finally:
       server.terminate()

@@ -6,10 +6,10 @@ from time import monotonic
 import streamlit as st
 import streamlit.components.v1 as components
 
-from arena import BotArena, STRATEGIES
+from arena import BotArena, apply_decision, observe
 from poker_engine import start_game
 from ui.benchmark_dashboard import render_benchmarks
-from pokerbots_sdk.champion_policy import TITLE
+from pokerbots_sdk.hive_policy import hive_mind
 from ui.bot_visualization import render_bot_visualization
 from ui.render import card_html, table_html
 from ui.replay import export_history, record_step, start_record
@@ -17,11 +17,12 @@ from ui.session import action_event, new_stats, settle_stats
 from ui.showdown import best_five, pot_explanation
 
 
-st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", layout="wide", initial_sidebar_state="auto")
+st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", layout="wide", initial_sidebar_state="collapsed")
 ROOT = Path(__file__).parent
 CSS = (ROOT / "ui" / "styles.css").read_text(encoding="utf-8")
 EFFECT_TEMPLATE = (ROOT / "ui" / "effect.html").read_text(encoding="utf-8")
-ARENA_PACING = {"Quick": 0.35, "Normal": 0.7, "Relaxed": 1.2}
+LOCAL = "Local Pass-and-Play"
+ASHWING = "Human vs Ashwing"
 BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 EFFECT_SCRIPT = (ROOT / "ui" / "effects.js").read_text(encoding="utf-8")
 
@@ -31,13 +32,12 @@ def _init_state():
     "screen": "menu",
     "game": None,
     "game_id": 0,
-    "game_mode": "Local Pass-and-Play",
+    "game_mode": LOCAL,
     "human_bots": None,
     "bot_simulations": {},
     "player_names": {},
     "revealed_player": None,
     "handoff_required": True,
-    "last_action": "",
     "last_actions": {},
     "history": [],
     "hand_records": {},
@@ -50,10 +50,9 @@ def _init_state():
     "bot_error": None,
     "bot_pacing": "Quick",
     "bot_due": None,
-    "arena": None,
-    "arena_playing": False,
-    "arena_due": None
   }
+  if st.session_state.get("game_mode") in {"Human vs Bots", "Bot Arena"}:
+    st.session_state.update(game_mode=LOCAL, screen="menu", game=None, hand_records={})
   for key, value in defaults.items():
     if key not in st.session_state:
       st.session_state[key] = value
@@ -73,23 +72,18 @@ def _player(player_id):
   return next(p for p in st.session_state.game.players if p.player_id == player_id)
 
 
-def _start_game(count, chips, small, big, mode, names, arena=None):
-  human_bots = BotArena(randbits(64), [TITLE] * count) if mode == "Human vs Bots" else None
-  bot_match = arena or human_bots
-  game = start_game(count, chips, small, big, deck_rng=bot_match.deck_rng if bot_match else None)
+def _start_game(count, chips, small, big, mode, names):
+  human_bots = BotArena(randbits(64), ["Ashwing"] * count) if mode == ASHWING else None
+  game = start_game(count, chips, small, big, deck_rng=human_bots.deck_rng if human_bots else None)
   st.session_state.human_bots = human_bots
   st.session_state.bot_simulations = {}
-  st.session_state.arena = arena
-  st.session_state.arena_playing = False
-  st.session_state.arena_due = None
   st.session_state.game = game
   st.session_state.game_id += 1
   st.session_state.screen = "table"
   st.session_state.game_mode = mode
   st.session_state.player_names = {i + 1: value.strip() for i, value in enumerate(names)}
   st.session_state.revealed_player = None
-  st.session_state.handoff_required = mode == "Local Pass-and-Play"
-  st.session_state.last_action = ""
+  st.session_state.handoff_required = mode == LOCAL
   st.session_state.last_actions = {}
   st.session_state.history = []
   st.session_state.hand_records = {}
@@ -117,15 +111,9 @@ def _log_action(action, player_id, before):
     _record_hand_start(before)
     record = st.session_state.hand_records[before["hand_number"]]
   record_step(record, game.get_state(), event)
-  phrase = f"{_name(player_id)} {action.replace('_', ' ')}"
-  if action in ("call", "raise", "all_in") and event["amount"] > 0:
-    phrase += f" · {event['amount']:,} chips"
-  st.session_state.last_action = phrase
   st.session_state.last_actions[player_id] = action.replace("_", " ").capitalize()
   if game.hand_over:
     st.session_state.pending_effect = ("win", "Hand complete · Pots awarded")
-  else:
-    st.session_state.pending_effect = ("action", phrase)
 
 
 def _apply_action(action, player, amount=None):
@@ -138,7 +126,7 @@ def _apply_action(action, player, amount=None):
   if ok:
     _log_action(action, player.player_id, before)
     st.session_state.revealed_player = None
-    st.session_state.handoff_required = st.session_state.game_mode == "Local Pass-and-Play"
+    st.session_state.handoff_required = st.session_state.game_mode == LOCAL
     st.session_state.flash = None
   else:
     st.session_state.flash = ("error", game.last_error or "That action could not be completed.")
@@ -146,7 +134,7 @@ def _apply_action(action, player, amount=None):
 
 
 def _bot_to_act(state):
-  return (st.session_state.game_mode == "Human vs Bots"
+  return (st.session_state.game_mode == ASHWING
     and not state["hand_over"] and state["current_player"] not in (None, 1))
 
 
@@ -154,12 +142,12 @@ def _play_bot_turn(before):
   game = st.session_state.game
   current = before["current_player"]
   player = _player(current)
-  arena = st.session_state.arena
   diagnostics = {}
   try:
-    bot_match = arena or st.session_state.human_bots
-    model = bot_match.styles[current - 1]
-    action, ok = bot_match.act(game, player, diagnostics=diagnostics)
+    view = observe(game, player)
+    action, target = hive_mind(view, st.session_state.human_bots.bot_rngs[current - 1],
+      diagnostics=diagnostics)
+    action, ok = apply_decision(game, player, view, action, target)
   except ValueError as error:
     st.session_state.bot_error = str(error)
     return False
@@ -168,7 +156,7 @@ def _play_bot_turn(before):
     return False
   _log_action(action, current, before)
   if diagnostics:
-    diagnostics.update(model=model, action=action, seat=current, phase=before["phase"],
+    diagnostics.update(model="Ashwing", action=action, seat=current, phase=before["phase"],
       board=before["board"], pot=before["pot"])
     st.session_state.bot_simulations.setdefault(before["hand_number"], []).append(diagnostics)
   return True
@@ -228,13 +216,11 @@ def _render_table(state):
   shown = state
   current = state["current_player"]
   if not state["hand_over"] and current is not None:
-    if st.session_state.game_mode == "Human vs Bots" and current == 1:
+    if st.session_state.game_mode == ASHWING and current == 1:
       shown = st.session_state.game.get_state(1)
-    if st.session_state.game_mode == "Local Pass-and-Play" and st.session_state.revealed_player == current:
+    if st.session_state.game_mode == LOCAL and st.session_state.revealed_player == current:
       shown = st.session_state.game.get_state(current)
-  bot_ids = {p.player_id for p in st.session_state.game.players if p.player_id != 1} if st.session_state.game_mode == "Human vs Bots" else set()
-  if st.session_state.arena:
-    bot_ids = {seat["player_id"] for seat in state["players"]}
+  bot_ids = {p.player_id for p in st.session_state.game.players if p.player_id != 1} if st.session_state.game_mode == ASHWING else set()
   markup = table_html(shown, st.session_state.player_names, st.session_state.last_actions, bot_ids)
   st.markdown(markup, unsafe_allow_html=True)
 
@@ -256,7 +242,7 @@ def _render_actions(state):
   if current is None:
     st.info("Waiting for the betting state to advance.")
     return
-  if st.session_state.game_mode == "Local Pass-and-Play" and st.session_state.revealed_player != current:
+  if st.session_state.game_mode == LOCAL and st.session_state.revealed_player != current:
     st.session_state.handoff_required = True
   turn_key = f"{st.session_state.game_id}_{state['hand_number']}_{current}_{len(st.session_state.history)}"
   if st.session_state.handoff_required:
@@ -318,7 +304,7 @@ def _render_actions(state):
 
 
 def _render_showdown(state):
-  if st.session_state.game_mode == "Human vs Bots":
+  if st.session_state.game_mode == ASHWING:
     human = next(item for item in state["players"] if item["player_id"] == 1)
     if human["stack"] == 0 and not state["game_over"]:
       st.error("You were eliminated. The remaining bots can continue the tournament if you choose Next hand.")
@@ -358,7 +344,7 @@ def _render_showdown(state):
       st.session_state.screen = "menu"
       st.session_state.game = None
       st.rerun()
-  elif not st.session_state.arena and st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
+  elif st.button("Next hand", key=f"next_{st.session_state.game_id}_{state['hand_number']}", type="primary", use_container_width=True):
     _deal_next_hand()
     st.rerun()
 
@@ -372,62 +358,10 @@ def _deal_next_hand():
   st.session_state.hand_start_stacks = starting_stacks
   _record_hand_start(game.get_state())
   st.session_state.revealed_player = None
-  st.session_state.handoff_required = st.session_state.game_mode == "Local Pass-and-Play"
+  st.session_state.handoff_required = st.session_state.game_mode == LOCAL
   st.session_state.last_actions = {}
-  st.session_state.last_action = ""
   st.session_state.flash = ("info", f"Hand {game.hand_number} started. Dealer rotated and blinds posted.")
   return True
-
-
-def _pause_arena():
-  st.session_state.arena_playing = False
-  st.session_state.arena_due = None
-
-
-def _advance_arena(state):
-  advanced = _deal_next_hand() if state["hand_over"] else _play_bot_turn(state)
-  if not advanced:
-    _pause_arena()
-
-
-def _render_arena(state):
-  arena = st.session_state.arena
-  st.caption(f"Bot Arena · Seed {arena.seed}")
-  st.caption(" · ".join(f"Seat {seat}: {style}" for seat, style in enumerate(arena.styles, 1)))
-  delay = ARENA_PACING[st.selectbox("Arena pace", list(ARENA_PACING), index=1)]
-  play, pause, step = st.columns(3)
-  if state["game_over"]:
-    _pause_arena()
-  playing = st.session_state.arena_playing
-  if play.button("Play", disabled=playing or state["game_over"], use_container_width=True):
-    st.session_state.arena_playing = True
-    st.rerun()
-  if pause.button("Pause", disabled=not playing, use_container_width=True):
-    _pause_arena()
-    st.rerun()
-  if step.button("Step", disabled=playing or state["game_over"], use_container_width=True):
-    _advance_arena(state)
-    st.rerun()
-  if state["hand_over"]:
-    _render_showdown(state)
-  if not playing:
-    return
-
-  turn = (st.session_state.game_id, state["hand_number"], len(st.session_state.history), delay)
-  timing = st.session_state.arena_due
-  if timing is None or timing[0] != turn:
-    st.session_state.arena_due = (turn, monotonic() + delay)
-
-  @st.fragment(run_every=delay)
-  def tick():
-    timing = st.session_state.arena_due
-    if (st.session_state.screen == "table" and st.session_state.arena_playing
-        and timing and timing[0] == turn and monotonic() >= timing[1]):
-      st.session_state.arena_due = None
-      _advance_arena(state)
-      st.rerun()
-
-  tick()
 
 
 def _render_payouts(state):
@@ -443,14 +377,13 @@ def _render_payouts(state):
 
 
 def _open_history(hand=None):
-  _pause_arena()
   if hand is not None:
     game_id = st.session_state.game_id
     st.session_state[f"replay_hand_{game_id}"] = hand
     st.session_state[f"replay_step_{game_id}_{hand}"] = 0
   st.session_state.screen = "history"
   st.session_state.bot_due = None
-  if st.session_state.game_mode == "Local Pass-and-Play":
+  if st.session_state.game_mode == LOCAL:
     st.session_state.revealed_player = None
     st.session_state.handoff_required = True
   st.rerun()
@@ -496,112 +429,131 @@ def _render_history():
       st.text(f"{_name(player_id)} · {stack:,} chips")
   if table["hand_over"]:
     _render_payouts(table)
-  arena = st.session_state.arena
-  config = {"seed": arena.seed, "styles": arena.styles} if arena else None
-  st.download_button("Download completed hands (JSON)", data=export_history(completed, config),
+  st.download_button("Download completed hands (JSON)", data=export_history(completed),
     file_name="pokerroom-hand-history.json", mime="application/json")
   st.caption("The download uses seat numbers and includes only cards revealed at showdown.")
 
 
+def _masthead():
+  st.markdown('<div class="room-masthead"><span class="room-mark" aria-hidden="true">♠</span>'
+    '<span class="room-wordmark">PokerRoom</span><span class="room-variant">No-Limit Hold’em</span></div>',
+    unsafe_allow_html=True)
+
+
 def _render_menu():
-  st.markdown('<div class="room-hero"><h1>POKERROOM</h1><p>NO-LIMIT TEXAS HOLD’EM</p></div>', unsafe_allow_html=True)
-  st.markdown('<p class="room-subtitle">A proper poker table. Real betting rules, side pots and showdown payouts. Play on one device or challenge the bots.</p>', unsafe_allow_html=True)
-  if st.session_state.game is not None:
-    if st.button("Resume current game", type="primary", use_container_width=True):
+  st.markdown('<div class="room-lobby"><h1>Play Hold’em</h1></div>', unsafe_allow_html=True)
+  setup, info = st.columns([2.05, 1], gap="medium")
+  with setup, st.container(border=True, key="lobby_setup"):
+    st.subheader("New game")
+    mode = st.radio("Game mode", [LOCAL, ASHWING], horizontal=True)
+    vs_ashwing = mode == ASHWING
+    st.caption("Play heads-up or add up to four more Ashwing seats." if vs_ashwing
+      else "Share one device. Each player reveals their cards on their turn.")
+    count = st.slider("Number of players", 2, 6 if vs_ashwing else 10, 2 if vs_ashwing else 5,
+      key="ashwing_seats" if vs_ashwing else "local_seats")
+    with st.form("new_game", clear_on_submit=False, border=False):
+      c1, c2, c3 = st.columns(3)
+      with c1:
+        chips = st.number_input("Starting chips", min_value=10, max_value=1000000, value=1000, step=100)
+      with c2:
+        small = st.number_input("Small blind", min_value=1, max_value=1000000, value=5, step=1)
+      with c3:
+        big = st.number_input("Big blind", min_value=2, max_value=1000000, value=10, step=1)
+      with st.expander("Player names"):
+        if vs_ashwing:
+          human = st.text_input("Your name", value="You", max_chars=24)
+          bots = ["Ashwing"] if count == 2 else [f"Ashwing {i}" for i in range(1, count)]
+          names = [human, *bots]
+        else:
+          names = [st.text_input(f"Seat {index + 1} name", value=f"Player {index + 1}",
+            max_chars=24, key=f"local_player_{index}") for index in range(count)]
+      submit = st.form_submit_button("Deal the first hand", type="primary", use_container_width=True)
+      if submit:
+        clean = [value.strip() for value in names]
+        if not 0 < small < big:
+          st.error("The big blind must be greater than the small blind.")
+        elif len({value.casefold() for value in clean}) != len(clean) or any(not value for value in clean):
+          st.error("Enter a distinct, nonempty name for each player.")
+        else:
+          _start_game(count, int(chips), int(small), int(big), mode, clean)
+          st.rerun()
+    if st.session_state.game is not None and st.button("Resume current game", use_container_width=True):
       st.session_state.screen = "table"
       st.rerun()
-  if st.button("Bot visualization"):
-    _open_visualization("menu")
-  if st.button("Bot benchmarks"):
-    st.session_state.screen = "benchmarks"
-    st.rerun()
-  if st.session_state.hand_records and st.button("Hand history"):
-    _open_history()
-  with st.expander("How to play · 60-second guide", expanded=st.session_state.game is None):
-    st.markdown("Each player receives two private cards. Make the strongest five-card hand using your cards and the shared board. Betting happens **before the flop**, **after the flop**, **after the turn** and **after the river**. Fold to leave the hand, check when no bet is owed, call to match, or raise to increase the bet. The last player standing wins immediately, otherwise the best eligible hand wins each pot.")
-    st.markdown("**Pass-and-play:** hand the device to the named player and reveal their cards only when they are ready. **Human vs Bots:** you play as Player 1; the opponents use the latest Equity training match winner.")
-  st.subheader("New game")
-  count = st.slider("Number of players", 2, 10, 5)
-  mode = st.selectbox("Game mode", ["Local Pass-and-Play", "Human vs Bots", "Bot Arena"])
-  if mode == "Human vs Bots":
-    st.caption(f"Opponent model · {TITLE}")
-  with st.form("new_game", clear_on_submit=False):
-    c1, c2, c3 = st.columns(3)
-    with c1:
-      chips = st.number_input("Starting chips per player", min_value=10, max_value=1000000, value=1000, step=100)
-    with c2:
-      small = st.number_input("Small blind", min_value=1, max_value=1000000, value=5, step=1)
-    with c3:
-      big = st.number_input("Big blind", min_value=2, max_value=1000000, value=10, step=1)
-    seed = None
-    styles = []
-    if mode == "Bot Arena":
-      seed = st.number_input("Match seed", min_value=0, max_value=2**32 - 1, value=42, step=1)
-      styles = [st.selectbox(f"Seat {i + 1} strategy", list(STRATEGIES), key=f"arena_style_{i}")
-        for i in range(count)]
-      names = [f"Seat {i + 1}" for i in range(count)]
-    else:
-      with st.expander("Player names"):
-        names = [st.text_input(f"Seat {index + 1} name", value=("You" if index == 0 and mode == "Human vs Bots" else f"Player {index + 1}"), max_chars=24, key=f"player_name_{index}") for index in range(count)]
-    submit = st.form_submit_button("Deal the first hand", type="primary", use_container_width=True)
-    if submit:
-      clean = [value.strip() for value in names]
-      if not 0 < small < big:
-        st.error("The big blind must be greater than the small blind.")
-      elif len(set(value.casefold() for value in clean)) != len(clean) or any(not value for value in clean):
-        st.error("Enter a distinct, nonempty name for each player.")
-      else:
-        try:
-          arena = BotArena(int(seed), styles) if styles else None
-          _start_game(count, int(chips), int(small), int(big), mode, clean, arena)
-          st.rerun()
-        except ValueError as error:
-          st.error(str(error))
+  with info:
+    with st.container(border=True, key="ashwing_profile"):
+      st.markdown('<div class="room-profile"><div class="room-profile__cards" aria-hidden="true">'
+        '<span>♠</span><span>♦</span></div><h2>Ashwing</h2>'
+        '<p>Reads betting patterns heads-up and recalculates its equity in multiway pots.</p></div>',
+        unsafe_allow_html=True)
+      if st.button("Bot visualization", use_container_width=True):
+        _open_visualization("menu")
+      if st.button("Bot benchmarks", use_container_width=True):
+        st.session_state.screen = "benchmarks"
+        st.rerun()
+      if st.session_state.hand_records and st.button("Hand history", use_container_width=True):
+        _open_history()
+  with st.expander("How to play"):
+    st.markdown("Use any five cards from your two hole cards and the shared board. Fold, check, call or raise "
+      "as betting moves from preflop to the river. The last player in the hand wins without a showdown. "
+      "At showdown, the strongest eligible hand wins each pot.")
 
 
-def _render_sidebar(state):
+def _render_sidebar():
   with st.sidebar:
-    st.markdown("### ♠ POKERROOM")
-    if st.button("Main menu", use_container_width=True):
-      _pause_arena()
-      if st.session_state.game_mode == "Local Pass-and-Play":
-        st.session_state.revealed_player = None
-        st.session_state.handoff_required = True
-      st.session_state.screen = "menu"
-      st.rerun()
+    st.subheader("Table settings")
     st.checkbox("Reduce animations", key="reduced_motion")
-    if st.session_state.game_mode == "Human vs Bots":
+    if st.session_state.game_mode == ASHWING:
       st.selectbox("Bot pace", list(BOT_PACING),
         index=list(BOT_PACING).index(st.session_state.bot_pacing), key="bot_pace_control",
         on_change=lambda: st.session_state.update(bot_pacing=st.session_state.bot_pace_control))
-    st.markdown("---")
-    st.caption(f"{st.session_state.game_mode} · Hand {state['hand_number']}")
-    st.metric("Pot", f"{state['pot']:,}")
-    st.metric("Active stacks", f"{sum(item['stack'] > 0 for item in state['players'])} players")
-    with st.expander("Recent actions", expanded=True):
-      events = [event for event in st.session_state.history if event["hand"] == state["hand_number"]]
-      if not events:
-        st.caption("No actions yet. Blinds have been posted.")
-      for event in events[-12:][::-1]:
-        amount = f" · {event['amount']:,}" if event["amount"] else ""
-        st.write(f"{_name(event['player_id'])}: {event['action'].replace('_', ' ')}{amount}")
-    if st.session_state.game_mode != "Local Pass-and-Play":
-      if st.button("Bot visualization", use_container_width=True):
-        _open_visualization("table")
-    if st.button("Hand history", use_container_width=True):
-      _open_history()
     with st.expander("Player statistics"):
       for player_id, stats in st.session_state.stats.items():
         hands = max(1, stats["hands"])
-        st.write(f"**{_name(player_id)}** · {stats['hands']} hands · {stats['wins']} wins")
+        st.text(f"{_name(player_id)} · {stats['hands']} hands · {stats['wins']} wins")
         st.caption(f"Net {stats['net']:+,} chips · VPIP {stats['vpip']/hands:.0%} · PFR {stats['pfr']/hands:.0%}")
-    with st.expander("Rules and privacy"):
-      st.markdown("A **straight** is five consecutive ranks. A **flush** is five of one suit. **Full house** beats a flush. Pots are split among the best eligible hands. The table hides private cards until a player reveals them or a showdown occurs.")
-      st.caption("Pass-and-play is for a trusted, shared device. Do not use this interface as a secure remote multiplayer server.")
+
+
+def _render_action_log(state):
+  street = "showdown" if state["hand_over"] else state["phase"]
+  labels = ("Preflop", "Flop", "Turn", "River", "Showdown")
+  stages = "".join(f'<span{" aria-current=step" if label.lower() == street else ""}>{label}</span>'
+    for label in labels)
+  events = [event for event in st.session_state.history if event["hand"] == state["hand_number"]]
+  rows = []
+  for event in reversed(events[-24:]):
+    player = html.escape(_name(event["player_id"]))
+    action = html.escape(event["action"].replace("_", " "))
+    amount = f'<strong>{event["amount"]:,}</strong>' if event["amount"] else ""
+    phase = html.escape(event["phase"].capitalize())
+    rows.append(f'<li><span>{player} {action}</span>{amount}<small>{phase}</small></li>')
+  if not rows:
+    rows.append("<li><span>Blinds posted</span></li>")
+  st.markdown(f'<section class="room-log" aria-label="Action log"><h3>Action log</h3>'
+    f'<div class="room-streets" aria-label="Betting streets">{stages}</div>'
+    f'<ol class="room-events">{"".join(rows)}</ol></section>', unsafe_allow_html=True)
+  if st.button("Hand history", use_container_width=True):
+    _open_history()
+  if st.session_state.game_mode == ASHWING and st.button("Bot visualization", use_container_width=True):
+    _open_visualization("table")
+
+
+def _table_heading(state):
+  details, nav = st.columns([4, 1])
+  with details:
+    st.caption(st.session_state.game_mode)
+    st.markdown(f"## Hand {state['hand_number']} · {state['phase'].replace('_', ' ').title()}")
+  with nav:
+    if st.button("Main menu", use_container_width=True):
+      if st.session_state.game_mode == LOCAL:
+        st.session_state.revealed_player = None
+        st.session_state.handoff_required = True
+      st.session_state.bot_due = None
+      st.session_state.screen = "menu"
+      st.rerun()
 
 
 def _open_visualization(return_to):
-  _pause_arena()
   st.session_state.bot_due = None
   st.session_state.visualization_return = return_to
   st.session_state.screen = "visualization"
@@ -611,6 +563,7 @@ def _open_visualization(return_to):
 def main():
   _init_state()
   _inject_css()
+  _masthead()
   if st.session_state.screen == "visualization":
     destination = st.session_state.visualization_return
     if st.button(f"Back to {destination}"):
@@ -640,7 +593,8 @@ def main():
   game = st.session_state.game
   state = game.get_state()
   _finish_hand_if_needed(state)
-  _render_sidebar(state)
+  _render_sidebar()
+  _table_heading(state)
   if st.session_state.bot_error:
     st.error(st.session_state.bot_error)
     if st.button("Continue bot turns"):
@@ -654,18 +608,19 @@ def main():
     else:
       st.info(message)
     st.session_state.flash = None
-  st.markdown(f"## Hand {state['hand_number']} · {state['phase'].replace('_', ' ').title()}")
-  _render_table(state)
-  _show_effect()
-  if st.session_state.last_action:
-    st.caption(f"Last action: {st.session_state.last_action}")
-  if st.session_state.arena:
-    _render_arena(state)
-  elif _bot_to_act(state):
-    _render_paced_bot(state, delay)
-  else:
-    st.session_state.bot_due = None
-    _render_actions(state)
+  table, log = st.columns([2.45, 1], gap="medium")
+  with table:
+    _render_table(state)
+    with st.container(border=True, key="table_controls"):
+      if state["hand_over"]:
+        _show_effect()
+      if _bot_to_act(state):
+        _render_paced_bot(state, delay)
+      else:
+        st.session_state.bot_due = None
+        _render_actions(state)
+  with log, st.container(border=True, key="table_log"):
+    _render_action_log(state)
 
 
 if __name__ == "__main__":

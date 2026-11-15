@@ -3,8 +3,9 @@
 from .model import Observation, Strategy, validate_decision
 from .strategies import TOOLKIT_STRATEGIES as _BUILTIN_STRATEGIES, button_pressure, value
 from .champion_policy import TITLE, one_above_all
+from .hive_policy import hive_mind
 
-TOOLKIT_STRATEGIES = {**_BUILTIN_STRATEGIES, TITLE: one_above_all}
+TOOLKIT_STRATEGIES = {**_BUILTIN_STRATEGIES, TITLE: one_above_all, "Hive Mind": hive_mind}
 
 __all__ = ["Observation", "Strategy", "TOOLKIT_STRATEGIES", "button_pressure",
   "validate_decision", "value"]
