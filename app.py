@@ -318,29 +318,30 @@ def _render_actions(state):
   player = _player(current)
   legal = st.session_state.game.legal_actions(player)
   _render_clock(turn)
+  passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
+  actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
+  can_raise = legal.get("raise", False)
+  available = []
+  if can_raise:
+    maximum = legal["max_raise_total"]
+    minimum = min(legal["min_raise_total"], maximum)
+    pot_after_call = state["pot"] + legal["call_amount"]
+    presets = [("½ pot", state["table_bet"] + pot_after_call // 2), ("Pot", state["table_bet"] + pot_after_call)]
+    available = [(label, amount) for label, amount in presets if minimum <= amount < maximum]
   with st.container(key="move_buttons"):
-    columns = st.columns(3, gap="small")
-    passive = ("Check", "check") if legal["check"] else (f"Call {legal['call_amount']:,}", "call")
-    actions = [("Fold", "fold"), passive, ("All-in", "all_in")]
-    for column, (label, action) in zip(columns, actions):
+    widths = [1, 1.15] + ([1, 1.8] + [1.05] * len(available) if can_raise else []) + [1]
+    fold, call, *sizing, all_in = st.columns(widths, gap="small", vertical_alignment="center")
+    for column, (label, action) in zip((fold, call, all_in), actions):
       if column.button(label, key=f"{action}_{key}", disabled=not legal.get(action, False),
           type="primary" if action in ("check", "call") else "secondary", use_container_width=True):
         _apply_action(action, player)
-  if not legal.get("raise"):
-    return
-  maximum = legal["max_raise_total"]
-  minimum = min(legal["min_raise_total"], maximum)
-  pot_after_call = state["pot"] + legal["call_amount"]
-  presets = [("½ pot", state["table_bet"] + pot_after_call // 2), ("Pot", state["table_bet"] + pot_after_call)]
-  with st.container(key="bet_sizes"):
-    amount_column, raise_column = st.columns([3, 2], gap="small", vertical_alignment="bottom")
-    target = amount_column.number_input("Raise to", min_value=minimum, max_value=maximum,
-      value=minimum, step=1, key=f"raise_to_{key}")
-    if raise_column.button("Raise", key=f"raise_{key}", use_container_width=True):
-      _apply_action("raise", player, int(target) - player.current_bet)
-    available = [(label, amount) for label, amount in presets if minimum <= amount < maximum]
-    if available:
-      for column, (label, amount) in zip(st.columns(2, gap="small"), available):
+    if can_raise:
+      raise_column, amount_column, *preset_columns = sizing
+      target = amount_column.number_input("Raise to", min_value=minimum, max_value=maximum,
+        value=minimum, step=1, key=f"raise_to_{key}", label_visibility="collapsed")
+      if raise_column.button("Raise", key=f"raise_{key}", use_container_width=True):
+        _apply_action("raise", player, int(target) - player.current_bet)
+      for column, (label, amount) in zip(preset_columns, available):
         if column.button(f"{label} {amount:,}", key=f"preset_{label}_{key}", use_container_width=True):
           _apply_action("raise", player, amount - player.current_bet)
 

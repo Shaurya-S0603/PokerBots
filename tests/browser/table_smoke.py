@@ -45,6 +45,9 @@ def check_table(browser, width):
   expect(page.get_by_role("timer")).to_be_visible()
   pot_button = page.get_by_role("button", name="Pot 30", exact=True).bounding_box()
   assert pot_button["y"] + pot_button["height"] <= height, pot_button
+  if width >= 800:
+    fold_button = page.get_by_role("button", name="Fold", exact=True).bounding_box()
+    assert abs(fold_button["y"] - pot_button["y"]) < 5
 
   stage = page.locator(".table-stage").bounding_box()
   board = page.get_by_role("group", name="Community cards").bounding_box()
@@ -86,7 +89,9 @@ def check_paced_bot(browser, width, count):
   page.get_by_role("button", name="Deal the first hand").click()
   label = "Ashwing" if count == 2 else "Ashwing 1"
   expect(page.get_by_role("article", name=label, exact=False).first).to_be_visible()
-  expect(page.locator(".seat .ashwing-avatar").first).to_be_visible()
+  avatar = page.locator(".seat .ashwing-avatar").first
+  expect(avatar).to_be_visible()
+  assert avatar.evaluate("(img) => img.complete && img.naturalWidth === 89")
   expect(page.get_by_role("region", name="Ashwing chat")).to_be_visible()
   expect(page.get_by_role("timer")).to_be_visible()
   assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")

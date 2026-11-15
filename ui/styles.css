@@ -192,9 +192,9 @@ h1, h2, h3 { letter-spacing: -.035em; }
 .room-clock i { display: block; width: calc(var(--remaining) * 100%); height: 100%; border-radius: inherit; background: currentColor; }
 .seat__cards--revealed .play-card { animation: room-card-reveal .24s ease-out; }
 @keyframes room-card-reveal { from { transform: perspective(110px) rotateY(72deg); } to { transform: perspective(110px) rotateY(0); } }
-.st-key-move_buttons button, .st-key-bet_sizes button { min-height: 40px; }
-.st-key-move_buttons [data-testid="stHorizontalBlock"], .st-key-bet_sizes [data-testid="stHorizontalBlock"] { flex-wrap: nowrap; }
-.st-key-move_buttons [data-testid="stColumn"], .st-key-bet_sizes [data-testid="stColumn"] { min-width: 0 !important; }
+.st-key-move_buttons .stButton button { min-height: 40px; padding-inline: .4rem; }
+.st-key-move_buttons [data-testid="stHorizontalBlock"] { flex-wrap: nowrap; }
+.st-key-move_buttons [data-testid="stColumn"] { min-width: 0 !important; }
 
 @container (max-width: 595px) {
   .table-stage { padding: 6px; gap: 5px; }
@@ -218,6 +218,10 @@ h1, h2, h3 { letter-spacing: -.035em; }
 @media (max-width: 800px) {
   .stApp:has(.room-table-heading) .block-container { padding: 2.7rem .6rem 1.5rem; }
   .st-key-table_nav .stButton p { font-size: .72rem; }
+  .st-key-move_buttons [data-testid="stHorizontalBlock"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .st-key-move_buttons [data-testid="stColumn"] { width: 100%; }
+  .st-key-move_buttons [data-testid="stColumn"]:has([data-testid="stNumberInput"]) { grid-column: span 2; }
+  .st-key-move_buttons [data-testid="stColumn"]:nth-child(4):nth-last-child(4) { grid-column: span 3; }
   .room-table-heading h2 { gap: .2rem; font-size: .72rem; }
   .room-table-heading small { font-size: .66rem; }
 }
