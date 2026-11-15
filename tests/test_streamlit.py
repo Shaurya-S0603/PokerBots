@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
@@ -196,3 +197,30 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   button(app, "Fold").click().run()
   assert len(app.session_state.chat) == 2
   assert any('room-speech--seat' in item.value and app.session_state.chat[-1] in item.value for item in app.markdown)
+
+
+def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
+  from pokerbots_sdk import hive_policy
+
+  def passive_bot(view, _rng):
+    return ("check" if view.legal["check"] else "call"), None
+
+  monkeypatch.setattr(hive_policy, "hive_mind", passive_bot)
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Play Ashwing").click().run()
+  deal(app)
+  app.session_state.bot_pacing = "Instant"
+  button(app, "Raise").click().run()
+  for _ in range(3):
+    button(app, "Check").click().run()
+
+  lines = json.loads((APP_PATH.parent / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
+  scene = list(app.session_state.chat)
+  expected = ["start", "human_raise", "flop", "turn", "river", "showdown"]
+  assert scene[:-1] == [lines[event][0] for event in expected]
+  assert scene[-1] in [lines[event][0] for event in ("win", "loss", "split")]
+  assert not app.exception
+  app.run()
+  assert app.session_state.chat == scene
+  button(app, "Next hand").click().run()
+  assert app.session_state.chat == [*scene, lines["new_hand"][0]]
