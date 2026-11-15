@@ -102,7 +102,6 @@ def _start_game(count, chips, small, big, mode, names):
   st.session_state.bot_due = None
   st.session_state.turn_clock = None
   st.session_state.chat = []
-  st.session_state.chat_counts = {}
   st.session_state.chat_events = set()
   _say("start", 0)
 
@@ -116,7 +115,6 @@ def _say(event, hand, *, occurrence=None):
   count = st.session_state.chat_counts.get(event, 0)
   lines = BANTER[event]
   st.session_state.chat.append(lines[count % len(lines)])
-  st.session_state.chat = st.session_state.chat[-24:]
   st.session_state.chat_counts[event] = count + 1
   st.session_state.chat_events.add(key)
 
@@ -134,9 +132,27 @@ def _log_action(action, player_id, before):
   if record is None:
     _record_hand_start(before)
     record = st.session_state.hand_records[before["hand_number"]]
-  record_step(record, game.get_state(), event)
+  after = game.get_state()
+  record_step(record, after, event)
+  _say_hand_progress(event, before, after)
   st.session_state.last_actions[player_id] = action.replace("_", " ").capitalize()
 
+
+
+def _say_hand_progress(event, before, after):
+  human = before["players"][0]
+  if st.session_state.game_mode != ASHWING or not human["in_hand"] or human["folded"]:
+    return
+  hand = event["hand"]
+  actor = "human" if event["player_id"] == 1 else "bot"
+  if event["action"] == "all_in":
+    _say(f"{actor}_all_in", hand)
+  elif event["raised"]:
+    _say(f"{actor}_raise", hand)
+  previous, current = len(before["board"]), len(after["board"])
+  for size, street in ((3, "flop"), (4, "turn"), (5, "river")):
+    if previous < size <= current:
+      _say(street, hand)
 
 
 def _turn_id(state):
@@ -267,19 +283,22 @@ def _finish_hand_if_needed(state):
     return
   st.session_state.finished_hand = state["hand_number"]
   settle_stats(st.session_state.stats, st.session_state.history, st.session_state.hand_start_stacks, state)
+  if st.session_state.game_mode != ASHWING:
+    return
   hand = state["hand_number"]
   human = state["players"][0]
-  if state["game_over"]:
+  if not human["in_hand"]:
+    return
+  if 1 in state["showdown_hands"]:
+    _say("showdown", hand)
+  split = any(1 in pot["winners"] and len(pot["winners"]) > 1 for pot in state["pot_results"])
+  human_won = 1 in state["winners"]
+  _say("split" if split else "loss" if human_won else "win", hand)
+  if state["game_over"] or human["stack"] == 0:
     _say("match_win" if human["stack"] == 0 else "match_loss", hand)
-  elif human["stack"] == 0 and st.session_state.hand_start_stacks.get(1, 0) > 0:
-    _say("match_win", hand)
-  elif st.session_state.game_mode == ASHWING:
-    knocked_out = any(seat["stack"] == 0 and st.session_state.hand_start_stacks.get(seat["player_id"], 0) > 0
-      for seat in state["players"][1:])
-    if knocked_out and 1 in state["winners"]:
-      _say("eliminated", hand)
-    elif human["in_hand"]:
-      _say("loss" if 1 in state["winners"] else "win", hand)
+  elif human_won and any(seat["stack"] == 0 and st.session_state.hand_start_stacks.get(seat["player_id"], 0) > 0
+      for seat in state["players"][1:]):
+    _say("eliminated", hand)
 
 
 def _render_table(state):
@@ -401,7 +420,10 @@ def _deal_next_hand():
     st.session_state.flash = ("error", game.last_error or "Could not start the next hand.")
     return False
   st.session_state.hand_start_stacks = starting_stacks
-  _record_hand_start(game.get_state())
+  state = game.get_state()
+  _record_hand_start(state)
+  if state["players"][0]["in_hand"]:
+    _say("new_hand", state["hand_number"])
   st.session_state.turn_clock = None
   st.session_state.revealed_player = None
   st.session_state.last_actions = {}
@@ -601,7 +623,7 @@ def _render_table_chat():
   chat = st.session_state.chat
   if not chat:
     return
-  rows = "".join(f"<li>{html.escape(line)}</li>" for line in reversed(chat))
+  rows = "".join(f"<li>{html.escape(line)}</li>" for line in chat)
   with st.expander("Ashwing chat"):
     st.markdown(f'<ol class="room-chat__messages">{rows}</ol>', unsafe_allow_html=True)
 

@@ -227,7 +227,7 @@ h1, h2, h3 { letter-spacing: -.035em; }
   .room[data-heads-up] .room-speech--seat { display: block; position: absolute; left: calc(100% + .75rem); top: 50%; transform: translateY(-50%); width: min(17cqi, 218px); }
   .room[data-heads-up] .room-speech--strip { display: none; }
 }
-.stApp .room-chat__messages { list-style: none; padding: 0; margin: 0 0 .4rem; max-height: 124px; overflow: auto; }
+.stApp .room-chat__messages { list-style: none; padding: 0; margin: 0 0 .4rem; max-height: min(42vh, 300px); overflow: auto; }
 .room-chat__messages li { width: fit-content; max-width: 95%; background: #32202c; color: var(--ink); border: 1px solid var(--panel-line); border-radius: 3px 10px 10px 10px; margin-bottom: .3rem; padding: .4rem .55rem; font-size: .82rem; }
 .room-clock { display: flex; align-items: center; gap: 8px; color: var(--gold); font-size: .8rem; font-weight: 750; font-variant-numeric: tabular-nums; }
 .room-clock--urgent { color: #ffb2b2; }
