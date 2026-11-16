@@ -12,10 +12,13 @@ from chipzen import Action, Bot, run_external_bot
 
 from pokerbots_sdk import Observation, load_strategy, validate_decision, value
 from pokerbots_sdk.equity_policy import EquityProfile, equity_bot
+from pokerbots_sdk.hive_policy import adaptive_river_value_pressure, hive_mind
 from pokerbots_sdk.model import LineAction, OpponentBet
+from pokerbots_sdk.river_calls import RiverCallHistory, RiverCallProfile
 
 SUITS = {"h": "♥️", "d": "♦️", "c": "♣️", "s": "♠️"}
 DEFAULT_POLICY = Path(__file__).resolve().parent / "training" / "competition-policy.json"
+ASHWING_V2 = "Ashwing v2"
 
 
 def _cards(cards):
@@ -108,15 +111,83 @@ class CompetitionBot(Bot):
   def on_reconnected(self, message):
     self.on_match_start(message)
 
+  def choose(self, view):
+    return self.strategy(view, self.rng)
+
   def decide(self, state):
     if len(state.hole_cards) != 2:
       raise ValueError("This policy requires two Hold’em hole cards")
     view = observation(state, self.big_blind)
-    action, target = self.strategy(view, self.rng)
+    action, target = self.choose(view)
     validate_decision(view, action, target)
     if action == "raise":
       return Action.raise_to(target)
     return {"check": Action.check, "call": Action.call, "fold": Action.fold, "all_in": Action.all_in}[action]()
+
+
+class AshwingV2Bot(CompetitionBot):
+  def __init__(self, *, seed=None):
+    super().__init__(seed=seed, strategy=hive_mind)
+    profile = DEFAULT_POLICY.with_name("streamlit-river-gate.json")
+    self.profile = RiverCallProfile(**json.loads(profile.read_text()))
+    self.histories = {}
+    self.completed = set()
+    self.match_id = None
+    self.own_seat = None
+
+  def on_match_start(self, message):
+    super().on_match_start(message)
+    self.match_id = message.get("match_id")
+    self.histories.clear()
+    self.completed.clear()
+    self.own_seat = next((seat["seat"] for seat in message.get("seats", ()) if seat["is_self"]), None)
+
+  def on_reconnected(self, message):
+    if message.get("match_id") != self.match_id or self.own_seat is None:
+      self.on_match_start(message)
+    else:
+      super().on_match_start(message)
+
+  def choose(self, view):
+    if self.own_seat is None or len(view.stacks) != 2 or len(view.board) != 5:
+      return super().choose(view)
+    opponent = next(seat for seat, _ in view.stacks if seat != self.own_seat)
+    return adaptive_river_value_pressure(view, self.rng, self._history(opponent))
+
+  def _history(self, seat):
+    if seat not in self.histories:
+      self.histories[seat] = RiverCallHistory(self.profile)
+    return self.histories[seat]
+
+  def on_hand_result(self, result):
+    actions = result.get("action_history", ())
+    seats = {entry["seat"] for entry in actions}
+    hand = result.get("round_id") or result.get("hand_number")
+    if hand is None or hand in self.completed or len(seats) != 2 or self.own_seat not in seats:
+      return
+    self.completed.add(hand)
+    for index, entry in enumerate(actions):
+      if entry["phase"] == "river" and entry["action"] == "raise":
+        break
+    else:
+      return
+    if entry["seat"] != self.own_seat or entry.get("is_timeout"):
+      return
+    opponent = next(iter(seats - {self.own_seat}))
+    response = next((move for move in actions[index + 1:]
+      if move["phase"] == "river" and move["seat"] == opponent), None)
+    if response is None or response.get("is_timeout") or response["action"] not in {"fold", "call", "raise"}:
+      return
+    _, line, _ = public_betting(actions[:index + 1], self.own_seat, {opponent})
+    bet = line[-1]
+    if bet.amount > 0 and bet.pot_before > 0:
+      self._history(opponent).record(bet.amount, bet.pot_before, response["action"])
+
+
+def bot_for_strategy(name, *, seed=None):
+  if name == ASHWING_V2:
+    return AshwingV2Bot(seed=seed)
+  return CompetitionBot(strategy=load_strategy(name), seed=seed)
 
 
 def main():
@@ -132,9 +203,9 @@ def main():
   if not bot_id or not token or args.matches < 1:
     parser.error("Set CHIPZEN_BOT_ID and CHIPZEN_EXTBOT_TOKEN and use a positive match limit")
   profile = EquityProfile(**json.loads(args.policy.read_text())["profile"]) if args.policy else None
-  strategy = None if profile is not None else load_strategy(args.strategy)
+  factory = (lambda: CompetitionBot(profile)) if profile is not None else (lambda: bot_for_strategy(args.strategy))
   logging.basicConfig(level=logging.INFO)
-  asyncio.run(run_external_bot(lambda: CompetitionBot(profile, strategy=strategy), bot_id=bot_id, env=args.env,
+  asyncio.run(run_external_bot(factory, bot_id=bot_id, env=args.env,
     token=token, max_matches=args.matches))
 
 
