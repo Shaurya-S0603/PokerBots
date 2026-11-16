@@ -4,8 +4,11 @@ from .model import Observation, Strategy, validate_decision
 from .strategies import TOOLKIT_STRATEGIES as _BUILTIN_STRATEGIES, button_pressure, value
 from .champion_policy import TITLE, one_above_all
 from .hive_policy import hive_mind
+from .adaptive_policy import TITLE as ADAPTIVE_TITLE, ashwing_adaptive
+from .search_policy import TITLE as SEARCH_TITLE, ashwing_search
 
-TOOLKIT_STRATEGIES = {**_BUILTIN_STRATEGIES, TITLE: one_above_all, "Hive Mind": hive_mind}
+TOOLKIT_STRATEGIES = {**_BUILTIN_STRATEGIES, TITLE: one_above_all, "Hive Mind": hive_mind,
+  ADAPTIVE_TITLE: ashwing_adaptive, SEARCH_TITLE: ashwing_search}
 
 __all__ = ["Observation", "Strategy", "TOOLKIT_STRATEGIES", "button_pressure",
   "validate_decision", "value"]

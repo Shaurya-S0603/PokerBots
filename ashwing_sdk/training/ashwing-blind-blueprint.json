@@ -1,0 +1,16 @@
+{
+  "training_seed": 963920000,
+  "training_deals_per_cell": 320,
+  "blind_raise_bb": {
+    "25": [
+      0,
+      0,
+      3
+    ],
+    "100": [
+      0,
+      4,
+      4
+    ]
+  }
+}

@@ -9,8 +9,8 @@ import streamlit as st
 
 from arena import BotArena, apply_decision, observe
 from poker_engine import start_game
-from pokerbots_sdk.hive_policy import adaptive_river_value_pressure
 from pokerbots_sdk.river_calls import RiverCallHistory, RiverCallProfile
+from pokerbots_sdk.search_policy import ashwing_search
 from ui.render import AVATAR_DATA, card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -271,8 +271,8 @@ def _play_bot_turn(before):
   player = _player(current)
   try:
     view = observe(game, player)
-    action, target = adaptive_river_value_pressure(
-      view, st.session_state.human_bots.bot_rngs[current - 1], _river_history())
+    action, target = ashwing_search(
+      view, st.session_state.human_bots.bot_rngs[current - 1], history=_river_history())
     action, ok = apply_decision(game, player, view, action, target)
   except ValueError as error:
     st.session_state.bot_error = str(error)
@@ -600,7 +600,7 @@ def _render_dealing():
 def _render_menu():
   with st.container(key="room_lobby"):
     st.title("Poker Room", anchor=False)
-    st.caption("No-Limit Texas Hold’em · Ashwing v2")
+    st.caption("No-Limit Texas Hold’em · Ashwing Search")
     st.markdown(f'<style>.st-key-mode_ashwing button::before {{ background-image: '
       f'url("data:image/webp;base64,{AVATAR_DATA}"); }}</style>', unsafe_allow_html=True)
     play, local = st.columns(2, gap="small")
