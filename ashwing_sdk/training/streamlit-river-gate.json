@@ -1,0 +1,5 @@
+{
+  "min_evidence": 3,
+  "min_call_rate": 0.67,
+  "smaller_bucket_discount": 0.8
+}

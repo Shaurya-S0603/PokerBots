@@ -52,7 +52,7 @@ def holding(hole, board):
   return Holding(hole, score, strength, draw)
 
 
-def action_likelihood(line, hand, big_blind, late):
+def action_likelihood(line, hand, big_blind, late, *, polarized=False):
   if line.street == "preflop":
     strength = preflop_strength(hand)
     if line.action == "raise":
@@ -63,15 +63,29 @@ def action_likelihood(line, hand, big_blind, late):
   size = min(line.amount / max(big_blind, line.pot_before), 2)
   strength = min(1, hand.strength + (.20 if hand.draw else 0))
   if line.action == "raise":
-    return (.30 - .08 * size) + (.68 + .08 * size) * strength ** 2
+    weight = (.30 - .08 * size) + (.68 + .08 * size) * strength ** 2
+    if polarized:
+      # A large turn bet after a small flop bet can come from air or value.
+      air = max(0, (.47 - hand.strength) / .47)
+      weight += .25 * air * min(1, size)
+    return weight
   return (.42 - .12 * size) + (.56 + .12 * size) * strength
 
 
-def evaluate_range(view, rng, trials, curve=None):
+def evaluate_range(view, rng, trials, curve=None, *, polarize_turn=False):
   """Reweight each combo on the board visible at each recorded action."""
   hole, board, unseen = _known_cards(view.hole, view.board, (3, 4, 5))
   street_size = {"preflop": 0, "flop": 3, "turn": 4, "river": 5}
   line = [step for step in view.betting_line if step.opponent and street_size[step.street] <= len(board)]
+  polarized_turn = None
+  if polarize_turn:
+    raises = [step for step in view.betting_line if step.street == "turn" and step.action == "raise"]
+    flop_raises = [step for step in view.betting_line if step.street == "flop" and step.action == "raise"]
+    if (len(raises) == 1 and raises[0].opponent and raises[0].amount * 3 >= raises[0].pot_before * 2
+        and len(flop_raises) == 1 and flop_raises[0].opponent
+        and flop_raises[0].amount * 2 <= flop_raises[0].pot_before):
+      polarized_turn = raises[0]
+
   def scored(opponent):
     by_street = {len(board): holding(opponent, board)}
     weight = 1.0
@@ -80,7 +94,7 @@ def evaluate_range(view, rng, trials, curve=None):
       if length and length not in by_street:
         by_street[length] = holding(opponent, board[:length])
       weight *= action_likelihood(step, by_street[length] if length else opponent,
-        view.big_blind, late=not view.late_position)
+        view.big_blind, late=not view.late_position, polarized=step is polarized_turn)
     return by_street[len(board)], weight
 
   if len(board) == 5:

@@ -9,7 +9,8 @@ import streamlit as st
 
 from arena import BotArena, apply_decision, observe
 from poker_engine import start_game
-from pokerbots_sdk.hive_policy import hive_mind
+from pokerbots_sdk.hive_policy import adaptive_river_value_pressure
+from pokerbots_sdk.river_calls import RiverCallHistory, RiverCallProfile
 from ui.render import AVATAR_DATA, card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -26,6 +27,8 @@ TURN_SECONDS = 30
 NEXT_HAND_SECONDS = 1
 DEAL_SCREEN_SECONDS = 0.8
 BANTER = json.loads((ROOT / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
+RIVER_PROFILE = RiverCallProfile(**json.loads(
+  (ROOT.parent / "ashwing_sdk" / "training" / "streamlit-river-gate.json").read_text()))
 
 
 def _init_state():
@@ -58,6 +61,9 @@ def _init_state():
     "bot_error": None,
     "bot_pacing": "Quick",
     "bot_due": None,
+    "ashwing_river_history": None,
+    "ashwing_river_bet": None,
+    "ashwing_river_response": None,
   }
   if st.session_state.get("screen") in {"puzzles", "visualization", "benchmarks"}:
     st.session_state.screen = "menu"
@@ -86,6 +92,9 @@ def _start_game(count, chips, small, big, mode, names):
   human_bots = BotArena(randbits(64), ["Ashwing"] * count) if mode == ASHWING else None
   game = start_game(count, chips, small, big, deck_rng=human_bots.deck_rng if human_bots else None)
   st.session_state.human_bots = human_bots
+  st.session_state.ashwing_river_history = RiverCallHistory(RIVER_PROFILE) if human_bots else None
+  st.session_state.ashwing_river_bet = None
+  st.session_state.ashwing_river_response = None
   st.session_state.game = game
   st.session_state.game_id += 1
   st.session_state.screen = "table"
@@ -127,10 +136,11 @@ def _record_hand_start(state):
     state, st.session_state.hand_start_stacks)
 
 
-def _log_action(action, player_id, before):
+def _log_action(action, player_id, before, *, timed_out=False):
   game = st.session_state.game
   event = action_event(action, player_id, before, _player(player_id))
   st.session_state.history.append(event)
+  _track_river_response(event, before, timed_out=timed_out)
   record = st.session_state.hand_records.get(before["hand_number"])
   if record is None:
     _record_hand_start(before)
@@ -139,6 +149,32 @@ def _log_action(action, player_id, before):
   record_step(record, after, event)
   _say_hand_progress(event, before, after)
   st.session_state.last_actions[player_id] = action.replace("_", " ").capitalize()
+
+
+def _track_river_response(event, before, *, timed_out):
+  if (st.session_state.game_mode != ASHWING or before["phase"] != "river"
+      or sum(player["in_hand"] for player in before["players"]) != 2):
+    return
+  hand = before["hand_number"]
+  if event["player_id"] != 1:
+    if event["raised"] and before["table_bet"] == 0 and event["amount"] > 0:
+      st.session_state.ashwing_river_bet = (hand, event["amount"], before["pot"])
+    return
+  pending = st.session_state.ashwing_river_bet
+  if pending is None or pending[0] != hand:
+    return
+  st.session_state.ashwing_river_bet = None
+  if not timed_out:
+    response = event["action"]
+    if response == "all_in":
+      response = "raise" if event["raised"] else "call"
+    st.session_state.ashwing_river_response = (*pending, response)
+
+
+def _river_history():
+  if st.session_state.ashwing_river_history is None:
+    st.session_state.ashwing_river_history = RiverCallHistory(RIVER_PROFILE)
+  return st.session_state.ashwing_river_history
 
 
 
@@ -212,7 +248,7 @@ def _apply_action(action, player, amount=None, *, timed_out=False):
   else:
     ok = getattr(game, action)(player)
   if ok:
-    _log_action(action, player.player_id, before)
+    _log_action(action, player.player_id, before, timed_out=timed_out)
     st.session_state.revealed_player = None
     st.session_state.turn_clock = None
     st.session_state.flash = ("info", f"Time expired · Automatic {action}.") if timed_out else None
@@ -235,7 +271,8 @@ def _play_bot_turn(before):
   player = _player(current)
   try:
     view = observe(game, player)
-    action, target = hive_mind(view, st.session_state.human_bots.bot_rngs[current - 1])
+    action, target = adaptive_river_value_pressure(
+      view, st.session_state.human_bots.bot_rngs[current - 1], _river_history())
     action, ok = apply_decision(game, player, view, action, target)
   except ValueError as error:
     st.session_state.bot_error = str(error)
@@ -277,6 +314,11 @@ def _finish_hand_if_needed(state):
   if st.session_state.game_mode != ASHWING:
     return
   hand = state["hand_number"]
+  observed = st.session_state.ashwing_river_response
+  st.session_state.ashwing_river_response = None
+  st.session_state.ashwing_river_bet = None
+  if observed and observed[0] == hand:
+    _river_history().record(*observed[1:])
   human = state["players"][0]
   if not human["in_hand"]:
     return
@@ -558,7 +600,7 @@ def _render_dealing():
 def _render_menu():
   with st.container(key="room_lobby"):
     st.title("Poker Room", anchor=False)
-    st.caption("No-Limit Texas Hold’em")
+    st.caption("No-Limit Texas Hold’em · Ashwing v2")
     st.markdown(f'<style>.st-key-mode_ashwing button::before {{ background-image: '
       f'url("data:image/webp;base64,{AVATAR_DATA}"); }}</style>', unsafe_allow_html=True)
     play, local = st.columns(2, gap="small")

@@ -204,7 +204,7 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
 def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
   from pokerbots_sdk import hive_policy
 
-  def passive_bot(view, _rng):
+  def passive_bot(view, _rng, **_options):
     return ("check" if view.legal["check"] else "call"), None
 
   monkeypatch.setattr(hive_policy, "hive_mind", passive_bot)
@@ -228,6 +228,34 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
   app.session_state.next_hand_clock = (round_key, 0)
   app.run()
   assert app.session_state.chat == [*scene, lines["new_hand"][0]]
+
+
+def test_ashwing_records_public_river_call_once_after_settlement(monkeypatch):
+  from pokerbots_sdk import hive_policy
+
+  def opens_river(view, _rng, _history):
+    if len(view.board) == 5 and view.legal["raise"]:
+      return "raise", view.legal["min_raise_total"]
+    return ("check" if view.legal["check"] else "call"), None
+
+  monkeypatch.setattr(hive_policy, "adaptive_river_value_pressure", opens_river)
+  app = AppTest.from_file(str(APP_PATH)).run()
+  button(app, "Play Ashwing").click().run()
+  deal(app)
+  app.session_state.bot_pacing = "Instant"
+  button(app, "Raise").click().run()
+  for _ in range(2):
+    button(app, "Check").click().run()
+  pending = app.session_state.ashwing_river_bet
+  assert pending and pending[0] == 1
+  assert not app.session_state.ashwing_river_history.responses
+  button(app, f"Call {pending[1]:,}").click().run()
+  assert app.session_state.game.hand_over
+  assert len(app.session_state.ashwing_river_history.responses) == 1
+  assert app.session_state.ashwing_river_history.responses[0][1]
+  app.run()
+  assert len(app.session_state.ashwing_river_history.responses) == 1
+  assert not app.exception
 
 
 def test_next_hand_clock_waits_on_history_and_deals_only_once():
