@@ -17,6 +17,8 @@ jobs:
             slug: one-above-all
           - policy: Hive Mind
             slug: hive-mind
+          - policy: Ashwing v2
+            slug: ashwing-v2
     env:
       BOT_POLICY: ${{ matrix.policy }}
       BOT_SLUG: ${{ matrix.slug }}
