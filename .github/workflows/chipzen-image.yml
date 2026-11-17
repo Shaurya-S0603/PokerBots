@@ -17,6 +17,8 @@ jobs:
             slug: one-above-all
           - policy: Hive Mind
             slug: hive-mind
+          - policy: Ashwing
+            slug: ashwing
           - policy: Ashwing Search
             slug: ashwing-search
           - policy: Ashwing v2

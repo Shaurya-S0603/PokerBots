@@ -600,7 +600,7 @@ def _render_dealing():
 def _render_menu():
   with st.container(key="room_lobby"):
     st.title("Poker Room", anchor=False)
-    st.caption("No-Limit Texas Hold’em · Ashwing v2/v3 Hybrid")
+    st.caption("No-Limit Texas Hold’em · Ashwing Search + Short-Stack Equity")
     st.markdown(f'<style>.st-key-mode_ashwing button::before {{ background-image: '
       f'url("data:image/webp;base64,{AVATAR_DATA}"); }}</style>', unsafe_allow_html=True)
     play, local = st.columns(2, gap="small")

@@ -10,7 +10,8 @@ from chipzen.conformance import (
 )
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from chipzen_entry import ASHWING_SEARCH, ASHWING_V2, CompetitionBot, bot_for_strategy, observation
+from chipzen_entry import ASHWING, ASHWING_SEARCH, ASHWING_V2, CompetitionBot, bot_for_strategy, observation
+from pokerbots_sdk.ashwing_policy import decide as ashwing_decide
 from pokerbots_sdk.hive_policy import hive_mind
 from pokerbots_sdk import TOOLKIT_STRATEGIES
 
@@ -73,16 +74,20 @@ def check_multiway_observation(strategy, method="Hive Mind"):
   assert view.late_position and view.effective_raise_total == 100
   assert len(view.stacks) == 5
   assert [step.amount for step in view.betting_line if step.opponent] == [30, 20]
-  diagnostics = {}
-  strategy(view, CompetitionBot(seed=42).rng, diagnostics=diagnostics)
-  assert diagnostics["method"] == method
+  if method is not None:
+    diagnostics = {}
+    strategy(view, CompetitionBot(seed=42).rng, diagnostics=diagnostics)
+    assert diagnostics["method"] == method
+  else:
+    result = CompetitionBot(seed=42, strategy=strategy).decide(state)
+    assert result.action in state.valid_actions, result
   state.opponent_stacks[2] = 0
   state.action_history.pop(-2)  # Seat 2 is still contesting the pot all-in.
   view = observation(state, 10)
   assert view.opponents == 2 and view.has_all_in_opponent and view.effective_raise_total == 100
   result = CompetitionBot(seed=42, strategy=strategy).decide(state)
   assert result.action in state.valid_actions, result
-  print(f"{method}: pass: folded and busted seats, all-in contenders, and heads-up transition")
+  print(f"{method or ASHWING}: pass: folded and busted seats, all-in contenders, and heads-up transition")
 
 
 def check_v2_gate():
@@ -123,10 +128,11 @@ def main(names=()):
     for result in results:
       print(f"{name}: {result.severity}: {result.name}: {result.message}")
     ok = ok and bool(results) and all(result.severity == "pass" for result in results)
-    if name in ("Hive Mind", ASHWING_V2, ASHWING_SEARCH):
-      strategy = hive_mind if name == ASHWING_V2 else TOOLKIT_STRATEGIES[name]
+    if name in ("Hive Mind", ASHWING_V2, ASHWING_SEARCH, ASHWING):
+      strategies = {ASHWING: ashwing_decide, ASHWING_V2: hive_mind}
+      strategy = strategies[name] if name in strategies else TOOLKIT_STRATEGIES[name]
       asyncio.run(check_holdem_tables(name))
-      check_multiway_observation(strategy)
+      check_multiway_observation(strategy, method=None if name == ASHWING else "Hive Mind")
     if name == ASHWING_V2:
       check_v2_gate()
   return 0 if ok else 1

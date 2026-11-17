@@ -12,6 +12,7 @@ from chipzen import Action, Bot, run_external_bot
 
 from pokerbots_sdk import Observation, load_strategy, validate_decision, value
 from pokerbots_sdk.adaptive_policy import TITLE as ASHWING_ADAPTIVE, ashwing_adaptive
+from pokerbots_sdk.ashwing_policy import decide as ashwing_decide
 from pokerbots_sdk.equity_policy import EquityProfile, equity_bot
 from pokerbots_sdk.hive_policy import adaptive_river_value_pressure, hive_mind
 from pokerbots_sdk.model import LineAction, OpponentBet
@@ -20,6 +21,7 @@ from pokerbots_sdk.search_policy import TITLE as ASHWING_SEARCH, ashwing_search
 
 SUITS = {"h": "♥️", "d": "♦️", "c": "♣️", "s": "♠️"}
 DEFAULT_POLICY = Path(__file__).resolve().parent / "training" / "competition-policy.json"
+ASHWING = "Ashwing"
 ASHWING_V2 = "Ashwing v2"
 
 
@@ -200,7 +202,18 @@ class AshwingSearchBot(AshwingAdaptiveBot):
     self.strategy = ashwing_search
 
 
+class AshwingBot(AshwingV2Bot):
+  def __init__(self, *, seed=None):
+    super().__init__(seed=seed)
+    self.strategy = ashwing_decide
+
+  def river_strategy(self, view, history):
+    return ashwing_decide(view, self.rng, history=history)
+
+
 def bot_for_strategy(name, *, seed=None):
+  if name == ASHWING:
+    return AshwingBot(seed=seed)
   if name == ASHWING_V2:
     return AshwingV2Bot(seed=seed)
   if name == ASHWING_ADAPTIVE:
