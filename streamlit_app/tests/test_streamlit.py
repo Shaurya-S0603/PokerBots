@@ -202,12 +202,12 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
 
 
 def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
-  from pokerbots_sdk import search_policy
+  import ashwing_policy
 
   def passive_bot(view, _rng, **_options):
     return ("check" if view.legal["check"] else "call"), None
 
-  monkeypatch.setattr(search_policy, "ashwing_search", passive_bot)
+  monkeypatch.setattr(ashwing_policy, "decide", passive_bot)
   app = AppTest.from_file(str(APP_PATH)).run()
   button(app, "Play Ashwing").click().run()
   deal(app)
@@ -231,14 +231,14 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
 
 
 def test_ashwing_records_public_river_call_once_after_settlement(monkeypatch):
-  from pokerbots_sdk import search_policy
+  import ashwing_policy
 
   def opens_river(view, _rng, *, history):
     if len(view.board) == 5 and view.legal["raise"]:
       return "raise", view.legal["min_raise_total"]
     return ("check" if view.legal["check"] else "call"), None
 
-  monkeypatch.setattr(search_policy, "ashwing_search", opens_river)
+  monkeypatch.setattr(ashwing_policy, "decide", opens_river)
   app = AppTest.from_file(str(APP_PATH)).run()
   button(app, "Play Ashwing").click().run()
   deal(app)
