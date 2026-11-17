@@ -26,6 +26,7 @@ BOT_PACING = {"Instant": 0, "Quick": 0.6, "Relaxed": 1.2}
 TURN_SECONDS = 30
 NEXT_HAND_SECONDS = 1
 DEAL_SCREEN_SECONDS = 0.8
+SPEECH_SECONDS = 3
 BANTER = json.loads((ROOT / "ui" / "ashwing_banter.json").read_text(encoding="utf-8"))
 RIVER_PROFILE = RiverCallProfile(**json.loads(
   (ROOT.parent / "ashwing_sdk" / "training" / "streamlit-river-gate.json").read_text()))
@@ -55,6 +56,7 @@ def _init_state():
     "next_hand_clock": None,
     "visible_board": None,
     "chat": [],
+    "speech": None,
     "chat_counts": {},
     "chat_events": set(),
     "reduced_motion": False,
@@ -114,6 +116,7 @@ def _start_game(count, chips, small, big, mode, names):
   st.session_state.turn_clock = None
   st.session_state.next_hand_clock = None
   st.session_state.chat = []
+  st.session_state.speech = None
   st.session_state.chat_events = set()
   _say("start", 0)
 
@@ -129,6 +132,21 @@ def _say(event, hand, *, occurrence=None):
   st.session_state.chat.append(lines[count % len(lines)])
   st.session_state.chat_counts[event] = count + 1
   st.session_state.chat_events.add(key)
+
+
+def _speech_due(now):
+  speech = st.session_state.speech
+  return bool(st.session_state.chat) and (
+    speech is None or (speech[0] < len(st.session_state.chat) - 1 and now >= speech[1]))
+
+
+def _visible_speech():
+  chat = st.session_state.chat
+  now = monotonic()
+  if _speech_due(now):
+    # Use the latest line after the hold, leaving the full sequence in chat.
+    st.session_state.speech = (len(chat) - 1, now + SPEECH_SECONDS)
+  return chat[st.session_state.speech[0]] if chat else ""
 
 
 def _record_hand_start(state):
@@ -225,7 +243,7 @@ def _render_clock(turn):
   _expire_turn(turn)
   left = min(TURN_SECONDS, max(0, ceil(timing[1] - monotonic())))
   if left <= 10 and st.session_state.game_mode == ASHWING:
-    # Refresh the whole table so the speech bubble shows the new line.
+    # Record this line once and refresh the transcript.
     key = ("thinking", turn[1], None)
     if key not in st.session_state.chat_events:
       _say("thinking", turn[1])
@@ -347,9 +365,8 @@ def _render_table(state):
   previous = st.session_state.visible_board
   previous_count = previous[2] if previous and previous[:2] == hand else 0
   st.session_state.visible_board = (*hand, len(state["board"]))
-  chat = st.session_state.chat
   markup = table_html(shown, st.session_state.player_names, st.session_state.last_actions, bot_ids,
-    reveal_board_from=previous_count, bot_line=chat[-1] if chat else "")
+    reveal_board_from=previous_count, bot_line=_visible_speech() if bot_ids else "")
   st.markdown(markup, unsafe_allow_html=True)
 
 
@@ -469,6 +486,8 @@ def _render_table_status(ready_turn):
   game = st.session_state.game
   if st.session_state.screen != "table" or game is None or st.session_state.bot_error:
     return
+  if st.session_state.game_mode == ASHWING and _speech_due(monotonic()):
+    st.rerun()
   state = game.get_state()
   if state["hand_over"]:
     if not state["game_over"]:

@@ -196,8 +196,14 @@ def test_expired_free_action_checks_and_ashwing_chat_survives_reruns():
   assert any('room-speech--seat' in item.value and first_line[0] in item.value for item in app.markdown)
   app.run()
   assert len(first_line) == 1 and app.session_state.chat == first_line
+  app.session_state.speech = (0, float("inf"))
   button(app, "Fold").click().run()
   assert len(app.session_state.chat) == 2
+  assert any('room-speech--seat' in item.value and first_line[0] in item.value for item in app.markdown)
+  assert all(app.session_state.chat[-1] not in item.value for item in app.markdown if 'room-speech--seat' in item.value)
+  index, _ = app.session_state.speech
+  app.session_state.speech = (index, 0)
+  app.run()
   assert any('room-speech--seat' in item.value and app.session_state.chat[-1] in item.value for item in app.markdown)
 
 
@@ -212,6 +218,7 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
   button(app, "Play Ashwing").click().run()
   deal(app)
   app.session_state.bot_pacing = "Instant"
+  app.session_state.speech = (0, float("inf"))
   button(app, "Raise").click().run()
   for _ in range(3):
     button(app, "Check").click().run()
@@ -228,6 +235,12 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
   app.session_state.next_hand_clock = (round_key, 0)
   app.run()
   assert app.session_state.chat == [*scene, lines["new_hand"][0]]
+  assert app.session_state.game.hand_number == 2
+  assert app.session_state.speech[0] == 0
+  app.session_state.speech = (0, 0)
+  app.run()
+  assert app.session_state.speech[0] == len(app.session_state.chat) - 1
+  assert any('room-speech--seat' in item.value and lines["new_hand"][0] in item.value for item in app.markdown)
 
 
 def test_ashwing_records_public_river_call_once_after_settlement(monkeypatch):
