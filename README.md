@@ -1,143 +1,50 @@
-# PokerBots
+# Ashwing Poker
 
-A local No-Limit Texas Hold'em browser game built in Streamlit with the original Python poker engine. The UI uses separate HTML and CSS assets for the table. Game rules and pot distribution remain on the Python side.
+[Play Ashwing Poker](https://ashwingpoker.streamlit.app/) · [Ashwing_v2 on Chipzen](https://chipzen.ai/bots/49375fc1-7b6d-4b7e-966f-44600ed28fb5)
 
-## Run
+Ashwing Poker is a no-limit Texas Hold’em game built with Python and Streamlit. Play against Ashwing at a table of 2–6 seats or use pass-and-play with 2–10 people on one device. Set the starting stacks and blinds in **Customize Room** before dealing.
+
+Ashwing combines Search for general play with a short-stack equity policy. In eligible heads-up preflop spots at 10 big blinds or less, it samples opponent holdings and board runouts to compare the value of folding, calling, and going all-in.
+
+## Run locally
+
+From the repository root:
 
 ```bash
 python -m pip install -r requirements.txt
-streamlit run app.py
+python -m streamlit run app.py
 ```
 
-Open the local URL printed by Streamlit. Choose **Play Ashwing** for a table of 2–6 seats, or **Pass-and-play** for 2–10 people sharing a device. In **Customize Room**, set the starting stacks, blinds, and human player names, then select **Deal the first hand**.
+## Table controls and history
 
-## Offline policy evaluation
+- Raise amounts are shown as the total bet for the current street.
+- **Ashwing chat** keeps the full transcript. The table bubble holds its current line for at least three seconds while play continues.
+- **History** replays completed hands from the current game and exports them as JSON. The export uses seat numbers and includes cards revealed at showdown.
+- **Leave game** returns to the lobby. Use **Resume current game** in the same session or export your history before reloading.
 
-Run the offline commands and Chipzen development commands from the `ashwing_sdk/` directory.
+## Project layout
 
-Run `python champion_arena.py` to repeat the tournament. The heads-up round robin swaps seats at
-15 and 100 BB. The multiway screen rotates each entrant through every seat at its assigned tables.
-Each screen leader faces the incumbent on fresh deals. The incumbent keeps its place when the
-95% bootstrap interval for the leader's advantage includes zero.
+| Path | Contents |
+|---|---|
+| `app.py` | Streamlit entry point used by the live deployment |
+| `streamlit_app/` | Lobby, table, hand history, and UI tests |
+| `ashwing_sdk/` | Poker engine, Ashwing strategy, Chipzen adapter, and validation |
 
-## Offline benchmarks
-
-Run a single mirrored deal or compare all four frozen Update 4 baselines:
-
-```bash
-python benchmark.py --opponent "Calling Station" --pairs 1
-python benchmark.py --split evaluation --pairs 100 --output evaluation.json
-```
-
-Each seed plays two hands with equal starting stacks and the bots swapped. A hash checks that the deal by seat is identical. Tuning uses even seeds and evaluation uses odd seeds. Use `--include-pairs` to keep each hand's outcome and deal hash in the export. Results show Equity's net big blinds per 100 hands, a 95% bootstrap interval sampled by seed pair, illegal actions, VPIP, PFR, and Equity's decision latency. If a strategy makes an illegal move, the runner reports it and exits with a nonzero status.
-
-## Project structure
-
-- `streamlit_app/` contains the Streamlit interface, table assets, and browser tests.
-- `ashwing_sdk/` contains the Chipzen SDK, strategy, shared game engine, training inputs, Docker image, and strategy tests.
-- Root `app.py` launches Streamlit from the existing deployment entry point.
-
-## Hand history
-
-Open **History** at the table to step through completed hands from the current game. The replay shows starting stacks, positions, actions, board changes, payouts, and final stacks.
-
-**Download completed hands (JSON)** exports the current game's completed hands with seat numbers. It includes cards revealed at showdown and omits names, folded or otherwise unrevealed hole cards, and the deck. Download before starting another game or leaving the session to keep the history.
-
-## Behavior and privacy
-
-The game state lives in Streamlit session state. Press **Leave game** and **Resume current game** to navigate within the same session. A browser reload or a disconnected session is not guaranteed to preserve the game. There is no database, external lobby or account system.
-
-Pass-and-play hides the previous player's cards until the next player taps **Reveal my cards**. This is meant for a trusted shared device, not secure network multiplayer. Bot opponents only receive their own private cards and publicly revealed community cards.
-
-Raise controls show a **target total bet for the current street**. The UI converts that to the additional chips expected by `game.raise_bet(player, amount)`.
-
-The game reports side-pot payouts after settlement. It does not attempt to recalculate side-pot eligibility in the browser.
-
-## Testing
+## Test and package
 
 ```bash
 python -m pytest -q
+python -m pip install -r ashwing_sdk/requirements-chipzen.txt
+python ashwing_sdk/tests/chipzen_conformance.py Ashwing
 ```
 
-The test suite covers hand starts, private cards, legal actions, rotating seats, short all-ins, chip conservation, winner payouts and view HTML escaping. To test browser rendering interactively, install Streamlit locally and run the app in a desktop and mobile browser.
+The **Chipzen upload** workflow packages the current `Ashwing` policy for Linux AMD64. Download the `pokerbots-ashwing-chipzen` artifact, extract the inner `.tar.gz`, and upload it to Chipzen.
 
-## Scope
-
-The bot difficulty settings are heuristics and have not been trained or optimized. Blind escalation, ante rules, tournament clocks, save-to-disk, network multiplayer and accounts are out of scope.
-
-## Repository and deployment
-
-This repository is the canonical project. Use feature branches and pull requests for updates rather than exchanging ZIP archives. GitHub Actions runs the existing test suite on pushes to main and pull requests.
-
-Streamlit Community Cloud deployment settings:
-
-- Repository: `Shaurya-S0603/PokerBots`
-- Branch: `main`
-- Entry point: `app.py`
-- Python: `3.12`
-- Dependencies: root `requirements.txt`
-
-Merge tested changes into main to update the connected app. Configure any future secrets in Streamlit settings; `.streamlit/secrets.toml` is ignored. Repository privacy and deployed-app access are separate settings.
-
-See [ROADMAP.md](ROADMAP.md) for the ordered browser-testing, persistence, AI and multiplayer milestones and their acceptance criteria.
-
-## Chipzen competition
-
-Open `PokerBots_Chipzen_Colab.ipynb` in Colab using a CPU runtime. Run setup and the offline conformance check, then use the bundled Value policy or train on fresh seeds. The final cell is opt-in and uses the Chipzen remote track with a bot ID and token stored in Colab Secrets. Test a friendly match before entering ranked play.
-
-The competition trainer runs mirrored heads-up hands in parallel, keeps screening and held-out seeds separate, and saves a challenger only when its held-out interval against the incumbent clears zero. The bundled report is in `training/competition-policy.json`. It measures performance against local bots.
-
-To reproduce the initial report locally:
+To build the same image locally:
 
 ```bash
-python competition_train.py --pairs 24 --held-out 64 --output competition-policy.json
-python -m pip install -r requirements-chipzen.txt
-python tests/chipzen_conformance.py
+docker build --platform linux/amd64 -f ashwing_sdk/Dockerfile.chipzen -t pokerbots-ashwing:chipzen ashwing_sdk
+docker save pokerbots-ashwing:chipzen | gzip > pokerbots-ashwing-chipzen.tar.gz
 ```
 
-For scheduled play, run the same adapter on a stable host. A Colab runtime can disconnect, which stops the bot's lobby connection.
-
-### Write a strategy once
-
-A strategy is a callable accepting `(state, rng)`. It receives a public
-`pokerbots_sdk.Observation` with its own hole cards, the board, stacks, and
-legal moves. The supplied RNG keeps seeded matches repeatable. Return
-`(action, None)` for check, call, or fold, or `("raise", total)` for the
-total street bet. The adapters validate the decision before sending it
-to the engine or Chipzen. Use only moves listed in `state.legal`; the
-Chipzen adapter exposes the actions offered by the match.
-
-**Value** and **Button Pressure** are selectable in Bot Arena. To add a
-custom callable to a scripted Arena, pass a mapping to
-`BotArena(seed, styles, strategies={"My strategy": decide})` and use its
-name in the seat list. In Colab or at the command line, put your Python
-module in the project root, then reference its callable as
-`my_bot:decide`. Compare it against Value before live play:
-
-```bash
-python strategy_matchup.py --candidate my_bot:decide --control Value
-python chipzen_entry.py --strategy my_bot:decide
-```
-
-The remote command needs the same Chipzen credentials as the notebook.
-
-### Upload One Above All to Chipzen
-
-Open the **Chipzen upload** workflow in GitHub Actions. Download the
-`pokerbots-one-above-all-chipzen` artifact and unzip it. Upload the inner
-`pokerbots-one-above-all-chipzen.tar.gz` at [Chipzen's upload page](https://chipzen.ai/get-started-upload).
-The hosted entrypoint uses the heads-up policy selected by the Arena.
-
-```bash
-docker build --platform linux/amd64 -f Dockerfile.chipzen --build-arg 'POKERBOTS_STRATEGY=One Above All' -t pokerbots-one-above-all:chipzen .
-docker save pokerbots-one-above-all:chipzen | gzip > pokerbots-one-above-all-chipzen.tar.gz
-```
-
-**Pot Guard** is an experimental heads-up strategy. It uses Value's settings
-until the postflop call costs at least one-third of the displayed pot, then
-requires a larger equity margin.
-To reproduce the local held-out comparison:
-
-```bash
-python strategy_matchup.py --candidate "Pot Guard" --control Value --seed 62000 --pairs 160 --stack 1000
-```
+Streamlit Community Cloud deploys `main/app.py` from this repository. See the [release notes](AUDIT_AND_CHANGELOG.md) and [roadmap](ROADMAP.md).

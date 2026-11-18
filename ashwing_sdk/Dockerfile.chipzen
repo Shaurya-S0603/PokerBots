@@ -10,7 +10,7 @@ COPY chipzen_hosted.py chipzen_entry.py baseline_v4.py equity.py fast_rank.py po
 COPY pokerbots_sdk/ ./pokerbots_sdk/
 COPY training/*.json ./training/
 
-ARG POKERBOTS_STRATEGY=Value
+ARG POKERBOTS_STRATEGY=Ashwing
 ENV POKERBOTS_STRATEGY=${POKERBOTS_STRATEGY}
 
 USER 10001:10001

@@ -10,22 +10,9 @@ permissions:
 jobs:
   package:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - policy: One Above All
-            slug: one-above-all
-          - policy: Hive Mind
-            slug: hive-mind
-          - policy: Ashwing
-            slug: ashwing
-          - policy: Ashwing Search
-            slug: ashwing-search
-          - policy: Ashwing v2
-            slug: ashwing-v2
     env:
-      BOT_POLICY: ${{ matrix.policy }}
-      BOT_SLUG: ${{ matrix.slug }}
+      BOT_POLICY: Ashwing
+      BOT_SLUG: ashwing
     steps:
       - uses: actions/checkout@v4
       - name: Build Linux image
@@ -44,7 +31,7 @@ jobs:
           test "$(wc -c < "pokerbots-$BOT_SLUG-chipzen.tar.gz")" -le 250000000
       - uses: actions/upload-artifact@v4
         with:
-          name: pokerbots-${{ matrix.slug }}-chipzen
-          path: pokerbots-${{ matrix.slug }}-chipzen.tar.gz
+          name: pokerbots-${{ env.BOT_SLUG }}-chipzen
+          path: pokerbots-${{ env.BOT_SLUG }}-chipzen.tar.gz
           if-no-files-found: error
           compression-level: 0
