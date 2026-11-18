@@ -143,9 +143,9 @@ h1, h2, h3 { letter-spacing: -.035em; }
   transform: scale(.94); transform-origin: 75% 76%;
 }
 .ashwing-title__wing--left { right: calc(100% - .03em); }
-.ashwing-title__wing--right { left: calc(100% - .03em); scale: -1 1; transform-origin: left bottom; }
+.ashwing-title__wing--right { left: calc(100% - .03em); scale: -1 1; transform-origin: center bottom; }
 .ashwing-title__tail {
-  position: absolute; width: 1.25em; height: .49em; right: .12em; top: 84%;
+  position: absolute; width: 1.25em; height: .49em; right: .12em; top: 95%;
   border: .045em solid #b77955; border-top: 0; border-left: 0; border-radius: 0 0 75% 0;
   transform-origin: left center; transform: rotate(-9deg);
   animation: ashwing-tail-flick 3.8s ease-in-out 1;
