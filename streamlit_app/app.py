@@ -17,7 +17,8 @@ from ui.session import action_event, new_stats, settle_stats
 from ui.showdown import best_five, pot_explanation
 
 
-st.set_page_config(page_title="PokerRoom · Texas Hold'em", page_icon="♠️", layout="wide", initial_sidebar_state="collapsed")
+APP_NAME = "Ashwing Poker"
+st.set_page_config(page_title=APP_NAME, page_icon="♠️", layout="wide", initial_sidebar_state="collapsed")
 ROOT = Path(__file__).parent
 CSS = (ROOT / "ui" / "styles.css").read_text(encoding="utf-8")
 LOCAL = "Local Pass-and-Play"
@@ -594,7 +595,7 @@ def _render_history():
 
 def _masthead():
   st.markdown('<div class="room-masthead"><span class="room-mark" aria-hidden="true">♠</span>'
-    '<span class="room-wordmark">PokerRoom</span><span class="room-variant">No-Limit Hold’em</span></div>',
+    f'<span class="room-wordmark">{APP_NAME}</span><span class="room-variant">No-Limit Hold’em</span></div>',
     unsafe_allow_html=True)
 
 
@@ -618,7 +619,14 @@ def _render_dealing():
 
 def _render_menu():
   with st.container(key="room_lobby"):
-    st.title("Poker Room", anchor=False)
+    st.markdown(
+      '<h1 class="ashwing-title"><span class="ashwing-title__crest">'
+      '<span class="ashwing-title__wing ashwing-title__wing--left" aria-hidden="true"></span>'
+      f'<span class="ashwing-title__name">{APP_NAME}</span>'
+      '<span class="ashwing-title__wing ashwing-title__wing--right" aria-hidden="true"></span>'
+      '<span class="ashwing-title__tail" aria-hidden="true"></span></span></h1>',
+      unsafe_allow_html=True,
+    )
     st.caption("No-Limit Texas Hold’em · Ashwing Search + Short-Stack Equity")
     st.markdown(f'<style>.st-key-mode_ashwing button::before {{ background-image: '
       f'url("data:image/webp;base64,{AVATAR_DATA}"); }}</style>', unsafe_allow_html=True)
