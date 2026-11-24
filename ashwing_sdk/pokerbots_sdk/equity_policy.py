@@ -47,7 +47,7 @@ def _sized_raise(view, increment):
   return "raise", min(maximum, max(minimum, view.table_bet + increment))
 
 
-def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_opening=False, river_weights=None):
+def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_opening=False, river_weights=None, preflop_equity=None):
   legal = view.legal
   call = legal["call_amount"]
   # A partial call or multiway all-in can expose less than the displayed pot.
@@ -69,6 +69,11 @@ def equity_bot(view, rng, *, profile=EquityProfile(), diagnostics=None, arena_op
     result = sample_equity(view.hole, view.board, view.opponents, trials, rng, checkpoints=curve)
     method = "Monte Carlo"
   share = result.equity
+  if preflop_equity is not None and not view.board:
+    if not 0 <= preflop_equity <= 1:
+      raise ValueError("Preflop equity must be a probability")
+    share = preflop_equity
+    method = "Masterstats with split-pot correction"
   if diagnostics is not None:
     diagnostics.update(method=method, opponents=view.opponents, wins=result.wins,
       ties=result.ties, losses=result.losses, equity=share, curve=curve)

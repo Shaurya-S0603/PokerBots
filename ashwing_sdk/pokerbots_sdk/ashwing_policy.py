@@ -37,7 +37,7 @@ def _decide(view, rng, *, history, profile, shallow_strategy):
     return baseline
 
 
-def short_stack(view, rng, control, details):
+def short_stack(view, rng, control, details, *, uniform_equity=None):
     if view.board or view.opponents != 1 or len(view.stacks) != 2:
         return control
     price = view.legal["call_amount"]
@@ -49,13 +49,14 @@ def short_stack(view, rng, control, details):
     if not raised and view.table_bet != view.big_blind:
         return control
     hole, _, unseen = _known_cards(view.hole, (), (0,))
-    total = share = answered = answered_share = 0.
+    total = share = answered = answered_share = unweighted = 0.
     for _ in range(72):
         deal = rng.sample(unseen, 7)
         other = tuple(deal[:2])
         board = tuple(deal[2:])
         score, opposing = rank_hand(hole + board), rank_hand(other + board)
         equity = (1 + (score > opposing) - (score < opposing)) / 2
+        unweighted += equity
         weight = action_likelihood(raised[-1], other, view.big_blind, not view.late_position) if raised else 1.
         call_weight = (.18 if raised else .08) + .75 / (1 + 2.71828 ** (-(preflop_strength(other) - .56) * 16))
         total += weight
@@ -64,14 +65,16 @@ def short_stack(view, rng, control, details):
         answered_share += equity * weight * call_weight
     pot = view.pot - max(0, view.table_bet - view.current_bet - price)
     facing_all_in = price == view.stack or view.has_all_in_opponent
-    call_ev = share / total * (pot + price) * (1 if facing_all_in else .84) - price
+    adjustment = 0. if uniform_equity is None else max(-.08, min(.08, uniform_equity - unweighted / 72))
+    call_equity = min(1., max(0., share / total + adjustment))
+    call_ev = call_equity * (pot + price) * (1 if facing_all_in else .84) - price
     best = ("call", None) if call_ev > 0 else ("fold", None)
     stack_risk = effective - view.current_bet
     if view.legal["all_in"] and not facing_all_in and stack_risk > price:
         call_rate = answered / total
         matched_extra = max(0, effective - view.table_bet)
         jam_ev = (1 - call_rate) * pot + call_rate * (
-            answered_share / answered * (pot + stack_risk + matched_extra) - stack_risk)
+            min(1., max(0., answered_share / answered + adjustment)) * (pot + stack_risk + matched_extra) - stack_risk)
         if jam_ev > max(0, call_ev) + .12 * view.big_blind:
             best = ("all_in", None)
     return best

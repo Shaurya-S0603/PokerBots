@@ -18,6 +18,18 @@ def load_strategy(spec: str) -> Strategy:
   """Resolve a built-in name or an importable module:callable."""
   from importlib import import_module
 
+  if spec in ("Ashwing_V4", "Ashwing v4"):
+    from .ashwing_v4 import decide
+    return decide
+  if spec == "Ashwing Masterstats":
+    from .masterstats_policy import decide
+    return decide
+  if spec == "Ashwing v3.1":
+    from .ashwing_v31 import decide
+    return decide
+  if spec == "Ashwing v3":
+    from .ashwing_v3 import decide
+    return decide
   if spec in TOOLKIT_STRATEGIES:
     return TOOLKIT_STRATEGIES[spec]
   module, separator, name = spec.partition(":")

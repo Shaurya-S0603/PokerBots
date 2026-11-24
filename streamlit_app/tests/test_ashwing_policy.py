@@ -3,12 +3,12 @@ from random import Random
 from arena import observe
 from ashwing_policy import decide
 from poker_engine import start_game
-from pokerbots_sdk import ashwing_policy
+from pokerbots_sdk import ashwing_policy, ashwing_v4
 from pokerbots_sdk.model import validate_decision
 
 
 def test_streamlit_uses_the_shared_benchmarked_policy():
-  assert decide is ashwing_policy.decide
+  assert decide is ashwing_v4.decide
 
 
 def test_preflop_dispatch_respects_the_effective_stack_and_player_count(monkeypatch):

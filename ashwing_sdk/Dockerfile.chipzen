@@ -8,9 +8,10 @@ RUN pip install --no-cache-dir -r requirements-chipzen.txt \
 
 COPY chipzen_hosted.py chipzen_entry.py baseline_v4.py equity.py fast_rank.py poker_engine.py pokerroom.py ./
 COPY pokerbots_sdk/ ./pokerbots_sdk/
+COPY archives/ ./archives/
 COPY training/*.json ./training/
 
-ARG POKERBOTS_STRATEGY=Ashwing
+ARG POKERBOTS_STRATEGY="Ashwing_V4"
 ENV POKERBOTS_STRATEGY=${POKERBOTS_STRATEGY}
 
 USER 10001:10001

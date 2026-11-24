@@ -22,6 +22,15 @@ class LineAction:
 
 
 @dataclass(frozen=True)
+class PublicAction:
+  player_id: object
+  street: str
+  action: str
+  amount: int
+  pot_before: int
+
+
+@dataclass(frozen=True)
 class Observation:
   hole: tuple
   board: tuple
@@ -38,6 +47,10 @@ class Observation:
   has_all_in_opponent: bool
   opponent_bets: tuple[OpponentBet, ...] = ()
   betting_line: tuple[LineAction, ...] = ()
+  public_players: tuple = ()
+  public_line: tuple = ()
+  player_id: object = None
+  dealer_id: object = None
 
 
 class Strategy(Protocol):

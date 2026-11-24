@@ -11,6 +11,7 @@ from arena import BotArena, apply_decision, observe
 from ashwing_policy import decide
 from poker_engine import start_game
 from pokerbots_sdk.river_calls import RiverCallHistory, RiverCallProfile
+from pokerbots_sdk.v4_history import PublicHistory
 from ui.render import AVATAR_DATA, card_html, table_html
 from ui.replay import export_history, record_step, start_record
 from ui.session import action_event, new_stats, settle_stats
@@ -65,6 +66,7 @@ def _init_state():
     "bot_pacing": "Quick",
     "bot_due": None,
     "ashwing_river_history": None,
+    "ashwing_public_history": None,
     "ashwing_river_bet": None,
     "ashwing_river_response": None,
   }
@@ -100,6 +102,9 @@ def _start_game(count, chips, small, big, mode, names):
   st.session_state.ashwing_river_response = None
   st.session_state.game = game
   st.session_state.game_id += 1
+  st.session_state.ashwing_public_history = PublicHistory() if human_bots else None
+  if human_bots:
+    st.session_state.ashwing_public_history.start(str(st.session_state.game_id))
   st.session_state.screen = "table"
   st.session_state.game_mode = mode
   st.session_state.player_names = {i + 1: value.strip() for i, value in enumerate(names)}
@@ -158,6 +163,7 @@ def _record_hand_start(state):
 def _log_action(action, player_id, before, *, timed_out=False):
   game = st.session_state.game
   event = action_event(action, player_id, before, _player(player_id))
+  event["is_timeout"] = timed_out
   st.session_state.history.append(event)
   _track_river_response(event, before, timed_out=timed_out)
   record = st.session_state.hand_records.get(before["hand_number"])
@@ -194,6 +200,13 @@ def _river_history():
   if st.session_state.ashwing_river_history is None:
     st.session_state.ashwing_river_history = RiverCallHistory(RIVER_PROFILE)
   return st.session_state.ashwing_river_history
+
+
+def _public_history():
+  if st.session_state.ashwing_public_history is None:
+    st.session_state.ashwing_public_history = PublicHistory()
+  st.session_state.ashwing_public_history.start(str(st.session_state.game_id))
+  return st.session_state.ashwing_public_history
 
 
 
@@ -291,7 +304,9 @@ def _play_bot_turn(before):
   try:
     view = observe(game, player)
     action, target = decide(
-      view, st.session_state.human_bots.bot_rngs[current - 1], history=_river_history())
+      view, st.session_state.human_bots.bot_rngs[current - 1],
+      history=_river_history() if view.opponents == 1 and any(pid == 1 for pid, _ in view.stacks) else None,
+      public_history=_public_history())
     action, ok = apply_decision(game, player, view, action, target)
   except ValueError as error:
     st.session_state.bot_error = str(error)
@@ -333,6 +348,10 @@ def _finish_hand_if_needed(state):
   if st.session_state.game_mode != ASHWING:
     return
   hand = state["hand_number"]
+  public_actions = [{**event, "action": ("raise" if event["raised"] else "call")
+    if event["action"] == "all_in" else event["action"]}
+    for event in st.session_state.history if event["hand"] == hand]
+  _public_history().record(hand, public_actions)
   observed = st.session_state.ashwing_river_response
   st.session_state.ashwing_river_response = None
   st.session_state.ashwing_river_bet = None
@@ -627,7 +646,7 @@ def _render_menu():
       '<span class="ashwing-title__tail" aria-hidden="true"></span></span></h1>',
       unsafe_allow_html=True,
     )
-    st.caption("No-Limit Texas Hold’em · Ashwing Search + Short-Stack Equity")
+    st.caption("No-Limit Texas Hold’em · Ashwing V4")
     st.markdown(f'<style>.st-key-mode_ashwing button::before {{ background-image: '
       f'url("data:image/webp;base64,{AVATAR_DATA}"); }}</style>', unsafe_allow_html=True)
     play, local = st.columns(2, gap="small")

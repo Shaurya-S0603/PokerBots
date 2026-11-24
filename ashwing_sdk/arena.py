@@ -3,7 +3,8 @@ from random import Random
 from baseline_v4 import BASELINES, calling_station, loose_aggressive, random_bot, tight
 from pokerbots_sdk import Observation, TOOLKIT_STRATEGIES, validate_decision
 from pokerbots_sdk.champion_policy import TITLE, one_above_all
-from pokerbots_sdk.model import LineAction, OpponentBet
+from pokerbots_sdk.model import LineAction, OpponentBet, PublicAction
+from pokerbots_sdk.v4_equity import PublicPlayer
 from pokerbots_sdk.equity_policy import (
   EQUITY_TRIALS_LARGE_TABLE, EQUITY_TRIALS_SMALL_TABLE, EquityProfile, equity_bot,
 )
@@ -22,6 +23,9 @@ def observe(game, player):
   respond_to = max((seat["current_bet"] + seat["stack"]
     for seat in opponents if not seat["all_in"]), default=0)
   return Observation(
+    public_players=tuple(PublicPlayer(s["player_id"],s["stack"],s["current_bet"],s["total_bet"],s["folded"],s["all_in"]) for s in seats),
+    public_line=tuple(PublicAction(seat,street,action,amount,pot) for seat,street,action,amount,pot in game.betting_line),
+    player_id=player.player_id,dealer_id=state["dealer"],
     hole=tuple(own["hole_cards"]), board=tuple(state["board"]), stack=own["stack"],
     stacks=tuple((seat["player_id"], seat["stack"]) for seat in seats),
     current_bet=own["current_bet"], table_bet=state["table_bet"],

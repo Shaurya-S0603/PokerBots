@@ -246,7 +246,7 @@ def test_ashwing_transcript_follows_a_hand_through_showdown(monkeypatch):
 def test_ashwing_records_public_river_call_once_after_settlement(monkeypatch):
   import ashwing_policy
 
-  def opens_river(view, _rng, *, history):
+  def opens_river(view, _rng, *, history, public_history=None):
     if len(view.board) == 5 and view.legal["raise"]:
       return "raise", view.legal["min_raise_total"]
     return ("check" if view.legal["check"] else "call"), None
@@ -266,8 +266,13 @@ def test_ashwing_records_public_river_call_once_after_settlement(monkeypatch):
   assert app.session_state.game.hand_over
   assert len(app.session_state.ashwing_river_history.responses) == 1
   assert app.session_state.ashwing_river_history.responses[0][1]
+  public = app.session_state.ashwing_public_history
+  assert public.match_id == str(app.session_state.game_id)
+  assert public.completed == {1}
+  observations = {pid: tuple(actions) for pid, actions in public.rows.items()}
   app.run()
   assert len(app.session_state.ashwing_river_history.responses) == 1
+  assert {pid: tuple(actions) for pid, actions in app.session_state.ashwing_public_history.rows.items()} == observations
   assert not app.exception
 
 

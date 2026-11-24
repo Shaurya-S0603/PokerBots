@@ -13,14 +13,18 @@ from chipzen import Action, Bot, run_external_bot
 from pokerbots_sdk import Observation, load_strategy, validate_decision, value
 from pokerbots_sdk.adaptive_policy import TITLE as ASHWING_ADAPTIVE, ashwing_adaptive
 from pokerbots_sdk.ashwing_policy import decide as ashwing_decide
+from pokerbots_sdk.ashwing_v3 import decide as ashwing_v3_decide
 from pokerbots_sdk.equity_policy import EquityProfile, equity_bot
 from pokerbots_sdk.hive_policy import adaptive_river_value_pressure, hive_mind
-from pokerbots_sdk.model import LineAction, OpponentBet
+from pokerbots_sdk.model import LineAction, OpponentBet, PublicAction
+from pokerbots_sdk.v4_equity import PublicPlayer
+from pokerbots_sdk.v4_history import PublicHistory
 from pokerbots_sdk.river_calls import RiverCallHistory, RiverCallProfile
 from pokerbots_sdk.search_policy import TITLE as ASHWING_SEARCH, ashwing_search
 
 SUITS = {"h": "♥️", "d": "♦️", "c": "♣️", "s": "♠️"}
 DEFAULT_POLICY = Path(__file__).resolve().parent / "training" / "competition-policy.json"
+
 ASHWING = "Ashwing"
 ASHWING_V2 = "Ashwing v2"
 
@@ -83,6 +87,22 @@ def observation(state, default_big_blind):
   seats = sorted(seated)
   button_index = seats.index(state.dealer_seat)
   late = state.your_seat == state.dealer_seat or (len(seats) >= 4 and state.your_seat == seats[button_index - 1])
+  # SDK calls/blinds are increments; raises are street raise-to totals.
+  # Keep folded contributions for side pots. A mismatch makes V4 use its frozen expert.
+  total, paid, public, phase, running_pot = {}, {}, [], None, 0
+  for entry in state.action_history:
+    actor, action, amount = entry['seat'], entry['action'], entry['amount']
+    if entry['phase'] != phase:
+      phase, paid = entry['phase'], {}
+    public.append(PublicAction(actor, phase, action, amount, running_pot))
+    increment = amount-paid.get(actor,0) if action == 'raise' else amount if action in ('call','post_small_blind','post_big_blind','post_ante') else 0
+    total[actor] = total.get(actor,0)+increment
+    running_pot += increment
+    if action == 'raise': paid[actor] = amount
+    elif action in ('call','post_small_blind','post_big_blind'): paid[actor] = paid.get(actor,0)+amount
+  current = paid if phase == street else {}
+  people = tuple(PublicPlayer(seat, stack, current.get(seat,0), total.get(seat,0), seat in folded,
+    stack == 0 and seat not in folded) for seat,stack in sorted(seated.items()))
   return Observation(
     hole=_cards(state.hole_cards), board=_cards(state.board), stack=state.your_stack,
     stacks=tuple(sorted(seated.items())),
@@ -93,7 +113,8 @@ def observation(state, default_big_blind):
       "max_raise_total": state.max_raise},
     effective_raise_total=min(state.max_raise, effective_total),
     has_all_in_opponent=any(stack == 0 for stack in opponents.values()),
-    opponent_bets=bets, betting_line=line,
+    opponent_bets=bets, betting_line=line, public_players=people, public_line=tuple(public),
+    player_id=state.your_seat, dealer_id=state.dealer_seat,
   )
 
 
@@ -211,7 +232,52 @@ class AshwingBot(AshwingV2Bot):
     return ashwing_decide(view, self.rng, history=history)
 
 
+class AshwingV31Bot(AshwingBot):
+  def __init__(self, *, seed=None):
+    super().__init__(seed=seed)
+    self.strategy = load_strategy("Ashwing v3.1")
+
+  def river_strategy(self, view, history):
+    return self.strategy(view, self.rng, history=history)
+
+
+class AshwingMasterstatsBot(AshwingV31Bot):
+  def __init__(self, *, seed=None):
+    super().__init__(seed=seed)
+    self.strategy = load_strategy("Ashwing Masterstats")
+
+
+class AshwingV4Bot(AshwingV31Bot):
+  def __init__(self, *, seed=None):
+    super().__init__(seed=seed)
+    self.strategy = load_strategy('Ashwing_V4')
+    self.public_history = PublicHistory()
+
+  def on_match_start(self, message):
+    super().on_match_start(message)
+    self.public_history.start(message.get('match_id'))
+
+  def choose(self, view):
+    opponent = next((seat for seat,_ in view.stacks if seat != self.own_seat),None) if len(view.stacks)==2 else None
+    return self.strategy(view,self.rng,history=self._history(opponent) if opponent is not None else None,
+      public_history=self.public_history)
+
+  def on_hand_result(self, result):
+    super().on_hand_result(result)
+    self.public_history.record(result.get('round_id') or result.get('hand_number'),result.get('action_history',()))
+
+
 def bot_for_strategy(name, *, seed=None):
+  if name in ('Ashwing_V4','Ashwing v4'):
+    return AshwingV4Bot(seed=seed)
+  if name == "Ashwing Masterstats":
+    return AshwingMasterstatsBot(seed=seed)
+  if name == "Ashwing v3.1":
+    return AshwingV31Bot(seed=seed)
+  if name == "Ashwing v3":
+    bot = AshwingBot(seed=seed)
+    bot.strategy = ashwing_v3_decide
+    return bot
   if name == ASHWING:
     return AshwingBot(seed=seed)
   if name == ASHWING_V2:

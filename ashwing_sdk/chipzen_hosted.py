@@ -14,7 +14,7 @@ def main():
   if not url:
     raise SystemExit("Chipzen must provide CHIPZEN_WS_URL")
   logging.basicConfig(level=logging.INFO)
-  bot = bot_for_strategy(os.environ.get("POKERBOTS_STRATEGY", "Ashwing"))
+  bot = bot_for_strategy(os.environ.get("POKERBOTS_STRATEGY", "Ashwing_V4"))
   asyncio.run(run_bot(url, bot, token=os.environ.get("CHIPZEN_TOKEN"),
     ticket=os.environ.get("CHIPZEN_TICKET")))
 

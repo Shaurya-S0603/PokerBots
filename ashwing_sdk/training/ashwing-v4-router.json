@@ -1,0 +1,498 @@
+{
+  "mapping": {
+    "heads/5": "v3",
+    "heads/10": "v3",
+    "heads/25": "v3",
+    "heads/50": "v3",
+    "heads/100": "v3.1",
+    "mixed6/5": "v3",
+    "mixed6/10": "v3",
+    "mixed6/25": "v3",
+    "mixed6/50": "v3",
+    "mixed6/100": "v3"
+  },
+  "screen": [
+    {
+      "region": "heads/5",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/5",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/5",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/5",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/10",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/10",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/10",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        -37.5,
+        37.5
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/10",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -25.0,
+      "ci": [
+        -62.5,
+        0.0
+      ],
+      "win_delta": -0.125,
+      "eligible": false
+    },
+    {
+      "region": "heads/25",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/25",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        -93.75,
+        93.75
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/25",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": -31.25,
+      "ci": [
+        -93.75,
+        0.0
+      ],
+      "win_delta": -0.0625,
+      "eligible": false
+    },
+    {
+      "region": "heads/25",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -31.25,
+      "ci": [
+        -93.75,
+        0.0
+      ],
+      "win_delta": -0.0625,
+      "eligible": false
+    },
+    {
+      "region": "heads/50",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/50",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": -62.5,
+      "ci": [
+        -187.5,
+        0.0
+      ],
+      "win_delta": -0.0625,
+      "eligible": false
+    },
+    {
+      "region": "heads/50",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/50",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/100",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "heads/100",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 433.3125,
+      "ci": [
+        123.75,
+        745.1875
+      ],
+      "win_delta": 0.1875,
+      "eligible": true
+    },
+    {
+      "region": "heads/100",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 46.5625,
+      "ci": [
+        0.0,
+        139.6875
+      ],
+      "win_delta": 0.0625,
+      "eligible": false
+    },
+    {
+      "region": "heads/100",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -46.125,
+      "ci": [
+        -388.375,
+        328.875
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/5",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/5",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/5",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/5",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -18.75,
+      "ci": [
+        -37.5,
+        -6.25
+      ],
+      "win_delta": -0.0625,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/10",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/10",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 1.75,
+      "ci": [
+        0.0,
+        5.25
+      ],
+      "win_delta": 0.020833333333333332,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/10",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": -5.5625,
+      "ci": [
+        -16.6875,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/10",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -10.75,
+      "ci": [
+        -37.5,
+        5.25
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/25",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/25",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": -2.3125,
+      "ci": [
+        -6.9375,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/25",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": -28.916666666666664,
+      "ci": [
+        -110.22916666666666,
+        39.958333333333336
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/25",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": -7.166666666666668,
+      "ci": [
+        -60.50000000000001,
+        52.33333333333333
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/50",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/50",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 1.0208333333333357,
+      "ci": [
+        0.0,
+        2.6458333333333357
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/50",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": 49.79166666666667,
+      "ci": [
+        -27.416666666666657,
+        183.27083333333334
+      ],
+      "win_delta": 0.020833333333333332,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/50",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": 65.58333333333334,
+      "ci": [
+        -24.791666666666668,
+        200.125
+      ],
+      "win_delta": 0.020833333333333332,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/100",
+      "expert": "v2",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/100",
+      "expert": "v3.1",
+      "blocks": 8,
+      "chip_delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/100",
+      "expert": "masterstats",
+      "blocks": 8,
+      "chip_delta": -0.7916666666666661,
+      "ci": [
+        -2.479166666666666,
+        0.625
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    },
+    {
+      "region": "mixed6/100",
+      "expert": "monarch",
+      "blocks": 8,
+      "chip_delta": 49.66666666666666,
+      "ci": [
+        -311.10416666666663,
+        415.79166666666663
+      ],
+      "win_delta": 0.0,
+      "eligible": false
+    }
+  ],
+  "rule": "lower paired chip 95% CI > 0; mean > 10 chips; win delta >= 0; highest N/(N+8) shrunk gain",
+  "phase": "development"
+}

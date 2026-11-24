@@ -14,10 +14,9 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install -r requirements.txt -r ashwing_sdk/requirements-chipzen.txt
       - run: python -m pytest -q
-      - run: python -m pip install -r ashwing_sdk/requirements-chipzen.txt
-      - run: python ashwing_sdk/tests/chipzen_conformance.py
+      - run: python ashwing_sdk/tests/chipzen_conformance.py Ashwing_V4
       - run: python -m pip install playwright
       - run: python -m playwright install --with-deps chromium
       - run: python streamlit_app/tests/browser/table_smoke.py

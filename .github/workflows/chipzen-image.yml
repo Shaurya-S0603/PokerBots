@@ -11,8 +11,8 @@ jobs:
   package:
     runs-on: ubuntu-latest
     env:
-      BOT_POLICY: Ashwing
-      BOT_SLUG: ashwing
+      BOT_POLICY: Ashwing_V4
+      BOT_SLUG: ashwing-v4
     steps:
       - uses: actions/checkout@v4
       - name: Build Linux image
